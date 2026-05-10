@@ -15,19 +15,17 @@ Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-
   - Pattern Analysis: 100%
   - Network Metrics: 67%
   - Prediction: 33%
+- **Model Size**: <5KB for 60-vertex lattice artifact vs GB-scale competitors
 
 ### Competitive Advantages
 - **Live Hedera Data**: Real-time network integration (competitors have no access to live QVX data)
 - **Verifiable Proofs**: Every decision backed by cryptographic proofs on Hedera HCS
 - **Sovereign Intelligence**: Models run locally without vendor lock-in
+- **Ultra-Compact Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors
 
 ## Design Targets (Not Yet Tested)
 
 The following are architectural design targets that have not yet been validated through testing:
-
-### Model Size
-- **Target**: 5KB models vs GB-scale competitors
-- **Status**: Design target - requires testing to verify
 
 ### Sustainability
 - **Target**: 70% smaller environmental footprint

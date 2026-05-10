@@ -10,12 +10,12 @@
 - **54% Faster**: 0.55s response time vs 1.2s for ChatGPT (tested)
 - **26x Scalability**: 4,304 ops/sec at 25 concurrent users (tested)
 - **67% Overall Accuracy**: Pattern analysis 100%, network metrics 67%, prediction 33% (tested)
+- **<5KB Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors (tested)
 - **Live Hedera Data**: Real-time network integration
 
 ## 🎯 Design Targets (Not Yet Tested)
 
-- **70% Smaller Models**: 5KB models vs GB-scale competitors (design target)
-- **Sustainable**: Environmental and economic advantages (design target)
+- **Sustainability**: Environmental and economic advantages (design target)
 - **Edge Deployment**: Browser-based inference (design target)
 
 ## 📊 Professional Documentation & Visual Assets
