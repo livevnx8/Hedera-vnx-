@@ -2,7 +2,7 @@
 
 ![VNX](docs/visuals/vnx-performance-comparison-png.png)
 
-**VNX** is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready.
+**VNX** is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready. It enables agents to bid on tasks, execute them with cryptographic proof, and settle payments with full audit trails.
 
 ## 🎯 Tested & Verified Capabilities
 
@@ -15,16 +15,32 @@ Based on real test data from benchmark testing:
 - **<5KB Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors (tested)
 - **Live Hedera Data**: Real-time network integration
 
-## 📊 Professional Documentation & Visual Assets
+**Data Sources**: [`vera-vs-ai-benchmark-report.json`](vera-vs-ai-benchmark-report.json) (March 26, 2026), [`vnxLmCore.test.ts`](src/tests/vnx/vnxLmCore.test.ts)
+
+---
+
+## 📊 Professional Documentation
 
 ### Comprehensive Overview
 - **[VNX Professional Overview](VNX_PROFESSIONAL_OVERVIEW.md)** - Complete documentation covering:
   - What VNX is and how it works
   - Competitive analysis vs ChatGPT, Claude, Gemini
   - Tested performance metrics and benchmarks
+  - BitLattice architecture (prototype)
   - Why Hedera is the safest place to develop
 
-### Visual Assets Gallery
+### BitLattice Deep Dive
+- **[BitLattice Architecture](BITLATTICE_DEEP_DIVE.md)** - Comprehensive technical documentation:
+  - Core philosophy and ternary-weight system
+  - How lattice topology works
+  - Weight packing scheme and .vnx artifact format
+  - Core findings and performance characteristics
+  - Current prototype status and future roadmap
+
+---
+
+## 🎨 Visual Assets Gallery
+
 All charts are available in both **PNG (300 DPI)** and **SVG** formats in `docs/visuals/`:
 
 | Chart | Description | Data Source |
@@ -41,7 +57,9 @@ All charts are available in both **PNG (300 DPI)** and **SVG** formats in `docs/
 
 **Note**: Sustainability and edge performance charts are design targets requiring testing to verify.
 
-### BitLattice Architecture
+---
+
+## 🔲 BitLattice Architecture
 
 BitLattice is VNX's sovereign edge-model architecture inspired by Microsoft's BitNet research. It uses ternary weights (-1, 0, +1) and lattice routing to achieve extreme model compression while maintaining functionality.
 
@@ -53,53 +71,65 @@ BitLattice is VNX's sovereign edge-model architecture inspired by Microsoft's Bi
 
 **Status**: Prototype (see [BITLATTICE_DEEP_DIVE.md](BITLATTICE_DEEP_DIVE.md) for comprehensive documentation)
 
+---
+
 ## 🔄 The Marketplace Loop
 
-The flagship loop is:
+The flagship loop enables verifiable AI task execution:
 
 ```text
-post task -> agents bid -> winner executes -> result verified -> payment settles -> reputation updates -> HCS proof emitted
+post task → agents bid → winner executes → result verified → payment settles → reputation updates → HCS proof emitted
 ```
 
-The repository also contains research and prototype subsystems for model inference, confidential execution, swarm coordination, agent routing, dashboards, and advanced Hedera tooling. Treat those as supporting or experimental surfaces unless they are tied back to the marketplace loop with tests, runnable endpoints, and observable proof.
+Each stage is cryptographically verifiable on Hedera Consensus Service, providing an immutable audit trail for all marketplace activities.
 
-## Status
+---
 
-- The TypeScript build is expected to pass with `npm run build`.
-- The focused marketplace/orchestrator suites cover pricing, reputation, escrow, settlement, task publishing, topic management, feature flags, event streaming, and scheduled execution governance.
-- Production claims should follow the bar in `VNX_PRODUCT_PATH.md`: tests, runnable surface, observable proof, and operator rollback/failure instructions.
-- Live Hedera operations require funded credentials and should be run deliberately against testnet before any mainnet promotion.
-- Legacy Vera research and experimental documentation has been consolidated under `legacy/vera/`; this repo’s active public product narrative is VNX.
+## 🚀 Quick Start
 
-## Core Capabilities
+### Prerequisites
+- **Docker** & **Docker Compose**
+- **Node.js** 18+ (for development)
+- **Hedera Operator Account** with HBAR
 
-- **Task marketplace**: task posting, bid intake, winner selection, execution state.
-- **Verification**: result schema validation, proof hash, verifier outcome.
-- **Settlement**: micropayment/HBAR payment, escrow/release, fee accounting.
-- **Reputation**: outcome-based agent score updates.
-- **Audit trail**: HCS event emission and lookup for marketplace events.
-- **Governance**: scheduled execution for threshold-approved state changes.
-- **Dashboards and realtime APIs**: proof, health, rig state, and marketplace visibility.
+### Installation
 
-## VNX Product Summary
+```bash
+# Clone the repository
+git clone https://github.com/livevnx8/Hedera-vnx-.git
+cd hedera-llm-api
 
-VNX is the production-facing sovereign AI marketplace on Hedera. The focus is on a clean, verifiable marketplace loop that delivers:
+# Copy environment template
+cp .env.example .env.production
 
-- clear marketplace outcomes for tasks, bids, awards, execution results, and settlements
-- verifiable proof backed by Hedera HCS and mirror-node evidence
-- operator-visible reputation and payment reconciliation
-- a stable, product-ready route surface for the marketplace/orchestrator
+# Edit configuration
+nano .env.production
+```
 
-Note: the current codebase still retains legacy internal route and config names such as `/api/vera` and `VERA_*`. These are implementation details; public-facing documentation and branding should use VNX.
+### Deployment
 
-Legacy research and historical design work has been archived under `legacy/vera/`. The active product documentation for VNX is:
-- `docs/vnx-product-overview.md`
-- `VNX_PRODUCT_PATH.md`
-- `docs/github-branching-labels.md`
-- `docs/vnx-legacy-archive.md`
+```bash
+# Production-style deployment
+./scripts/deploy.sh production
 
-Read the product overview for the current product boundary and route surface:
-- `docs/vnx-product-overview.md`
+# Development deployment
+./scripts/deploy.sh development
+```
+
+### Verification
+
+```bash
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f vera-app
+
+# Health check
+curl http://localhost:8080/api/vnx/health
+```
+
+---
 
 ## 🏗️ Architecture
 
@@ -119,51 +149,7 @@ Read the product overview for the current product boundary and route surface:
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Docker** & **Docker Compose**
-- **Node.js** 18+ (for development)
-- **Hedera Operator Account** with HBAR
-
-### 1. Use this checkout
-```bash
-cd hedera-llm-api
-```
-
-### 2. Environment Setup
-```bash
-# Copy environment template
-cp .env.example .env.production
-
-# Edit configuration
-nano .env.production
-```
-
-### 3. Deploy
-```bash
-# Production-style deployment
-./scripts/deploy.sh production
-
-# Development deployment
-./scripts/deploy.sh development
-```
-
-### 4. Verify Deployment
-```bash
-# Check service status
-docker-compose ps
-
-# View logs (internal compose service retains its current name)
-docker-compose logs -f vera-app
-
-# Health check (public VNX API surface)
-curl http://localhost:8080/api/vnx/health
-
-# Legacy Vera API surface (still available for compatibility)
-curl http://localhost:8080/api/vera/health
-```
+---
 
 ## 🔧 Configuration
 
@@ -190,6 +176,8 @@ curl http://localhost:8080/api/vera/health
 | Wallet Ops | 0.17 req/s | 1 |
 | Heavy Ops | 0.03 req/s | 1 |
 
+---
+
 ## 📊 Monitoring
 
 ### Grafana Dashboards
@@ -212,9 +200,12 @@ Key metrics:
 
 Access: `http://localhost:9090`
 
+---
+
 ## 🛠️ Development
 
 ### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -230,6 +221,7 @@ npm run build
 ```
 
 ### Code Structure
+
 ```
 src/
 ├── agent/           # AI agent logic
@@ -241,12 +233,7 @@ src/
 └── tests/           # Test suites
 ```
 
-### Adding New Tools
-
-1. **Define Tool** in `src/agent/definitions.ts`
-2. **Implement Logic** in `src/agent/executor.ts`
-3. **Add Tests** in `src/tests/`
-4. **Update Categories** in `src/agent/toolManager.ts`
+---
 
 ## 🔒 Security
 
@@ -263,20 +250,7 @@ src/
 - **XSS Protection**: Output encoding
 - **CSRF Protection**: Token validation
 
-## 📈 Performance
-
-### Optimization Features
-- **Caching**: Multi-layer caching (Redis, memory)
-- **Compression**: Gzip compression
-- **Connection Pooling**: Database connection reuse
-- **GPU Memory Management**: Dynamic memory allocation
-- **Tool Streaming**: Load tools on-demand
-
-### Benchmarks
-- **Response Time**: <2s for chat responses
-- **Throughput**: 100+ concurrent users
-- **Memory Usage**: <8GB GPU memory
-- **Uptime**: 99.9% availability target
+---
 
 ## 🚨 Troubleshooting
 
@@ -316,6 +290,8 @@ nvidia-smi -l 1
 curl http://localhost:8080/admin/rate-limits
 ```
 
+---
+
 ## 📚 API Documentation
 
 ### Core Endpoints
@@ -328,52 +304,41 @@ curl http://localhost:8080/admin/rate-limits
 | POST | `/v1/wallet/connect` | Connect wallet |
 | GET | `/wallet/overview` | Wallet overview |
 
-### Tool Examples
-
-```bash
-# Create account
-curl -X POST http://localhost:8080/v1/chat/agent \
-  -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"Create a new Hedera account"}],"enable_tools":true}'
-
-# Verify account
-curl -X POST http://localhost:8080/v1/chat/agent \
-  -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"Verify account 0.0.123456"}],"enable_tools":true}'
-```
+---
 
 ## 🤝 Contributing
 
-1. Create a focused branch for the change.
-2. Keep new production claims tied to the flagship marketplace loop.
-3. Run `npm run build` and `npm test` before promotion.
-4. Update `VNX_PRODUCT_PATH.md` when a change alters the product path or readiness bar.
+1. Create a focused branch for the change
+2. Keep new production claims tied to the flagship marketplace loop
+3. Run `npm run build` and `npm test` before promotion
+4. Update [`VNX_PRODUCT_PATH.md`](VNX_PRODUCT_PATH.md) when a change alters the product path
 
 ### Development Guidelines
-- **Code Style**: TypeScript-first, following local Fastify and module patterns.
-- **Tests**: Vitest coverage for happy paths and important failure modes.
-- **Documentation**: Label features as production, prototype, demo, research, or planned.
-- **Security**: Keep mainnet operations gated and auditable.
+- **Code Style**: TypeScript-first, following local Fastify and module patterns
+- **Tests**: Vitest coverage for happy paths and important failure modes
+- **Documentation**: Label features as production, prototype, demo, research, or planned
+- **Security**: Keep mainnet operations gated and auditable
 
-### GitHub Branching and Label Policy
-- `main` — production-ready code only.
-- `feature/vnx-marketplace/*` — core marketplace/orchestrator product work.
-- `feature/experimental-research/*` — research, prototype, or model experimentation work.
-- `chore/branding/*`, `chore/docs/*`, `chore/cleanup/*` — non-feature maintenance work.
+### GitHub Branching Policy
+- `main` — production-ready code only
+- `feature/vnx-marketplace/*` — core marketplace/orchestrator product work
+- `feature/experimental-research/*` — research, prototype, or model experimentation work
+- `chore/branding/*`, `chore/docs/*`, `chore/cleanup/*` — non-feature maintenance work
 
-Labels:
-- `core/product` — stable product work aligned to the flagship VNX marketplace loop.
-- `research/experimental` — prototype or research subsystems that support but do not define the core product.
-- `branding` — identity, public-facing naming, and documentation updates.
-- `docs` — documentation or runbook changes.
-- `cleanup` — refactor, technical debt, or code hygiene updates.
-
-Keep new product claims tied to `VNX_PRODUCT_PATH.md` and the `/api/vera` marketplace/orchestrator surface. Research routes and experimental models should be treated as separate, lower-stability work until they are explicitly promoted to the core product path.
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
 ## 🆘 Support
 
-Use the local docs in `docs/`, the deployment runbooks, and `VNX_PRODUCT_PATH.md` as the current source of truth.
+For detailed documentation, see:
+- [`docs/vnx-product-overview.md`](docs/vnx-product-overview.md) - Current product boundary and route surface
+- [`VNX_PRODUCT_PATH.md`](VNX_PRODUCT_PATH.md) - Production readiness bar
+- [`docs/github-branching-labels.md`](docs/github-branching-labels.md) - Branching and labeling policy
+- [`docs/vnx-legacy-archive.md`](docs/vnx-legacy-archive.md) - Legacy Vera archive
+
+**Note**: The codebase retains legacy internal route names such as `/api/vera` and `VERA_*` for compatibility. Public-facing documentation and branding use VNX.
