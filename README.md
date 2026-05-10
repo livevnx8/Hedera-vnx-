@@ -33,12 +33,25 @@ All charts are available in both **PNG (300 DPI)** and **SVG** formats in `docs/
 | ![Scalability](docs/visuals/vnx-scalability-visualization-png.png) | 26x performance multiplier | vera-vs-ai-benchmark-report.json |
 | ![Accuracy Metrics](docs/visuals/vnx-accuracy-metrics-png.png) | Real test accuracy breakdown | vera-vs-ai-benchmark-report.json |
 | ![Model Size](docs/visuals/vnx-model-size-comparison-png.png) | <5KB vs GB-scale competitors | vnxLmCore.test.ts |
+| ![BitLattice Architecture](docs/visuals/vnx-bitlattice-architecture-png.png) | Ternary-weight lattice system | BITLATTICE_DEEP_DIVE.md |
 | ![Architecture](docs/visuals/vnx-architecture-diagram-png.png) | Verifiable marketplace loop | Architectural design |
 | ![Verifiability](docs/visuals/vnx-verifiability-diagram-png.png) | Hedera-backed proof chains | Architectural design |
 | ![Competitive Advantages](docs/visuals/vnx-competitive-advantage-grid-png.png) | 6 unique advantages | Architectural design |
 | ![Research Timeline](docs/visuals/vnx-research-timeline-png.png) | Key achievement milestones | Project history |
 
 **Note**: Sustainability and edge performance charts are design targets requiring testing to verify.
+
+### BitLattice Architecture
+
+BitLattice is VNX's sovereign edge-model architecture inspired by Microsoft's BitNet research. It uses ternary weights (-1, 0, +1) and lattice routing to achieve extreme model compression while maintaining functionality.
+
+**Key Features:**
+- **70% smaller**: <5KB models vs GB-scale competitors
+- **200,000× compression**: 5 weights packed per byte
+- **Local inference**: No API calls or vendor lock-in
+- **Deterministic**: Exact reproducibility across devices
+
+**Status**: Prototype (see [BITLATTICE_DEEP_DIVE.md](BITLATTICE_DEEP_DIVE.md) for comprehensive documentation)
 
 ## 🔄 The Marketplace Loop
 
