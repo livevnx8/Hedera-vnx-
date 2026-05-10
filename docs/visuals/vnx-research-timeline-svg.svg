@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-05-09T21:19:06.889498</dc:date>
+    <dc:date>2026-05-09T21:36:23.035695</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ C 101.327804 320.593697 99.27 325.529624 99.27 330.675625
 C 99.27 335.821626 101.327804 340.757553 104.990205 344.396325 
 C 108.652605 348.035097 113.620583 350.079625 118.8 350.079625 
 z
-" clip-path="url(#p1ccdb17bbb)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
+" clip-path="url(#pc76db89147)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 416.4 350.079625 
@@ -53,7 +53,7 @@ C 398.927804 320.593697 396.87 325.529624 396.87 330.675625
 C 396.87 335.821626 398.927804 340.757553 402.590205 344.396325 
 C 406.252605 348.035097 411.220583 350.079625 416.4 350.079625 
 z
-" clip-path="url(#p1ccdb17bbb)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
+" clip-path="url(#pc76db89147)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 714 350.079625 
@@ -66,7 +66,7 @@ C 696.527804 320.593697 694.47 325.529624 694.47 330.675625
 C 694.47 335.821626 696.527804 340.757553 700.190205 344.396325 
 C 703.852605 348.035097 708.820583 350.079625 714 350.079625 
 z
-" clip-path="url(#p1ccdb17bbb)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
+" clip-path="url(#pc76db89147)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 1011.6 350.079625 
@@ -79,12 +79,12 @@ C 994.127804 320.593697 992.07 325.529624 992.07 330.675625
 C 992.07 335.821626 994.127804 340.757553 997.790205 344.396325 
 C 1001.452605 348.035097 1006.420583 350.079625 1011.6 350.079625 
 z
-" clip-path="url(#p1ccdb17bbb)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
+" clip-path="url(#pc76db89147)" style="fill: #ffd700; stroke: #f8fafc; stroke-width: 4; stroke-linejoin: miter"/>
    </g>
    <g id="line2d_1">
     <path d="M 118.8 330.675625 
 L 1011.6 330.675625 
-" clip-path="url(#p1ccdb17bbb)" style="fill: none; stroke: #00d4aa; stroke-opacity: 0.8; stroke-width: 5; stroke-linecap: square"/>
+" clip-path="url(#pc76db89147)" style="fill: none; stroke: #00d4aa; stroke-opacity: 0.8; stroke-width: 5; stroke-linecap: square"/>
    </g>
    <g id="text_1">
     <!-- BitNet Ternary -->
@@ -1133,7 +1133,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p1ccdb17bbb">
+  <clipPath id="pc76db89147">
    <rect x="7.2" y="53.475625" width="1116" height="554.4"/>
   </clipPath>
  </defs>

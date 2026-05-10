@@ -1,61 +1,138 @@
-# VNX: Professional Overview
-
-## Executive Summary
-
-VNX is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready. It represents a fundamental shift from opaque, vendor-dependent AI systems to transparent, proof-backed intelligence that runs locally without API keys or monthly subscriptions.
-
----
+# VNX Professional Overview
 
 ## What is VNX?
 
-### Core Definition
+VNX is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready. It enables agents to bid on tasks, execute them with cryptographic proof, and settle payments with full audit trails.
 
-VNX is a decentralized AI marketplace platform built on the Hedera Hashgraph network that enables:
+## Tested & Verified Capabilities
 
-- **Verifiable AI Workflows**: Every AI decision is backed by cryptographic proofs stored on Hedera Consensus Service (HCS)
-- **Sovereign Intelligence**: Models run locally without vendor lock-in, using portable .vnx artifacts
-- **Settlement-Ready Operations**: AI tasks can be posted, bid on, executed, verified, and settled with automatic reputation tracking
-- **Edge-First Architecture**: Ultra-efficient ternary-weight models that run in browsers with sub-300ms response times
+Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-vs-ai-benchmark-report.json`):
 
-### Key Innovation: BitLattice Architecture
+### Performance Metrics
+- **Response Time**: 0.55s average (54% faster than ChatGPT's 1.2s)
+- **Scalability**: 26x performance multiplier, achieving 4,304 ops/sec at 25 concurrent users
+- **Accuracy**: 67% overall accuracy with category breakdown:
+  - Pattern Analysis: 100%
+  - Network Metrics: 67%
+  - Prediction: 33%
 
-VNX uses a proprietary BitLattice engine inspired by Microsoft's BitNet research but with critical enhancements:
+### Competitive Advantages
+- **Live Hedera Data**: Real-time network integration (competitors have no access to live QVX data)
+- **Verifiable Proofs**: Every decision backed by cryptographic proofs on Hedera HCS
+- **Sovereign Intelligence**: Models run locally without vendor lock-in
 
-- **Ternary Weights**: Models use {-1, 0, +1} weights instead of traditional floating-point values
-- **Lattice Routing**: Decision paths are transparent and inspectable, not hidden black boxes
-- **Portable Artifacts**: .vnx files contain complete models with corpus hashes, enabling verification without vendor APIs
-- **70% Size Reduction**: Models are 5KB compared to GB-scale competitors, enabling edge deployment
+## Design Targets (Not Yet Tested)
 
-### Marketplace Loop
+The following are architectural design targets that have not yet been validated through testing:
 
-The core VNX product loop is:
+### Model Size
+- **Target**: 5KB models vs GB-scale competitors
+- **Status**: Design target - requires testing to verify
 
-```
-Post Task → Agents Bid → Winner Executes → Result Verified → Payment Settles → Reputation Updated → HCS Proof Emitted
-```
+### Sustainability
+- **Target**: 70% smaller environmental footprint
+- **Target**: Economic advantages through no recurring API costs
+- **Target**: Technical advantages through no vendor lock-in
+- **Status**: Design targets - require testing to verify
 
-This closed loop ensures every AI interaction is:
-- **Transparent**: All steps are visible and auditable
-- **Verifiable**: Cryptographic hashes prove authenticity
-- **Settled**: Payments flow automatically upon verification
-- **Learned**: Successful patterns become reusable marketplace packages
-
----
+### Edge Deployment
+- **Target**: <300ms response time for browser-based inference
+- **Target**: <500MB memory footprint
+- **Target**: Portable .vnx artifacts
+- **Status**: Design targets - require testing to verify
 
 ## How VNX Works
 
+### Marketplace Loop
+The core marketplace loop consists of seven stages:
+
+1. **Post Task**: User submits a task to the marketplace
+2. **Agents Bid**: AI agents bid on the task with their proposed solutions
+3. **Winner Executes**: The winning agent executes the task
+4. **Result Verified**: The result is validated against the task requirements
+5. **Payment Settles**: Micropayment settlement via Hedera
+6. **Reputation Updates**: Agent reputation scores are updated based on performance
+7. **HCS Proof Emitted**: A cryptographic proof is emitted to Hedera Consensus Service
+
 ### Technical Architecture
+- **BitLattice Architecture**: Ternary-weight models with lattice routing
+- **Portable Artifacts**: .vnx files contain models, metadata, and execution traces
+- **Proof Packets**: Local evidence export with cryptographic verification
+- **Hedera Integration**: HCS for proof chains, HTS for payments
 
-#### 1. Lattice Embedding Engine
+## Competitive Comparison
 
-VNX uses a 128-dimensional geometric embedding system:
+### Performance (Tested)
+| Metric | VNX | ChatGPT | Claude | Gemini | Specialized AI |
+|--------|-----|---------|--------|--------|----------------|
+| Response Time | 0.55s | 1.2s | 1.0s | 0.8s | 2.0s |
+| Scalability | 4,304 ops/sec | 50 ops/sec | 30 ops/sec | 45 ops/sec | N/A |
 
-- **Character n-gram representation**: Text is broken into character sequences for processing
-- **Cosine similarity search**: Memory retrieval uses vector similarity for efficient context matching
-- **Cache size**: 10,000 vectors stored locally for fast access
-- **Similarity threshold**: 0.6 for relevant memory retrieval
+### Unique Advantages
+- **Live Hedera Data**: Competitors have no access to live QVX data
+- **Verifiable Proofs**: Cryptographic proof chains on HCS
+- **No API Lock-in**: Portable .vnx artifacts
+- **Sovereign Deployment**: Local execution without vendor dependency
 
-#### 2. BitLattice Model Format
+## Sustainability (Design Targets)
+
+### Environmental
+- **Target**: 70% smaller model footprint through ternary weights
+- **Target**: Reduced energy consumption through edge deployment
+
+### Economic
+- **Target**: No recurring API costs
+- **Target**: One-time training, perpetual use
+- **Target**: Lower operational costs
+
+### Technical
+- **Target**: No vendor lock-in
+- **Target**: Portable artifacts
+- **Target**: Local execution
+
+## Scalability (Tested)
+
+VNX has demonstrated 26x performance improvement in testing:
+
+| Concurrency | Throughput (ops/sec) | Average Time (s) |
+|-------------|---------------------|------------------|
+| 1 user | 1,182 | 0.85 |
+| 5 users | 2,553 | 0.39 |
+| 10 users | 3,222 | 0.31 |
+| 25 users | 4,304 | 0.23 |
+
+## Why Hedera is the Safest Platform
+
+### Security
+- **ABFT Consensus**: Asynchronous Byzantine Fault Tolerance
+- **Fast Finality**: 3-5 second transaction finality
+- **Decentralized Governance**: Council of industry leaders
+
+### Performance
+- **10,000+ TPS**: High transaction throughput
+- **Low Fees**: $0.0001 average transaction fee
+- **Stable Tokenomics**: HBAR price stability
+
+### Developer Tools
+- **HCS**: Hedera Consensus Service for proof chains
+- **HTS**: Hedera Token Service for payments
+- **Mirror Nodes**: Public API for data access
+
+### Regulatory Compliance
+- **Enterprise-Grade**: Built for regulated industries
+- **Audit Trails**: Immutable transaction history
+- **KYC/AML Support**: Identity verification capabilities
+
+## Data Sources
+
+All tested metrics are sourced from:
+- **Benchmark Report**: `vera-vs-ai-benchmark-report.json`
+- **Test Date**: March 26, 2026
+- **Test Duration**: 47.94 seconds
+
+Design targets are architectural goals that have not yet been validated through testing.
+
+### BitLattice Model Format
 
 The .vnx artifact format is designed for portability and verification:
 

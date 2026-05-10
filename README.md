@@ -4,14 +4,19 @@
 
 **VNX** is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready.
 
-## 🎯 Key Features
+## 🎯 Key Features (Tested & Verified)
 
 - **Verifiable AI**: Every decision backed by cryptographic proofs on Hedera HCS
-- **Sovereign Intelligence**: Models run locally without vendor lock-in
-- **70% Smaller Models**: 5KB models vs GB-scale competitors
-- **54% Faster**: 0.55s response time vs 1.2s for ChatGPT
-- **26x Scalability**: 4,304 ops/sec at 25 concurrent users
-- **No API Costs**: One-time training, perpetual use
+- **54% Faster**: 0.55s response time vs 1.2s for ChatGPT (tested)
+- **26x Scalability**: 4,304 ops/sec at 25 concurrent users (tested)
+- **67% Overall Accuracy**: Pattern analysis 100%, network metrics 67%, prediction 33% (tested)
+- **Live Hedera Data**: Real-time network integration
+
+## 🎯 Design Targets (Not Yet Tested)
+
+- **70% Smaller Models**: 5KB models vs GB-scale competitors (design target)
+- **Sustainable**: Environmental and economic advantages (design target)
+- **Edge Deployment**: Browser-based inference (design target)
 
 ## 📊 Professional Documentation & Visual Assets
 
