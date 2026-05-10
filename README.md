@@ -4,7 +4,9 @@
 
 **VNX** is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready.
 
-## 🎯 Key Features (Tested & Verified)
+## 🎯 Tested & Verified Capabilities
+
+Based on real test data from benchmark testing:
 
 - **Verifiable AI**: Every decision backed by cryptographic proofs on Hedera HCS
 - **54% Faster**: 0.55s response time vs 1.2s for ChatGPT (tested)
@@ -13,36 +15,30 @@
 - **<5KB Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors (tested)
 - **Live Hedera Data**: Real-time network integration
 
-## 🎯 Design Targets (Not Yet Tested)
-
-- **Sustainability**: Environmental and economic advantages (design target)
-- **Edge Deployment**: Browser-based inference (design target)
-
 ## 📊 Professional Documentation & Visual Assets
 
 ### Comprehensive Overview
 - **[VNX Professional Overview](VNX_PROFESSIONAL_OVERVIEW.md)** - Complete documentation covering:
   - What VNX is and how it works
   - Competitive analysis vs ChatGPT, Claude, Gemini
-  - Sustainability advantages (environmental, economic, technical)
-  - Scalability metrics and benchmarks
+  - Tested performance metrics and benchmarks
   - Why Hedera is the safest place to develop
 
 ### Visual Assets Gallery
 All charts are available in both **PNG (300 DPI)** and **SVG** formats in `docs/visuals/`:
 
-| Chart | Description |
-|-------|-------------|
-| ![Performance Comparison](docs/visuals/vnx-performance-comparison-png.png) | VNX vs competitors response time |
-| ![Scalability](docs/visuals/vnx-scalability-visualization-png.png) | 26x performance multiplier |
-| ![Sustainability](docs/visuals/vnx-sustainability-infographic-png.png) | 70% smaller footprint |
-| ![Architecture](docs/visuals/vnx-architecture-diagram-png.png) | Verifiable marketplace loop |
-| ![Model Size](docs/visuals/vnx-model-size-comparison-png.png) | 5KB vs GB-scale competitors |
-| ![Verifiability](docs/visuals/vnx-verifiability-diagram-png.png) | Hedera-backed proof chains |
-| ![Accuracy Metrics](docs/visuals/vnx-accuracy-metrics-png.png) | All validation targets met |
-| ![Edge Performance](docs/visuals/vnx-edge-performance-dashboard-png.png) | Browser-based inference |
-| ![Competitive Advantages](docs/visuals/vnx-competitive-advantage-grid-png.png) | 6 unique advantages |
-| ![Research Timeline](docs/visuals/vnx-research-timeline-png.png) | Key achievement milestones |
+| Chart | Description | Data Source |
+|-------|-------------|-------------|
+| ![Performance Comparison](docs/visuals/vnx-performance-comparison-png.png) | VNX vs competitors response time | vera-vs-ai-benchmark-report.json |
+| ![Scalability](docs/visuals/vnx-scalability-visualization-png.png) | 26x performance multiplier | vera-vs-ai-benchmark-report.json |
+| ![Accuracy Metrics](docs/visuals/vnx-accuracy-metrics-png.png) | Real test accuracy breakdown | vera-vs-ai-benchmark-report.json |
+| ![Model Size](docs/visuals/vnx-model-size-comparison-png.png) | <5KB vs GB-scale competitors | vnxLmCore.test.ts |
+| ![Architecture](docs/visuals/vnx-architecture-diagram-png.png) | Verifiable marketplace loop | Architectural design |
+| ![Verifiability](docs/visuals/vnx-verifiability-diagram-png.png) | Hedera-backed proof chains | Architectural design |
+| ![Competitive Advantages](docs/visuals/vnx-competitive-advantage-grid-png.png) | 6 unique advantages | Architectural design |
+| ![Research Timeline](docs/visuals/vnx-research-timeline-png.png) | Key achievement milestones | Project history |
+
+**Note**: Sustainability and edge performance charts are design targets requiring testing to verify.
 
 ## 🔄 The Marketplace Loop
 

@@ -6,7 +6,7 @@ VNX is a sovereign AI marketplace built on Hedera that makes AI workflows verifi
 
 ## Tested & Verified Capabilities
 
-Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-vs-ai-benchmark-report.json`):
+Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-vs-ai-benchmark-report.json`) and unit testing (see `src/tests/vnx/vnxLmCore.test.ts`):
 
 ### Performance Metrics
 - **Response Time**: 0.55s average (54% faster than ChatGPT's 1.2s)
@@ -22,22 +22,6 @@ Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-
 - **Verifiable Proofs**: Every decision backed by cryptographic proofs on Hedera HCS
 - **Sovereign Intelligence**: Models run locally without vendor lock-in
 - **Ultra-Compact Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors
-
-## Design Targets (Not Yet Tested)
-
-The following are architectural design targets that have not yet been validated through testing:
-
-### Sustainability
-- **Target**: 70% smaller environmental footprint
-- **Target**: Economic advantages through no recurring API costs
-- **Target**: Technical advantages through no vendor lock-in
-- **Status**: Design targets - require testing to verify
-
-### Edge Deployment
-- **Target**: <300ms response time for browser-based inference
-- **Target**: <500MB memory footprint
-- **Target**: Portable .vnx artifacts
-- **Status**: Design targets - require testing to verify
 
 ## How VNX Works
 
@@ -71,22 +55,6 @@ The core marketplace loop consists of seven stages:
 - **Verifiable Proofs**: Cryptographic proof chains on HCS
 - **No API Lock-in**: Portable .vnx artifacts
 - **Sovereign Deployment**: Local execution without vendor dependency
-
-## Sustainability (Design Targets)
-
-### Environmental
-- **Target**: 70% smaller model footprint through ternary weights
-- **Target**: Reduced energy consumption through edge deployment
-
-### Economic
-- **Target**: No recurring API costs
-- **Target**: One-time training, perpetual use
-- **Target**: Lower operational costs
-
-### Technical
-- **Target**: No vendor lock-in
-- **Target**: Portable artifacts
-- **Target**: Local execution
 
 ## Scalability (Tested)
 
@@ -124,11 +92,10 @@ VNX has demonstrated 26x performance improvement in testing:
 ## Data Sources
 
 All tested metrics are sourced from:
-- **Benchmark Report**: `vera-vs-ai-benchmark-report.json`
-- **Test Date**: March 26, 2026
-- **Test Duration**: 47.94 seconds
+- **Benchmark Report**: `vera-vs-ai-benchmark-report.json` (March 26, 2026)
+- **Unit Tests**: `src/tests/vnx/vnxLmCore.test.ts` (model size validation)
 
-Design targets are architectural goals that have not yet been validated through testing.
+Architectural diagrams (marketplace loop, verifiability, competitive advantages, research timeline) represent system design and are not performance benchmarks.
 
 ### BitLattice Model Format
 
