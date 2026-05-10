@@ -18,7 +18,7 @@ Based on comprehensive benchmark testing conducted on March 26, 2026 (see `vera-
 - **Model Size**: <5KB for 60-vertex lattice artifact vs GB-scale competitors
 
 ### Competitive Advantages
-- **Live Hedera Data**: Real-time network integration (competitors have no access to live QVX data)
+- **Live Hedera Data**: Real-time network integration (competitors lack live network access)
 - **Verifiable Proofs**: Every decision backed by cryptographic proofs on Hedera HCS
 - **Sovereign Intelligence**: Models run locally without vendor lock-in
 - **Ultra-Compact Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors
@@ -51,7 +51,7 @@ The core marketplace loop consists of seven stages:
 | Scalability | 4,304 ops/sec | 50 ops/sec | 30 ops/sec | 45 ops/sec | N/A |
 
 ### Unique Advantages
-- **Live Hedera Data**: Competitors have no access to live QVX data
+- **Live Hedera Data**: Competitors lack live network access
 - **Verifiable Proofs**: Cryptographic proof chains on HCS
 - **No API Lock-in**: Portable .vnx artifacts
 - **Sovereign Deployment**: Local execution without vendor dependency
@@ -364,7 +364,7 @@ VNX optimizes GPU resource usage:
 
 - **Dynamic layer placement**: Intelligent model layer distribution
 - **Frequency-mode selection**: Adaptive GPU clock speeds
-- **Critical-task quantum mode**: Priority processing for important tasks
+- **Priority task processing**: Priority processing for important tasks
 - **Metric-driven tuning**: Continuous performance optimization
 
 #### Cost Tracking

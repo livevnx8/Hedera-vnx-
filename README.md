@@ -111,7 +111,6 @@ Read the product overview for the current product boundary and route surface:
 ### Prerequisites
 
 - **Docker** & **Docker Compose**
-- **NVIDIA GPU** (for QVX model)
 - **Node.js** 18+ (for development)
 - **Hedera Operator Account** with HBAR
 
@@ -159,9 +158,9 @@ curl http://localhost:8080/api/vera/health
 
 | Category | Variable | Description | Required |
 |----------|----------|-------------|----------|
-| **AI Model** | `MODEL_PROVIDER` | `qvx-direct` | ✅ |
-| | `QVX_INFER_URL` | QVX server URL | ✅ |
-| | `QVX_INFER_API_KEY` | QVX API key | ✅ |
+| **AI Model** | `MODEL_PROVIDER` | Model provider configuration | ✅ |
+| | `MODEL_URL` | Model server URL | ✅ |
+| | `MODEL_API_KEY` | Model API key | ✅ |
 | **Hedera** | `HEDERA_NETWORK` | `mainnet`/`testnet` | ✅ |
 | | `HEDERA_OPERATOR_ACCOUNT_ID` | Operator account | ✅ |
 | | `HEDERA_OPERATOR_PRIVATE_KEY` | Private key | ✅ |
@@ -270,13 +269,13 @@ src/
 
 ### Common Issues
 
-#### QVX Memory Issues
+#### Model Memory Issues
 ```bash
 # Check GPU memory
 nvidia-smi
 
 # Reduce context size
-QVX_INFER_MAX_TOKENS=256
+MODEL_MAX_TOKENS=256
 NATIVE_CONTEXT_SIZE=1024
 ```
 
