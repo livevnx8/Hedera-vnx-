@@ -37,7 +37,6 @@ The core marketplace loop consists of seven stages:
 7. **HCS Proof Emitted**: A cryptographic proof is emitted to Hedera Consensus Service
 
 ### Technical Architecture
-- **BitLattice Architecture**: Ternary-weight models with lattice routing
 - **Portable Artifacts**: .vnx files contain models, metadata, and execution traces
 - **Proof Packets**: Local evidence export with cryptographic verification
 - **Hedera Integration**: HCS for proof chains, HTS for payments
@@ -96,59 +95,6 @@ All tested metrics are sourced from:
 - **Unit Tests**: `src/tests/vnx/vnxLmCore.test.ts` (model size validation)
 
 Architectural diagrams (marketplace loop, verifiability, competitive advantages, research timeline) represent system design and are not performance benchmarks.
-
-### BitLattice Model Format
-
-The .vnx artifact format is designed for portability and verification:
-
-```
-Header:
-- Magic bytes: VNX
-- Format version
-- Context size
-- Vertex count
-- Metadata JSON length
-- Metadata JSON
-- Packed ternary weights
-```
-
-**Packing Scheme**:
-- -1 → 0
-- 0 → 1
-- +1 → 2
-- 5 weights per byte (3^5 = 243 combinations)
-
-#### 3. Swarm Specialist System
-
-VNX uses a hybrid swarm routing system with keyword-selected specialists:
-
-- **12 specialist models**: Each optimized for specific domains (code, Hedera, security, memory, data, creative, etc.)
-- **Keyword routing**: Prompts automatically select relevant specialists
-- **Context injection**: Specialist outputs blend into main model context
-- **Bounded execution**: Maximum 4 specialists per prompt to maintain efficiency
-
-#### 4. Proof Packet System
-
-Every meaningful inference generates a local proof packet:
-
-- **Model hash**: SHA-256 of the .vnx artifact
-- **Corpus hash**: SHA-256 of training data
-- **Prompt hash**: SHA-256 of input (without storing raw prompt on-chain)
-- **Output hash**: SHA-256 of generated text (without storing raw output on-chain)
-- **Trace hash**: SHA-256 of normalized token trace
-- **HCS-ready summary**: Compact hash-only packet for Hedera publication
-
-**Privacy Rule**: Raw prompts and outputs exist only in local exports. HCS publishes only hash-only summaries.
-
-#### 5. Hedera Integration
-
-VNX leverages Hedera's unique capabilities:
-
-- **HCS (Hedera Consensus Service)**: Immutable, ordered message logs for proof chains
-- **Mirror Nodes**: Replay verification without full node operation
-- **HIP-993**: Transport for compact memory packets with chunking and replay
-- **HIP-1056**: Block-stream evidence for consensus ordering and state-change references
-- **HBAR Settlement**: Native cryptocurrency for automatic payments
 
 ---
 
