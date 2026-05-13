@@ -27,35 +27,30 @@ It is built for three jobs:
 
 ```bash
 git clone https://github.com/livevnx8/Hedera-vnx-.git
-cd hedera-llm-api
-
-python3 tests/validate_vera_os_release.py
-python3 tests/validate_infrastructure.py
-python3 tests/smoke_test.py
+cd Hedera-vnx-
+bash quickstart.sh        # creates venv, installs, verifies — one command
 ```
 
-Install the public facade in editable mode:
+Or step by step:
 
 ```bash
-python3 -m pip install -e ".[production]"
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[production]"
+make verify               # runs all 3 validation suites
 ```
 
-List the visual assets:
+**Try it out:**
 
 ```bash
-python3 examples/vera_os_visual_assets.py
+make predict              # sample HBAR prediction
+make visuals              # list 11 professional visual assets
+make swarm                # inspect 27-agent Hedera specialist swarm
 ```
 
-Inspect the Hedera specialist swarm without running network-heavy checks:
+**Start the full Docker stack:**
 
 ```bash
-python3 examples/vera_os_run_hedera_swarm.py
-```
-
-Run a sample local prediction when model artifacts are available:
-
-```bash
-python3 examples/vera_os_predict_hbar.py --predict
+make infra-up             # Vera + Redis + PostgreSQL + Grafana + Prometheus + Loki + Jaeger
 ```
 
 ## Python Facade
