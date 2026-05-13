@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   vera-app:
@@ -66,10 +65,10 @@ services:
         reservations:
           memory: 8G
           cpus: '4'
-        devices:
-          - driver: nvidia
-            count: 1
-            capabilities: [gpu]
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5101/health"]

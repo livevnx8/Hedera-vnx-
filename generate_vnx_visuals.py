@@ -29,7 +29,7 @@ COLORS = {
 }
 
 # Output directory
-OUTPUT_DIR = Path('/home/vera-live-0-1/hedera-llm-api/assets/vnx-visuals')
+OUTPUT_DIR = Path('/home/vera-live-0-1/hedera-llm-api/docs/visuals')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def setup_chart(figsize=(19.2, 10.8), dpi=100):
@@ -317,43 +317,93 @@ def generate_model_size_comparison():
 
 def generate_verifiability_diagram():
     """Generate verifiability diagram: Hedera-backed proof chains."""
-    fig, ax = setup_chart(figsize=(20, 10))
+    fig, ax = setup_chart(figsize=(20, 12))
     
-    # Chain components
-    components = [
-        'Model Hash',
-        'Prompt Hash',
-        'Output Hash',
-        'Trace Hash',
-        'Proof Hash',
-        'HCS Receipt'
+    # ── Top row: data origin layer ──
+    origin_items = [
+        ('Model\nWeights', 2.5),
+        ('User\nPrompt', 7),
+        ('Inference\nEngine', 11.5),
+        ('Execution\nTrace', 16),
     ]
-    
-    # Position in a chain
-    x_positions = np.linspace(2, 18, len(components))
-    y_position = 5
-    
-    # Draw chain links with enhanced styling
-    for i, (component, x) in enumerate(zip(components, x_positions)):
-        # Draw box with gradient effect
-        rect = Rectangle((x - 1.6, y_position - 0.7), 3.2, 1.4, 
-                        facecolor=COLORS['accent'], edgecolor=COLORS['text'], linewidth=3)
+    for label, x in origin_items:
+        rect = Rectangle((x - 1.3, 8.2), 2.6, 1.4,
+                          facecolor=COLORS['chart_bg'], edgecolor=COLORS['primary'],
+                          linewidth=2.5, linestyle='--')
         ax.add_patch(rect)
-        
-        # Text with better formatting
-        ax.text(x, y_position, component, ha='center', va='center', 
-                color=COLORS['chart_bg'], fontsize=16, fontweight='bold')
-        
-        # Draw arrow to next (except last) with enhanced styling
-        if i < len(components) - 1:
-            ax.arrow(x + 1.7, y_position, 1.0, 0, 
-                    head_width=0.25, head_length=0.35, fc=COLORS['primary'], ec=COLORS['text'], linewidth=3)
-    
+        ax.text(x, 8.9, label, ha='center', va='center',
+                color=COLORS['primary'], fontsize=14, fontweight='bold')
+
+    # ── Vertical arrows from origin → hash row ──
+    for x in [2.5, 7, 11.5, 16]:
+        ax.annotate('', xy=(x, 7.1), xytext=(x, 8.15),
+                    arrowprops=dict(arrowstyle='->', color=COLORS['secondary'],
+                                    lw=2, connectionstyle='arc3'))
+
+    # ── Middle row: hash chain (the core) ──
+    chain = [
+        'Model\nHash',
+        'Prompt\nHash',
+        'Output\nHash',
+        'Trace\nHash',
+        'Proof\nHash',
+        'HCS\nReceipt'
+    ]
+    x_positions = np.linspace(2, 18, len(chain))
+    y_chain = 6.2
+
+    for i, (comp, x) in enumerate(zip(chain, x_positions)):
+        rect = Rectangle((x - 1.4, y_chain - 0.8), 2.8, 1.6,
+                          facecolor=COLORS['accent'], edgecolor=COLORS['text'],
+                          linewidth=3)
+        ax.add_patch(rect)
+        ax.text(x, y_chain, comp, ha='center', va='center',
+                color=COLORS['background'], fontsize=15, fontweight='bold')
+        if i < len(chain) - 1:
+            ax.annotate('', xy=(x_positions[i + 1] - 1.5, y_chain),
+                        xytext=(x + 1.5, y_chain),
+                        arrowprops=dict(arrowstyle='->', color=COLORS['primary'],
+                                        lw=3))
+
+    # ── Bottom row: verification / anchoring layer ──
+    verify_items = [
+        ('SHA-256\nDigest', 5),
+        ('Merkle\nRoot', 10),
+        ('HCS Topic\nAnchor', 15),
+    ]
+    for label, x in verify_items:
+        rect = Rectangle((x - 1.4, 2.6), 2.8, 1.4,
+                          facecolor=COLORS['chart_bg'], edgecolor=COLORS['success'],
+                          linewidth=2.5)
+        ax.add_patch(rect)
+        ax.text(x, 3.3, label, ha='center', va='center',
+                color=COLORS['success'], fontsize=14, fontweight='bold')
+
+    # Arrows from chain → verification
+    for src_x, dst_x in [(3.6, 5), (8.4, 10), (14.8, 15)]:
+        ax.annotate('', xy=(dst_x, 4.05), xytext=(src_x, y_chain - 0.85),
+                    arrowprops=dict(arrowstyle='->', color=COLORS['secondary'],
+                                    lw=2, connectionstyle='arc3'))
+
+    # ── Labels for each layer ──
+    ax.text(0.6, 8.9, 'DATA\nORIGIN', ha='center', va='center',
+            color=COLORS['secondary'], fontsize=11, fontweight='bold')
+    ax.text(0.6, y_chain, 'HASH\nCHAIN', ha='center', va='center',
+            color=COLORS['accent'], fontsize=11, fontweight='bold')
+    ax.text(0.6, 3.3, 'VERIFY\nLAYER', ha='center', va='center',
+            color=COLORS['success'], fontsize=11, fontweight='bold')
+
+    # ── Callout badge ──
+    ax.text(10, 1.2, 'Every prediction → immutable proof on Hedera Consensus Service',
+            ha='center', va='center', color=COLORS['text'], fontsize=16, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.6', facecolor=COLORS['chart_bg'],
+                      edgecolor=COLORS['accent'], linewidth=2))
+
     # Styling
     ax.set_xlim(0, 20)
-    ax.set_ylim(0, 10)
+    ax.set_ylim(0, 10.8)
     ax.axis('off')
-    ax.set_title('VNX Verifiability: Hedera-Backed Proof Chains', 
+    ax.set_title('VNX Verifiability: Hedera-Backed Proof Chains',
                  color=COLORS['text'], fontsize=28, fontweight='bold', pad=25)
     
     save_chart(fig, 'vnx-verifiability-diagram')
@@ -403,56 +453,66 @@ def generate_accuracy_metrics_chart():
 
 def generate_edge_performance_dashboard():
     """Generate edge performance dashboard: Design targets (not yet tested)."""
-    fig, ax = setup_chart(figsize=(20, 12))
-    
-    # Design target metrics (not yet tested)
+    fig = plt.figure(figsize=(20, 12), facecolor=COLORS['background'])
+
+    # Design target metrics
     metrics = [
         ('Response Time', '<300ms (Target)', 300, 'ms'),
         ('Memory', '<500MB (Target)', 500, 'MB'),
         ('Model Size', '5KB (Target)', 5, 'KB'),
         ('Throughput', '4,300+ (Tested)', 4300, 'ops/sec')
     ]
-    
-    # Create gauge cluster (2x2 grid)
-    positions = [(0.25, 0.75), (0.75, 0.75), (0.25, 0.25), (0.75, 0.25)]
-    
-    for (metric_name, target, value, unit), (x, y) in zip(metrics, positions):
-        # Gauge background with enhanced styling
-        gauge_bg = Circle((x, y), 0.18, facecolor=COLORS['chart_bg'], 
-                         edgecolor=COLORS['text'], linewidth=3)
-        ax.add_patch(gauge_bg)
-        
-        # Gauge fill (85% full to show healthy)
-        gauge_fill = Wedge((x, y), 0.18, 0, 306, facecolor=COLORS['success'], 
-                          edgecolor=COLORS['text'], linewidth=3)
-        ax.add_patch(gauge_fill)
-        
-        # Metric name with better formatting
-        ax.text(x, y + 0.28, metric_name, ha='center', va='center', 
+
+    # 2×2 grid of subplots with equal aspect for proper circles
+    for idx, (metric_name, target, value, unit) in enumerate(metrics):
+        ax = fig.add_subplot(2, 2, idx + 1, facecolor=COLORS['chart_bg'])
+        ax.set_aspect('equal')
+        ax.set_xlim(-1.5, 1.5)
+        ax.set_ylim(-1.5, 1.5)
+        ax.axis('off')
+
+        # Gauge background ring
+        bg = Circle((0, 0), 1.1, facecolor=COLORS['chart_bg'],
+                     edgecolor=COLORS['text'], linewidth=3)
+        ax.add_patch(bg)
+
+        # Gauge filled arc (85%)
+        fill = Wedge((0, 0), 1.1, 40, 360, facecolor=COLORS['success'],
+                     edgecolor=COLORS['text'], linewidth=3)
+        ax.add_patch(fill)
+
+        # Inner circle to make it a donut
+        inner = Circle((0, 0), 0.65, facecolor=COLORS['chart_bg'],
+                        edgecolor=COLORS['grid'], linewidth=2)
+        ax.add_patch(inner)
+
+        # Value inside donut
+        ax.text(0, 0.1, f'{value}', ha='center', va='center',
+                color=COLORS['accent'], fontsize=28, fontweight='bold')
+        ax.text(0, -0.25, unit, ha='center', va='center',
                 color=COLORS['text'], fontsize=18, fontweight='bold')
-        
-        # Value with better formatting
-        ax.text(x, y, f'{value}\n{unit}', ha='center', va='center', 
-                color=COLORS['chart_bg'], fontsize=20, fontweight='bold')
-        
-        # Target with better formatting
-        ax.text(x, y - 0.28, target, ha='center', va='center', 
+
+        # Title above gauge
+        ax.set_title(metric_name, color=COLORS['text'], fontsize=20,
+                     fontweight='bold', pad=12)
+
+        # Target below gauge
+        ax.text(0, -1.4, target, ha='center', va='center',
                 color=COLORS['secondary'], fontsize=14)
-    
-    # Styling
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.axis('off')
-    ax.set_title('VNX Edge Performance: Design Targets (Not Yet Tested)', 
-                 color=COLORS['text'], fontsize=26, fontweight='bold', pad=25)
-    
-    # Add disclaimer
-    ax.text(0.5, 0.5, '⚠ Design targets - require testing to verify\n(Throughput only metric tested)', 
-            transform=ax.transAxes, color=COLORS['secondary'], 
-            fontsize=22, fontweight='bold', ha='center', va='center',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor=COLORS['chart_bg'], 
-                     edgecolor=COLORS['secondary'], linewidth=3, alpha=0.9))
-    
+
+    # Overall title
+    fig.suptitle('VNX Edge Performance: Design Targets (Not Yet Tested)',
+                 color=COLORS['text'], fontsize=28, fontweight='bold', y=0.98)
+
+    # Disclaimer at the very bottom, outside subplots
+    fig.text(0.5, 0.02,
+             '⚠ Design targets — require testing to verify  (Throughput only metric tested)',
+             ha='center', va='center', color=COLORS['secondary'],
+             fontsize=16, fontweight='bold',
+             bbox=dict(boxstyle='round,pad=0.5', facecolor=COLORS['chart_bg'],
+                       edgecolor=COLORS['secondary'], linewidth=2))
+
+    fig.subplots_adjust(hspace=0.35, wspace=0.25, top=0.90, bottom=0.08)
     save_chart(fig, 'vnx-edge-performance-dashboard')
 
 def generate_competitive_advantage_grid():
@@ -504,48 +564,71 @@ def generate_competitive_advantage_grid():
 
 def generate_research_timeline():
     """Generate research timeline: Key achievement milestones."""
-    fig, ax = setup_chart(figsize=(20, 10))
+    fig, ax = setup_chart(figsize=(20, 8))
     
     # Milestones
     milestones = [
-        ('BitNet Ternary\nOptimization', '2024 Q3'),
-        ('Lattice Routing', '2024 Q4'),
-        ('HCS Memory\nSystem', '2025 Q1'),
-        ('Multi-tier\nArchitecture', '2025 Q2')
+        ('BitNet Ternary\nOptimization', '2024 Q3', 'Ternary weight\nquantization'),
+        ('Lattice Routing', '2024 Q4', 'Dodecahedral\nnetwork topology'),
+        ('HCS Memory\nSystem', '2025 Q1', 'On-chain proof\nanchoring'),
+        ('Multi-tier\nArchitecture', '2025 Q2', 'Production\ninfrastructure')
     ]
     
     # Timeline positions
-    x_positions = np.linspace(2, 18, len(milestones))
-    y_position = 5
+    x_positions = np.linspace(2.5, 17.5, len(milestones))
+    y_position = 4.0
     
-    # Draw timeline line with enhanced styling
-    ax.plot([2, 18], [y_position, y_position], color=COLORS['primary'], linewidth=5, alpha=0.8)
+    # Draw timeline line
+    ax.plot([1.5, 18.5], [y_position, y_position], color=COLORS['primary'],
+            linewidth=5, alpha=0.8, solid_capstyle='round')
     
-    # Draw milestones with enhanced styling
-    for milestone, x in zip(milestones, x_positions):
-        # Milestone marker with gradient effect
-        circle = Circle((x, y_position), 0.35, facecolor=COLORS['accent'], 
-                       edgecolor=COLORS['text'], linewidth=4)
+    # Draw milestones
+    for i, (title, date, detail) in enumerate(milestones):
+        x = x_positions[i]
+        
+        # Milestone marker
+        circle = Circle((x, y_position), 0.35, facecolor=COLORS['accent'],
+                        edgecolor=COLORS['text'], linewidth=4, zorder=3)
         ax.add_patch(circle)
         
-        # Text with better formatting
-        ax.text(x, y_position + 0.6, milestone[0], ha='center', va='center', 
-                color=COLORS['text'], fontsize=18, fontweight='bold')
-        ax.text(x, y_position - 0.6, milestone[1], ha='center', va='center', 
-                color=COLORS['accent'], fontsize=16, fontweight='bold')
+        # Alternate above/below for visual interest
+        if i % 2 == 0:
+            # Title above
+            ax.text(x, y_position + 1.2, title, ha='center', va='center',
+                    color=COLORS['text'], fontsize=17, fontweight='bold')
+            ax.text(x, y_position - 0.7, date, ha='center', va='center',
+                    color=COLORS['accent'], fontsize=15, fontweight='bold')
+            # Detail below date
+            ax.text(x, y_position - 1.4, detail, ha='center', va='center',
+                    color=COLORS['secondary'], fontsize=12)
+            # Connector line
+            ax.plot([x, x], [y_position + 0.4, y_position + 0.7],
+                    color=COLORS['grid'], linewidth=2)
+        else:
+            # Title below
+            ax.text(x, y_position - 1.2, title, ha='center', va='center',
+                    color=COLORS['text'], fontsize=17, fontweight='bold')
+            ax.text(x, y_position + 0.7, date, ha='center', va='center',
+                    color=COLORS['accent'], fontsize=15, fontweight='bold')
+            # Detail above date
+            ax.text(x, y_position + 1.4, detail, ha='center', va='center',
+                    color=COLORS['secondary'], fontsize=12)
+            # Connector line
+            ax.plot([x, x], [y_position - 0.4, y_position - 0.7],
+                    color=COLORS['grid'], linewidth=2)
     
-    # Styling
+    # Styling — tight bounds
     ax.set_xlim(0, 20)
-    ax.set_ylim(0, 10)
+    ax.set_ylim(1.5, 6.5)
     ax.axis('off')
-    ax.set_title('VNX Research Milestones', 
-                 color=COLORS['text'], fontsize=28, fontweight='bold', pad=25)
+    ax.set_title('VNX Research Milestones',
+                 color=COLORS['text'], fontsize=28, fontweight='bold', pad=20)
     
-    # Add callout
-    ax.text(0.5, 0.92, 'Continuous Innovation', 
-            transform=ax.transAxes, color=COLORS['accent'], 
+    # Callout
+    ax.text(0.5, 0.95, 'Continuous Innovation',
+            transform=ax.transAxes, color=COLORS['accent'],
             fontsize=22, fontweight='bold', ha='center',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor=COLORS['chart_bg'], 
+            bbox=dict(boxstyle='round,pad=0.5', facecolor=COLORS['chart_bg'],
                      edgecolor=COLORS['accent'], linewidth=2))
     
     save_chart(fig, 'vnx-research-timeline')
@@ -597,50 +680,49 @@ def generate_bitlattice_architecture():
     ax.text(1.0, 0.5, 'OUTPUT', ha='left', va='center', 
             color=COLORS['success'], fontsize=16, fontweight='bold')
     
-    # Add ternary weight legend with enhanced styling
+    # ── Legend and metrics placed BELOW the lattice to avoid overlap ──
     legend_x = 0.05
-    legend_y = 0.15
-    ax.text(legend_x, legend_y + 0.15, 'Ternary Weights:', 
+    legend_y = -0.12
+    ax.text(legend_x, legend_y + 0.08, 'Ternary Weights:',
             color=COLORS['text'], fontsize=18, fontweight='bold')
-    
+
     # -1 weight
-    circle1 = Circle((legend_x + 0.05, legend_y + 0.10), 0.02, 
+    circle1 = Circle((legend_x + 0.05, legend_y + 0.03), 0.015,
                      facecolor=COLORS['secondary'], edgecolor=COLORS['text'], linewidth=2)
     ax.add_patch(circle1)
-    ax.text(legend_x + 0.1, legend_y + 0.10, '-1 (inhibitory)', 
+    ax.text(legend_x + 0.1, legend_y + 0.03, '-1 (inhibitory)',
             color=COLORS['text'], fontsize=14)
-    
+
     # 0 weight
-    circle2 = Circle((legend_x + 0.05, legend_y + 0.05), 0.02, 
+    circle2 = Circle((legend_x + 0.05, legend_y - 0.02), 0.015,
                      facecolor=COLORS['chart_bg'], edgecolor=COLORS['text'], linewidth=2)
     ax.add_patch(circle2)
-    ax.text(legend_x + 0.1, legend_y + 0.05, '0 (no connection)', 
+    ax.text(legend_x + 0.1, legend_y - 0.02, '0 (no connection)',
             color=COLORS['text'], fontsize=14)
-    
+
     # +1 weight
-    circle3 = Circle((legend_x + 0.05, legend_y), 0.02, 
+    circle3 = Circle((legend_x + 0.05, legend_y - 0.07), 0.015,
                      facecolor=COLORS['primary'], edgecolor=COLORS['accent'], linewidth=2)
     ax.add_patch(circle3)
-    ax.text(legend_x + 0.1, legend_y, '+1 (excitatory)', 
+    ax.text(legend_x + 0.1, legend_y - 0.07, '+1 (excitatory)',
             color=COLORS['text'], fontsize=14)
-    
-    # Add key metrics with enhanced styling
-    metrics_x = 0.6
-    metrics_y = 0.15
-    ax.text(metrics_x, metrics_y + 0.15, 'Key Advantages:', 
+
+    # Key advantages — right side, also below lattice
+    metrics_x = 0.55
+    ax.text(metrics_x, legend_y + 0.08, 'Key Advantages:',
             color=COLORS['text'], fontsize=18, fontweight='bold')
-    ax.text(metrics_x, metrics_y + 0.10, '• 70% smaller: <5KB vs 1GB+', 
+    ax.text(metrics_x, legend_y + 0.03, '• 70% smaller: <5KB vs 1GB+',
             color=COLORS['accent'], fontsize=14)
-    ax.text(metrics_x, metrics_y + 0.05, '• 200,000× compression ratio', 
+    ax.text(metrics_x, legend_y - 0.02, '• 200,000× compression ratio',
             color=COLORS['accent'], fontsize=14)
-    ax.text(metrics_x, metrics_y, '• 5 weights packed per byte', 
+    ax.text(metrics_x, legend_y - 0.07, '• 5 weights packed per byte',
             color=COLORS['accent'], fontsize=14)
-    ax.text(metrics_x, metrics_y - 0.05, '• Local inference, no API calls', 
+    ax.text(metrics_x, legend_y - 0.12, '• Local inference, no API calls',
             color=COLORS['accent'], fontsize=14)
-    
-    # Styling
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+
+    # Styling — extend y range to include below-lattice info
+    ax.set_xlim(-0.05, 1.05)
+    ax.set_ylim(-0.18, 1.0)
     ax.axis('off')
     ax.set_title('BitLattice Architecture: Ternary-Weight Lattice System', 
                  color=COLORS['text'], fontsize=28, fontweight='bold', pad=25)
