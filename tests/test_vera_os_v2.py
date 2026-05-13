@@ -455,5 +455,227 @@ class TestFullV2Integration:
         assert pkg_builder.stats()["published"] == 1
 
 
+# ═══════════════════════════════════════════════════════════════
+# SMOKE TESTS — facade, repr, stats shape, router factories
+# ═══════════════════════════════════════════════════════════════
+
+class TestSmokeImports:
+    """Verify the public facade re-exports everything cleanly."""
+
+    def test_version(self):
+        import vera_os
+        assert vera_os.__version__ == "2.0.0"
+
+    def test_all_exports_resolve(self):
+        import vera_os
+        for name in vera_os.__all__:
+            obj = getattr(vera_os, name, None)
+            assert obj is not None, f"{name} missing from vera_os"
+
+    def test_layer5_exports(self):
+        from vera_os import HCSProofEmitter, MirrorVerifier
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        mv = MirrorVerifier(network="testnet")
+        assert em is not None and mv is not None
+
+    def test_layer6_exports(self):
+        from vera_os import FirstPartyAgentRegistry
+        r = FirstPartyAgentRegistry()
+        assert len(r.list_agents()) == 8
+
+    def test_layer7_exports(self):
+        from vera_os import ProofLoopTracker, LessonEngine, UpgradePackageBuilder
+        assert ProofLoopTracker is not None
+        assert LessonEngine is not None
+        assert UpgradePackageBuilder is not None
+
+
+class TestReprMethods:
+    """Verify __repr__ on key classes for debuggability."""
+
+    def test_emitter_repr(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        r = repr(em)
+        assert "dry_run" in r
+        assert "emitted=0" in r
+
+    def test_emitter_repr_after_emit(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        em.emit("t", "e", "h")
+        assert "emitted=1" in repr(em)
+
+    def test_verifier_repr(self):
+        mv = MirrorVerifier(network="testnet")
+        assert "testnet" in repr(mv)
+        assert "verified=0" in repr(mv)
+
+    def test_registry_repr(self):
+        reg = FirstPartyAgentRegistry()
+        assert "agents=8" in repr(reg)
+
+
+class TestStatsShape:
+    """Verify stats dicts have the expected keys the dashboard reads."""
+
+    def test_emitter_stats_keys(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        s = em.stats()
+        for key in ("mode", "total_emitted", "total_errors", "total_bytes",
+                    "chain_head", "chain_length", "receipts_buffered",
+                    "task_topic_id", "audit_topic_id"):
+            assert key in s, f"Missing key: {key}"
+        assert s["chain_length"] == 0
+        em.emit("t", "e", "h")
+        assert em.stats()["chain_length"] == 1
+
+    def test_verifier_stats_keys(self):
+        mv = MirrorVerifier(network="testnet")
+        s = mv.stats()
+        for key in ("network", "mirror_url", "total_verified", "total_failed",
+                    "total_verifications", "total_requests", "buffered"):
+            assert key in s, f"Missing key: {key}"
+        assert s["total_verifications"] == 0
+
+    def test_registry_stats_keys(self):
+        reg = FirstPartyAgentRegistry()
+        s = reg.stats()
+        for key in ("total_agents", "agents", "total_executions", "total_successes"):
+            assert key in s, f"Missing key: {key}"
+        assert s["total_agents"] == 8
+
+    def test_tracker_stats_keys(self):
+        tr = ProofLoopTracker()
+        s = tr.stats()
+        for key in ("total_loops", "by_status", "with_lessons", "with_packages"):
+            assert key in s, f"Missing key: {key}"
+
+    def test_lesson_engine_stats_keys(self):
+        le = LessonEngine()
+        s = le.stats()
+        for key in ("total_lessons", "approved", "by_domain", "avg_reproducibility"):
+            assert key in s, f"Missing key: {key}"
+
+    def test_package_builder_stats_keys(self):
+        pb = UpgradePackageBuilder()
+        s = pb.stats()
+        for key in ("total_packages", "published", "by_domain", "avg_quality"):
+            assert key in s, f"Missing key: {key}"
+
+
+class TestRouterFactories:
+    """Verify API router factories return valid APIRouter instances."""
+
+    def test_proof_router(self):
+        from src.hedera_proof.proof_api import create_proof_router
+        from fastapi import APIRouter
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        mv = MirrorVerifier(network="testnet")
+        router = create_proof_router(em, mv)
+        assert isinstance(router, APIRouter)
+        paths = [r.path for r in router.routes]
+        assert "/proof/stats" in paths
+        assert "/proof/receipts" in paths
+        assert "/proof/verify" in paths
+
+    def test_verifiable_ai_router(self):
+        from src.verifiable_ai.verifiable_ai_api import create_verifiable_ai_router
+        from fastapi import APIRouter
+        bus = EventBus()
+        router = create_verifiable_ai_router(
+            registry=FirstPartyAgentRegistry(),
+            task_engine=TaskEngine(event_bus=bus),
+            reputation_engine=ReputationEngine(),
+            escrow_engine=EscrowEngine(event_bus=bus),
+            verifier=ResultVerifier(),
+            proof_emitter=HCSProofEmitter(mode=ProofMode.DRY_RUN),
+        )
+        assert isinstance(router, APIRouter)
+        paths = [r.path for r in router.routes]
+        assert any("agents" in p for p in paths)
+        assert any("run-now" in p for p in paths)
+
+    def test_learning_router(self):
+        from src.learning_lane.learning_api import create_learning_router
+        from fastapi import APIRouter
+        router = create_learning_router(
+            tracker=ProofLoopTracker(),
+            lesson_engine=LessonEngine(),
+            package_builder=UpgradePackageBuilder(),
+        )
+        assert isinstance(router, APIRouter)
+        paths = [r.path for r in router.routes]
+        assert any("loops" in p for p in paths)
+        assert any("stats" in p for p in paths)
+        assert any("lessons" in p for p in paths)
+
+
+class TestEdgeCases:
+    """Edge-case coverage."""
+
+    def test_emitter_receipt_ring_buffer(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        for i in range(5100):
+            em.emit(f"t{i}", "e", "h")
+        # Ring buffer trims to 2500 each time it exceeds 5000
+        assert len(em._receipts) <= 5000
+        assert em.stats()["total_emitted"] == 5100
+
+    def test_proof_receipt_to_dict(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        r = em.emit("t1", "e1", "h1")
+        d = r.to_dict()
+        assert isinstance(d, dict)
+        assert d["task_id"] == "t1"
+        assert d["error"] is None
+
+    def test_chain_empty(self):
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        chain = em.get_chain("nonexistent")
+        assert chain["chain_length"] == 0
+        assert chain["verified"] is True  # vacuously true
+
+    def test_lesson_search_no_results(self):
+        le = LessonEngine()
+        results = le.search("xyzzy_nothing_matches")
+        assert results == []
+
+    def test_lesson_approve_missing(self):
+        le = LessonEngine()
+        with pytest.raises(KeyError):
+            le.approve("nonexistent_id")
+
+    def test_package_publish_missing(self):
+        pb = UpgradePackageBuilder()
+        with pytest.raises(KeyError):
+            pb.publish("nonexistent_id")
+
+    def test_package_double_publish(self):
+        """Publishing an already-published package is idempotent."""
+        em = HCSProofEmitter(mode=ProofMode.DRY_RUN)
+        pb = UpgradePackageBuilder(proof_emitter=em)
+        le = LessonEngine()
+        tr = ProofLoopTracker()
+        tr.open_loop("t", "a")
+        for stage in (LoopStage.VERIFICATION, LoopStage.SETTLEMENT, LoopStage.REPUTATION, LoopStage.RECEIPT):
+            tr.record_stage("t", stage, "s")
+        lesson = le.extract(tr.get_loop("t"), {"domain": "x"})
+        le.approve(lesson.lesson_id)
+        pkg = pb.build("test", "x", [lesson])
+        pb.publish(pkg.package_id)
+        assert pkg.published
+        first_ts = pkg.published_at
+        pb.publish(pkg.package_id)  # no-op
+        assert pkg.published_at == first_ts  # unchanged
+
+    def test_all_8_agents_execute(self):
+        """Every first-party agent can execute without error."""
+        reg = FirstPartyAgentRegistry()
+        for agent_dict in reg.list_agents():
+            agent = reg.get(agent_dict["agent_id"])
+            result = agent.execute("smoke_test", {})
+            assert result.proof_hash != ""
+            assert result.confidence > 0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
