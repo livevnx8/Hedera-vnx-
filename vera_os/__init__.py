@@ -11,8 +11,9 @@ from .markets import PredictionMarketService
 from .prediction import PredictionService
 from .specialists import HederaSpecialistSwarm
 from .visuals import VisualAsset, get_visual_asset_pairs, get_visual_assets
+from .workflows import WorkflowAgentService
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "HealthService",
@@ -20,6 +21,7 @@ __all__ = [
     "PredictionMarketService",
     "PredictionService",
     "VisualAsset",
+    "WorkflowAgentService",
     "get_visual_asset_pairs",
     "get_visual_assets",
     "__version__",

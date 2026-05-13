@@ -311,6 +311,65 @@ print(pms.leaderboard(sort_by="profit"))
 
 ---
 
+## Specialized Workflow Agents (42 total)
+
+Beyond the original 27 monitoring specialists, Vera OS includes **15 workflow agents** across 3 operational domains — each producing typed action recommendations with proof hashes for HCS anchoring.
+
+### DeFi Operations (5 agents)
+
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **Yield Optimizer** | `defi_yield_001` | Rank DEX pools by risk-adjusted APY, factor in impermanent loss |
+| **Swap Router** | `defi_swap_001` | Optimal swap path, slippage estimation, split-order recommendation |
+| **LP Position Manager** | `defi_lp_001` | Track LP positions, monitor IL, suggest rebalance or exit |
+| **Pool Health Monitor** | `defi_pool_001` | TVL changes, whale concentration, utilization alerts |
+| **Fee Harvester** | `defi_fees_001` | Track accrued fees, recommend claim timing vs gas cost |
+
+### Carbon/ESG Compliance (5 agents)
+
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **Carbon Credit Verifier** | `carbon_verify_001` | Validate credit metadata, flag suspicious registries/vintages |
+| **Retirement Tracker** | `carbon_retire_001` | Monitor retirements, generate offset certificates with proof hash |
+| **ESG Score Calculator** | `esg_score_001` | Compute E/S/G scores from on-chain activity, issue grades |
+| **Sustainability Reporter** | `esg_report_001` | Auto-generate compliance reports (Paris Agreement, third-party) |
+| **Green Token Monitor** | `carbon_token_001` | Track DOVU, carbon NFTs — supply spikes, price crashes |
+
+### Risk Management (5 agents)
+
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **Position Sizer** | `risk_size_001` | Kelly criterion + volatility-adjusted sizing |
+| **Portfolio Rebalancer** | `risk_rebal_001` | Drift detection, rebalance orders when allocation exceeds threshold |
+| **Stop-Loss Automation** | `risk_stop_001` | Trailing stops, ATR-based levels, time-decay adjustments |
+| **Exposure Monitor** | `risk_exposure_001` | Per-token and sector concentration limits |
+| **Drawdown Protector** | `risk_drawdown_001` | Warning → critical → halt escalation with auto-reduction |
+
+### Multi-Step Pipelines
+
+Agents chain across domains. The `WorkflowEngine` feeds each step's output into the next:
+
+```python
+from vera_os import WorkflowAgentService
+
+was = WorkflowAgentService()
+
+# Pre-built pipeline: assess risk → size position → route swap
+result = was.run_pipeline([
+    {"domain": "risk", "agent": "risk_size_001"},
+    {"domain": "defi", "agent": "defi_swap_001"},
+], context={"portfolio_value": 100_000})
+
+# Or run an entire domain
+defi_report = was.run_defi()
+risk_report = was.run_risk()
+esg_report  = was.run_carbon({"entity_id": "0.0.12345"})
+```
+
+Pre-built presets: `assess_and_trade`, `full_risk_scan`, `esg_audit`, `defi_opportunity`.
+
+---
+
 ## Production Infrastructure
 
 ### Docker Stack (13 services)
@@ -402,6 +461,24 @@ Schema includes: predictions, model_metadata, specialist_alerts, proof_anchors, 
 | `/liquidity/{id}/add` | POST | Add LP liquidity |
 | `/liquidity/{id}/tvl` | GET | Total value locked in LP pool |
 
+### Workflow Agents
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/agents/workflows/defi` | GET | Run all 5 DeFi agents |
+| `/agents/workflows/defi/{agent_id}` | GET | Run a specific DeFi agent |
+| `/agents/workflows/carbon` | GET | Run all 5 Carbon/ESG agents |
+| `/agents/workflows/carbon/{agent_id}` | GET | Run a specific Carbon agent |
+| `/agents/workflows/risk` | GET | Run all 5 Risk Management agents |
+| `/agents/workflows/risk/{agent_id}` | GET | Run a specific Risk agent |
+| `/agents/workflows/all` | GET | Run all 15 agents across all domains |
+| `/agents/workflows/run` | POST | Run a multi-step agent pipeline |
+| `/agents/workflows/presets` | GET | List pre-built workflow presets |
+| `/agents/workflows/presets/{name}` | POST | Run a preset pipeline |
+| `/agents/workflows/history` | GET | Recent pipeline execution history |
+| `/agents/workflows/stats` | GET | Global agent statistics |
+| `/agents/workflows/list` | GET | List all registered agents |
+
 ---
 
 ## Python Facade
@@ -413,6 +490,7 @@ from vera_os import (
     PredictionService,         # Token predictions with confidence scoring
     HederaSpecialistSwarm,     # 27-agent Hedera monitoring swarm
     PredictionMarketService,   # Polymarket-style markets on Hedera
+    WorkflowAgentService,      # 15 DeFi/Carbon/Risk workflow agents
     HealthService,             # Deep health checks
     VisualAsset,               # Visual asset dataclass
     get_visual_assets,         # Get all 11 visual assets
@@ -452,8 +530,16 @@ vera_os/                    → Public Python facade (pip install -e .)
   prediction.py             → PredictionService wrapper
   specialists.py            → HederaSpecialistSwarm wrapper
   markets.py                → PredictionMarketService wrapper
+  workflows.py              → WorkflowAgentService wrapper
   health.py                 → HealthService wrapper
   visuals.py                → Visual asset catalog
+
+src/agents/                 → Specialized workflow agents (15 agents, 3 domains)
+  base_agent.py             → WorkflowAgent, WorkflowEngine, proof hashing
+  defi_agents.py            → 5 DeFi agents + orchestrator
+  carbon_agents.py          → 5 Carbon/ESG agents + orchestrator
+  risk_agents.py            → 5 Risk Management agents + orchestrator
+  agent_api.py              → FastAPI router for agent endpoints
 
 src/markets/                → Prediction market infrastructure (Polymarket on Hedera)
   market_core.py            → State machine, order book, FIFO matching
@@ -515,6 +601,7 @@ make verify    # runs all three
 | `validate_infrastructure.py` | Compose files, monitoring configs, alerts, migrations, wiring |
 | `smoke_test.py` | End-to-end: model loading, prediction, caching, health, metrics |
 | `test_prediction_markets.py` | 111 checks: market lifecycle, HTS tokens, HBAR pools, oracle, settlement, factory, LP, portfolio, leaderboard, market maker |
+| `test_workflow_agents.py` | 77 checks: DeFi agents, Carbon/ESG agents, Risk agents, workflow engine, pipelines, typing |
 
 ---
 

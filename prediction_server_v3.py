@@ -49,6 +49,13 @@ from src.markets.portfolio import PortfolioTracker
 from src.markets.market_maker import MarketMakerBot, MMConfig
 from src.markets.market_api import create_market_router
 
+# Specialized Workflow Agents
+from src.agents.base_agent import WorkflowEngine
+from src.agents.defi_agents import create_defi_orchestrator
+from src.agents.carbon_agents import create_carbon_orchestrator
+from src.agents.risk_agents import create_risk_orchestrator
+from src.agents.agent_api import create_agent_router
+
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
 analytics_engine = AnalyticsEngine()
@@ -86,6 +93,12 @@ liquidity_manager = LiquidityManager()
 portfolio_tracker = PortfolioTracker(market_manager, pool_manager, token_manager)
 market_maker = MarketMakerBot(market_manager, pool_manager, token_manager, oracle_feed)
 
+# Specialized Workflow Agents (15 agents across 3 domains)
+workflow_engine = WorkflowEngine()
+workflow_engine.register(create_defi_orchestrator())
+workflow_engine.register(create_carbon_orchestrator())
+workflow_engine.register(create_risk_orchestrator())
+
 # Register validator and agent with auditor
 auditor.register_entity(validator.validator_id, "validator", validator.get_secret_key())
 auditor.register_entity(reward_agent.agent_id, "agent", reward_agent.get_secret_key())
@@ -113,6 +126,10 @@ market_router = create_market_router(
     settlement_engine=settlement_engine,
 )
 app.include_router(market_router, prefix="/markets")
+
+# Mount Workflow Agent Router
+agent_router = create_agent_router(workflow_engine)
+app.include_router(agent_router, prefix="/agents/workflows")
 
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)
