@@ -50,10 +50,14 @@ from src.markets.market_maker import MarketMakerBot, MMConfig
 from src.markets.market_api import create_market_router
 
 # Specialized Workflow Agents
-from src.agents.base_agent import WorkflowEngine
+from src.agents.base_agent import WorkflowEngine, WorkflowAgent
 from src.agents.defi_agents import create_defi_orchestrator
 from src.agents.carbon_agents import create_carbon_orchestrator
 from src.agents.risk_agents import create_risk_orchestrator
+from src.agents.hedera_native_agents import create_hedera_orchestrator
+from src.agents.intel_agents import create_intel_orchestrator
+from src.agents.ops_agents import create_ops_orchestrator
+from src.agents.advanced_workflows import EventBus, TriggerManager, AgentScheduler, ScheduleEntry, EventTrigger
 from src.agents.agent_api import create_agent_router
 
 # Initialize all specialist engines
@@ -93,11 +97,36 @@ liquidity_manager = LiquidityManager()
 portfolio_tracker = PortfolioTracker(market_manager, pool_manager, token_manager)
 market_maker = MarketMakerBot(market_manager, pool_manager, token_manager, oracle_feed)
 
-# Specialized Workflow Agents (15 agents across 3 domains)
+# Specialized Workflow Agents (30 agents across 6 domains)
 workflow_engine = WorkflowEngine()
 workflow_engine.register(create_defi_orchestrator())
 workflow_engine.register(create_carbon_orchestrator())
 workflow_engine.register(create_risk_orchestrator())
+workflow_engine.register(create_hedera_orchestrator())
+workflow_engine.register(create_intel_orchestrator())
+workflow_engine.register(create_ops_orchestrator())
+
+# Event bus + trigger manager + scheduler
+event_bus = EventBus()
+WorkflowAgent._event_bus = event_bus
+trigger_manager = TriggerManager(event_bus, workflow_engine.run_pipeline)
+agent_scheduler = AgentScheduler(workflow_engine.run_pipeline, workflow_engine.run_domain)
+
+# Register default scheduled tasks
+agent_scheduler.register(ScheduleEntry(
+    name="risk_scan_4h", interval_seconds=14400,
+    pipeline_steps=[
+        {"domain": "risk", "agent": "risk_exposure_001"},
+        {"domain": "risk", "agent": "risk_drawdown_001"},
+        {"domain": "risk", "agent": "risk_stop_001"},
+    ],
+))
+agent_scheduler.register(ScheduleEntry(
+    name="system_health_1h", interval_seconds=3600, domain="ops",
+))
+agent_scheduler.register(ScheduleEntry(
+    name="intel_scan_2h", interval_seconds=7200, domain="intel",
+))
 
 # Register validator and agent with auditor
 auditor.register_entity(validator.validator_id, "validator", validator.get_secret_key())
@@ -128,8 +157,8 @@ market_router = create_market_router(
 app.include_router(market_router, prefix="/markets")
 
 # Mount Workflow Agent Router
-agent_router = create_agent_router(workflow_engine)
-app.include_router(agent_router, prefix="/agents/workflows")
+agent_router = create_agent_router(workflow_engine, trigger_manager, agent_scheduler)
+app.include_router(agent_router, prefix="/agents")
 
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)

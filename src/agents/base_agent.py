@@ -21,6 +21,9 @@ class AgentDomain(str, Enum):
     DEFI = "defi"
     CARBON = "carbon"
     RISK = "risk"
+    HEDERA = "hedera"
+    INTEL = "intel"
+    OPS = "ops"
 
 
 class ActionType(str, Enum):
@@ -89,6 +92,8 @@ class WorkflowAgent:
     3. Generates a proof hash of its output for HCS anchoring
     """
 
+    _event_bus = None  # Set by WorkflowEngine when event bus is active
+
     def __init__(self, agent_id: str, name: str, domain: AgentDomain):
         self.agent_id = agent_id
         self.name = name
@@ -124,6 +129,13 @@ class WorkflowAgent:
             self.status = "idle"
 
             result["latency_ms"] = round((time.time() - start) * 1000, 2)
+
+            # Emit event for event-driven triggers
+            if WorkflowAgent._event_bus is not None:
+                WorkflowAgent._event_bus.emit(
+                    f"{self.domain.value}.{self.agent_id}", result
+                )
+
             return result
 
         except Exception as e:

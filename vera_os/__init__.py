@@ -13,7 +13,7 @@ from .specialists import HederaSpecialistSwarm
 from .visuals import VisualAsset, get_visual_asset_pairs, get_visual_assets
 from .workflows import WorkflowAgentService
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     "HealthService",

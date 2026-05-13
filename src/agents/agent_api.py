@@ -5,7 +5,12 @@ Endpoints:
   /agents/defi/*       — DeFi operations
   /agents/carbon/*     — Carbon/ESG compliance
   /agents/risk/*       — Risk management
+  /agents/hedera/*     — Hedera native (HCS/HTS)
+  /agents/intel/*      — Intelligence & analytics
+  /agents/ops/*        — Autonomous operations
   /agents/workflows/*  — Multi-step pipelines
+  /agents/triggers/*   — Event-driven triggers
+  /agents/schedules/*  — Cron-style scheduling
   /agents/stats        — Global agent statistics
 """
 
@@ -14,9 +19,21 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException
 
 from .base_agent import WorkflowEngine
+from .advanced_workflows import (
+    EventBus,
+    EventTrigger,
+    TriggerManager,
+    AgentScheduler,
+    ScheduleEntry,
+    resolve_pipeline_steps,
+)
 
 
-def create_agent_router(engine: WorkflowEngine) -> APIRouter:
+def create_agent_router(
+    engine: WorkflowEngine,
+    trigger_manager: TriggerManager = None,
+    scheduler: AgentScheduler = None,
+) -> APIRouter:
     """Create the agent API router wired to a WorkflowEngine."""
 
     router = APIRouter(tags=["Workflow Agents"])
@@ -66,6 +83,42 @@ def create_agent_router(engine: WorkflowEngine) -> APIRouter:
     async def run_risk_agent(agent_id: str):
         """Run a specific Risk agent."""
         return _run_single_agent(engine, "risk", agent_id)
+
+    @router.get("/hedera")
+    async def run_hedera(account_id: str = "0.0.12345"):
+        """Run all Hedera native agents."""
+        try:
+            return engine.run_domain("hedera", {"account_id": account_id})
+        except KeyError:
+            raise HTTPException(404, "Hedera domain not registered")
+
+    @router.get("/hedera/{agent_id}")
+    async def run_hedera_agent(agent_id: str):
+        return _run_single_agent(engine, "hedera", agent_id)
+
+    @router.get("/intel")
+    async def run_intel():
+        """Run all Intelligence & Analytics agents."""
+        try:
+            return engine.run_domain("intel")
+        except KeyError:
+            raise HTTPException(404, "Intel domain not registered")
+
+    @router.get("/intel/{agent_id}")
+    async def run_intel_agent(agent_id: str):
+        return _run_single_agent(engine, "intel", agent_id)
+
+    @router.get("/ops")
+    async def run_ops():
+        """Run all Autonomous Operations agents."""
+        try:
+            return engine.run_domain("ops")
+        except KeyError:
+            raise HTTPException(404, "Ops domain not registered")
+
+    @router.get("/ops/{agent_id}")
+    async def run_ops_agent(agent_id: str):
+        return _run_single_agent(engine, "ops", agent_id)
 
     # ------------------------------------------------------------------
     # Workflow pipeline endpoints
@@ -133,6 +186,57 @@ def create_agent_router(engine: WorkflowEngine) -> APIRouter:
                         {"domain": "defi", "agent": "defi_fees_001"},
                     ],
                 },
+                {
+                    "name": "Smart Trade",
+                    "description": "Signal aggregation → position sizing → swap routing → exposure check",
+                    "steps": [
+                        {"domain": "intel", "agent": "intel_signal_001"},
+                        {"domain": "risk", "agent": "risk_size_001"},
+                        {"domain": "defi", "agent": "defi_swap_001"},
+                        {"domain": "risk", "agent": "risk_exposure_001"},
+                    ],
+                },
+                {
+                    "name": "Whale Alert",
+                    "description": "Whale profiler → volume anomaly → pool health → drawdown",
+                    "steps": [
+                        {"domain": "intel", "agent": "intel_whale_001"},
+                        {"domain": "intel", "agent": "intel_volume_001"},
+                        {"domain": "defi", "agent": "defi_pool_001"},
+                        {"domain": "risk", "agent": "risk_drawdown_001"},
+                    ],
+                },
+                {
+                    "name": "Hedera Audit",
+                    "description": "Account profiler → HTS lifecycle → HCS topic check → ESG score",
+                    "steps": [
+                        {"domain": "hedera", "agent": "hedera_account_001"},
+                        {"domain": "hedera", "agent": "hedera_hts_001"},
+                        {"domain": "hedera", "agent": "hedera_hcs_001"},
+                        {"domain": "carbon", "agent": "esg_score_001"},
+                    ],
+                },
+                {
+                    "name": "System Checkup",
+                    "description": "System health → circuit breakers → cost optimizer → self-healer",
+                    "steps": [
+                        {"domain": "ops", "agent": "ops_health_001"},
+                        {"domain": "ops", "agent": "ops_circuit_001"},
+                        {"domain": "ops", "agent": "ops_cost_001"},
+                        {"domain": "ops", "agent": "ops_heal_001"},
+                    ],
+                },
+                {
+                    "name": "Full Intelligence",
+                    "description": "Signal → sentiment → whale → volume → arb",
+                    "steps": [
+                        {"domain": "intel", "agent": "intel_signal_001"},
+                        {"domain": "intel", "agent": "intel_sentiment_001"},
+                        {"domain": "intel", "agent": "intel_whale_001"},
+                        {"domain": "intel", "agent": "intel_volume_001"},
+                        {"domain": "intel", "agent": "intel_arb_001"},
+                    ],
+                },
             ],
         }
 
@@ -160,6 +264,37 @@ def create_agent_router(engine: WorkflowEngine) -> APIRouter:
                 {"domain": "defi", "agent": "defi_yield_001"},
                 {"domain": "defi", "agent": "defi_fees_001"},
             ],
+            "smart_trade": [
+                {"domain": "intel", "agent": "intel_signal_001"},
+                {"domain": "risk", "agent": "risk_size_001"},
+                {"domain": "defi", "agent": "defi_swap_001"},
+                {"domain": "risk", "agent": "risk_exposure_001"},
+            ],
+            "whale_alert": [
+                {"domain": "intel", "agent": "intel_whale_001"},
+                {"domain": "intel", "agent": "intel_volume_001"},
+                {"domain": "defi", "agent": "defi_pool_001"},
+                {"domain": "risk", "agent": "risk_drawdown_001"},
+            ],
+            "hedera_audit": [
+                {"domain": "hedera", "agent": "hedera_account_001"},
+                {"domain": "hedera", "agent": "hedera_hts_001"},
+                {"domain": "hedera", "agent": "hedera_hcs_001"},
+                {"domain": "carbon", "agent": "esg_score_001"},
+            ],
+            "system_checkup": [
+                {"domain": "ops", "agent": "ops_health_001"},
+                {"domain": "ops", "agent": "ops_circuit_001"},
+                {"domain": "ops", "agent": "ops_cost_001"},
+                {"domain": "ops", "agent": "ops_heal_001"},
+            ],
+            "full_intelligence": [
+                {"domain": "intel", "agent": "intel_signal_001"},
+                {"domain": "intel", "agent": "intel_sentiment_001"},
+                {"domain": "intel", "agent": "intel_whale_001"},
+                {"domain": "intel", "agent": "intel_volume_001"},
+                {"domain": "intel", "agent": "intel_arb_001"},
+            ],
         }
         steps = presets.get(preset_name)
         if not steps:
@@ -172,13 +307,18 @@ def create_agent_router(engine: WorkflowEngine) -> APIRouter:
 
     @router.get("/all")
     async def run_all_agents():
-        """Run all 15 agents across all domains."""
+        """Run all 30 agents across all domains."""
         return engine.run_all()
 
     @router.get("/stats")
     async def agent_stats():
         """Global agent statistics."""
-        return engine.stats()
+        stats = engine.stats()
+        if trigger_manager:
+            stats["triggers"] = trigger_manager.stats()
+        if scheduler:
+            stats["scheduler"] = scheduler.stats()
+        return stats
 
     @router.get("/list")
     async def list_all_agents():
@@ -187,6 +327,59 @@ def create_agent_router(engine: WorkflowEngine) -> APIRouter:
         for domain, orch in engine._orchestrators.items():
             agents.extend(orch.list_agents())
         return {"total_agents": len(agents), "agents": agents}
+
+    # ------------------------------------------------------------------
+    # Event triggers
+    # ------------------------------------------------------------------
+
+    @router.get("/triggers")
+    async def list_triggers():
+        """List all event triggers."""
+        if not trigger_manager:
+            return {"triggers": [], "message": "Trigger manager not initialized"}
+        return {"triggers": trigger_manager.list_triggers()}
+
+    @router.get("/triggers/history")
+    async def trigger_history(limit: int = 20):
+        if not trigger_manager:
+            return {"history": []}
+        return {"history": trigger_manager.history(limit)}
+
+    @router.get("/triggers/stats")
+    async def trigger_stats():
+        if not trigger_manager:
+            return {}
+        return trigger_manager.stats()
+
+    # ------------------------------------------------------------------
+    # Schedules
+    # ------------------------------------------------------------------
+
+    @router.get("/schedules")
+    async def list_schedules():
+        """List all scheduled runs."""
+        if not scheduler:
+            return {"schedules": [], "message": "Scheduler not initialized"}
+        return {"schedules": scheduler.list_schedules()}
+
+    @router.post("/schedules/{schedule_id}/run")
+    async def run_schedule_now(schedule_id: str):
+        """Manually trigger a scheduled run immediately."""
+        if not scheduler:
+            raise HTTPException(404, "Scheduler not initialized")
+        return scheduler.run_now(schedule_id)
+
+    @router.get("/schedules/history")
+    async def schedule_history(limit: int = 20):
+        if not scheduler:
+            return {"history": []}
+        return {"history": scheduler.history(limit)}
+
+    @router.get("/schedules/stats")
+    async def schedule_stats():
+        if not scheduler:
+            return {}
+        return scheduler.stats()
 
     return router
 

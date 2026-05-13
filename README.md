@@ -311,9 +311,9 @@ print(pms.leaderboard(sort_by="profit"))
 
 ---
 
-## Specialized Workflow Agents (42 total)
+## Specialized Workflow Agents (57 total)
 
-Beyond the original 27 monitoring specialists, Vera OS includes **15 workflow agents** across 3 operational domains — each producing typed action recommendations with proof hashes for HCS anchoring.
+Beyond the original 27 monitoring specialists, Vera OS includes **30 workflow agents** across 6 operational domains — each producing typed action recommendations with proof hashes for HCS anchoring, event emission, conditional branching, and scheduled execution.
 
 ### DeFi Operations (5 agents)
 
@@ -345,28 +345,89 @@ Beyond the original 27 monitoring specialists, Vera OS includes **15 workflow ag
 | **Exposure Monitor** | `risk_exposure_001` | Per-token and sector concentration limits |
 | **Drawdown Protector** | `risk_drawdown_001` | Warning → critical → halt escalation with auto-reduction |
 
-### Multi-Step Pipelines
+### Hedera Native (5 agents)
 
-Agents chain across domains. The `WorkflowEngine` feeds each step's output into the next:
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **HCS Topic Orchestrator** | `hedera_hcs_001` | Topic query/subscribe, sequence gap detection, flood alerts |
+| **HTS Token Lifecycle** | `hedera_hts_001` | Mint/burn tracking, supply auditing, risk flag detection |
+| **Scheduled Tx Manager** | `hedera_sched_001` | Pending tx tracking, signature progress, expiry alerts |
+| **Multi-Sig Coordinator** | `hedera_multisig_001` | Threshold key approvals, stale tx cleanup, backlog alerts |
+| **Account Activity Profiler** | `hedera_account_001` | Tx frequency, holdings, topic activity, risk scoring |
+
+### Intelligence & Analytics (5 agents)
+
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **Prediction Signal Aggregator** | `intel_signal_001` | Combine BitLattice + oracle + sentiment into composite score |
+| **Sentiment Aggregator** | `intel_sentiment_001` | Fear/greed index from social sources, contrarian signals |
+| **Whale Behavior Profiler** | `intel_whale_001` | Accumulation/distribution tracking, large-move alerts |
+| **Volume Anomaly Scorer** | `intel_volume_001` | Z-score deviations, wash trading detection |
+| **Cross-Chain Arb Detector** | `intel_arb_001` | Price discrepancies across bridges, net profit scoring |
+
+### Autonomous Operations (5 agents)
+
+| Agent | ID | Workflow |
+| --- | --- | --- |
+| **Self-Healer** | `ops_heal_001` | Detect failures, auto-restart, escalation on retry exhaustion |
+| **Cost Optimizer** | `ops_cost_001` | HBAR spend tracking, batch recommendations, budget alerts |
+| **Circuit Breaker Orchestrator** | `ops_circuit_001` | Upstream dependency monitoring, trip/recovery logic |
+| **Task Scheduler** | `ops_scheduler_001` | Overdue task detection, interval tracking |
+| **System Health Aggregator** | `ops_health_001` | Composite system score from all components |
+
+### Advanced Workflow Engine
+
+**Conditional Branching** — pipelines with if/else logic based on agent output:
+```python
+pipeline = [
+    {"domain": "risk", "agent": "risk_drawdown_001"},
+    {
+        "type": "branch",
+        "condition": "drawdown_status == 'critical'",
+        "if_true":  [{"domain": "risk", "agent": "risk_stop_001"}],
+        "if_false": [{"domain": "risk", "agent": "risk_rebal_001"}],
+    },
+]
+```
+
+**Event-Driven Triggers** — auto-fire pipelines when agents emit matching events:
+```python
+trigger = EventTrigger(
+    name="whale_move_response",
+    event_pattern="intel.intel_whale_001",
+    condition="total_moved_24h > 1000000000000",
+    pipeline_steps=[{"domain": "risk", "agent": "risk_exposure_001"}],
+)
+```
+
+**Scheduled Runs** — cron-style or interval-based periodic execution:
+```python
+scheduler.register(ScheduleEntry(name="risk_scan_4h", interval_seconds=14400, domain="risk"))
+scheduler.register(ScheduleEntry(name="system_health_1h", interval_seconds=3600, domain="ops"))
+```
+
+### Multi-Step Pipelines
 
 ```python
 from vera_os import WorkflowAgentService
 
 was = WorkflowAgentService()
 
-# Pre-built pipeline: assess risk → size position → route swap
+# Run domains
+defi_report   = was.run_defi()
+hedera_report = was.run_hedera({"account_id": "0.0.12345"})
+intel_report  = was.run_intel()
+ops_report    = was.run_ops()
+
+# Cross-domain pipeline
 result = was.run_pipeline([
+    {"domain": "intel", "agent": "intel_signal_001"},
     {"domain": "risk", "agent": "risk_size_001"},
     {"domain": "defi", "agent": "defi_swap_001"},
 ], context={"portfolio_value": 100_000})
-
-# Or run an entire domain
-defi_report = was.run_defi()
-risk_report = was.run_risk()
-esg_report  = was.run_carbon({"entity_id": "0.0.12345"})
 ```
 
-Pre-built presets: `assess_and_trade`, `full_risk_scan`, `esg_audit`, `defi_opportunity`.
+Pre-built presets: `assess_and_trade`, `full_risk_scan`, `esg_audit`, `defi_opportunity`, `smart_trade`, `whale_alert`, `hedera_audit`, `system_checkup`, `full_intelligence`.
 
 ---
 
@@ -465,19 +526,29 @@ Schema includes: predictions, model_metadata, specialist_alerts, proof_anchors, 
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
-| `/agents/workflows/defi` | GET | Run all 5 DeFi agents |
-| `/agents/workflows/defi/{agent_id}` | GET | Run a specific DeFi agent |
-| `/agents/workflows/carbon` | GET | Run all 5 Carbon/ESG agents |
-| `/agents/workflows/carbon/{agent_id}` | GET | Run a specific Carbon agent |
-| `/agents/workflows/risk` | GET | Run all 5 Risk Management agents |
-| `/agents/workflows/risk/{agent_id}` | GET | Run a specific Risk agent |
-| `/agents/workflows/all` | GET | Run all 15 agents across all domains |
+| `/agents/defi` | GET | Run all 5 DeFi agents |
+| `/agents/defi/{agent_id}` | GET | Run a specific DeFi agent |
+| `/agents/carbon` | GET | Run all 5 Carbon/ESG agents |
+| `/agents/carbon/{agent_id}` | GET | Run a specific Carbon agent |
+| `/agents/risk` | GET | Run all 5 Risk Management agents |
+| `/agents/risk/{agent_id}` | GET | Run a specific Risk agent |
+| `/agents/hedera` | GET | Run all 5 Hedera Native agents |
+| `/agents/hedera/{agent_id}` | GET | Run a specific Hedera agent |
+| `/agents/intel` | GET | Run all 5 Intelligence agents |
+| `/agents/intel/{agent_id}` | GET | Run a specific Intel agent |
+| `/agents/ops` | GET | Run all 5 Autonomous Ops agents |
+| `/agents/ops/{agent_id}` | GET | Run a specific Ops agent |
+| `/agents/all` | GET | Run all 30 agents across all domains |
 | `/agents/workflows/run` | POST | Run a multi-step agent pipeline |
-| `/agents/workflows/presets` | GET | List pre-built workflow presets |
+| `/agents/workflows/presets` | GET | List 9 pre-built workflow presets |
 | `/agents/workflows/presets/{name}` | POST | Run a preset pipeline |
 | `/agents/workflows/history` | GET | Recent pipeline execution history |
-| `/agents/workflows/stats` | GET | Global agent statistics |
-| `/agents/workflows/list` | GET | List all registered agents |
+| `/agents/stats` | GET | Global agent + trigger + scheduler statistics |
+| `/agents/list` | GET | List all 30 registered agents |
+| `/agents/triggers` | GET | List event-driven triggers |
+| `/agents/triggers/history` | GET | Recent trigger firings |
+| `/agents/schedules` | GET | List scheduled runs |
+| `/agents/schedules/{id}/run` | POST | Manually fire a scheduled run |
 
 ---
 
@@ -534,12 +605,16 @@ vera_os/                    → Public Python facade (pip install -e .)
   health.py                 → HealthService wrapper
   visuals.py                → Visual asset catalog
 
-src/agents/                 → Specialized workflow agents (15 agents, 3 domains)
-  base_agent.py             → WorkflowAgent, WorkflowEngine, proof hashing
+src/agents/                 → Specialized workflow agents (30 agents, 6 domains)
+  base_agent.py             → WorkflowAgent, WorkflowEngine, proof hashing, event emission
+  advanced_workflows.py     → EventBus, EventTrigger, TriggerManager, AgentScheduler, branching
   defi_agents.py            → 5 DeFi agents + orchestrator
   carbon_agents.py          → 5 Carbon/ESG agents + orchestrator
   risk_agents.py            → 5 Risk Management agents + orchestrator
-  agent_api.py              → FastAPI router for agent endpoints
+  hedera_native_agents.py   → 5 HCS/HTS native agents + orchestrator
+  intel_agents.py           → 5 Intelligence & Analytics agents + orchestrator
+  ops_agents.py             → 5 Autonomous Operations agents + orchestrator
+  agent_api.py              → FastAPI router (23 endpoints + triggers + schedules)
 
 src/markets/                → Prediction market infrastructure (Polymarket on Hedera)
   market_core.py            → State machine, order book, FIFO matching
@@ -602,6 +677,7 @@ make verify    # runs all three
 | `smoke_test.py` | End-to-end: model loading, prediction, caching, health, metrics |
 | `test_prediction_markets.py` | 111 checks: market lifecycle, HTS tokens, HBAR pools, oracle, settlement, factory, LP, portfolio, leaderboard, market maker |
 | `test_workflow_agents.py` | 77 checks: DeFi agents, Carbon/ESG agents, Risk agents, workflow engine, pipelines, typing |
+| `test_advanced_agents.py` | 99 checks: Hedera Native, Intel, Ops agents, conditional branching, event bus, triggers, scheduler, 6-domain engine |
 
 ---
 
