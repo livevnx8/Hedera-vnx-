@@ -4,6 +4,7 @@ Hedera Prediction Market Server v3.
 Integrates predictions + analytics + graph data for full dashboard support.
 """
 
+import os
 import sys
 from typing import Dict, Any, List
 
@@ -94,6 +95,12 @@ from src.learning_lane.proof_loop_tracker import ProofLoopTracker, LoopStage
 from src.learning_lane.lesson_engine import LessonEngine
 from src.learning_lane.upgrade_packages import UpgradePackageBuilder
 from src.learning_lane.learning_api import create_learning_router
+
+# Unified Health
+from src.health.unified_health import UnifiedHealthCheck
+
+# Persistence
+from src.persistence.vera_db import VeraDB
 
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
@@ -341,6 +348,50 @@ learning_router = create_learning_router(
 )
 app.include_router(learning_router)
 
+# ── v2 Metrics Bridges ────────────────────────────────────────
+def _metrics_bridge(event_name: str, data):
+    if "proof" in event_name or event_name.startswith("marketplace."):
+        mode = proof_emitter.mode.value if proof_emitter else "unknown"
+        metrics.proofs_emitted.labels(mode=mode).inc()
+    if "settled" in event_name:
+        metrics.tasks_settled.inc()
+event_bus.subscribe("marketplace.*", _metrics_bridge)
+event_bus.subscribe("proof.*", _metrics_bridge)
+
+# ── Persistence ───────────────────────────────────────────────
+vera_db = VeraDB(os.environ.get("VERA_DB_PATH", "data/vera.db"))
+
+# Bridge: proof emission → DB
+def _persist_receipt(event_name: str, data):
+    if isinstance(data, dict) and "receipt_id" in data:
+        vera_db.save_receipt(data)
+event_bus.subscribe("proof.*", _persist_receipt)
+
+# Periodic flush of emitter receipts to DB (on health check)
+_last_persisted_seq = [0]
+
+def _flush_receipts_to_db():
+    receipts = proof_emitter.get_receipts(limit=500)
+    if receipts:
+        batch = [r.to_dict() for r in receipts if r.sequence_number > _last_persisted_seq[0]]
+        if batch:
+            vera_db.save_receipts_batch(batch)
+            _last_persisted_seq[0] = max(r.sequence_number for r in receipts)
+
+# ── Unified Health ────────────────────────────────────────────
+unified_health = UnifiedHealthCheck(
+    prediction_engine=prediction_engine,
+    hedera_swarm=hedera_swarm,
+    workflow_engine=workflow_engine,
+    task_engine=task_engine,
+    proof_emitter=proof_emitter,
+    mirror_verifier=mirror_verifier,
+    first_party_registry=first_party_registry,
+    proof_loop_tracker=proof_loop_tracker,
+    lesson_engine=lesson_engine,
+    package_builder=package_builder,
+)
+
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)
 # ============================================================
@@ -419,7 +470,19 @@ async def list_tokens():
 
 @app.get("/health")
 async def health():
-    return prediction_engine.get_health()
+    _flush_receipts_to_db()
+    result = unified_health.check()
+    result["persistence"] = vera_db.stats()
+    return result
+
+@app.get("/health/db")
+async def health_db():
+    return vera_db.stats()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    _flush_receipts_to_db()
+    vera_db.close()
 
 @app.get("/metrics")
 async def prometheus_metrics():
@@ -967,6 +1030,21 @@ async def mm_state(market_id: str):
     if not state:
         raise HTTPException(404, "No MM state for this market")
     return state.to_dict()
+
+# ── Dashboard static files (production build) ────────────────
+_dashboard_dist = os.path.join(os.path.dirname(__file__), "dashboard", "dist")
+if os.path.isdir(_dashboard_dist):
+    from fastapi.staticfiles import StaticFiles
+    from starlette.responses import FileResponse
+
+    @app.get("/dashboard/{full_path:path}")
+    async def serve_dashboard(full_path: str):
+        file = os.path.join(_dashboard_dist, full_path)
+        if os.path.isfile(file):
+            return FileResponse(file)
+        return FileResponse(os.path.join(_dashboard_dist, "index.html"))
+
+    app.mount("/dashboard-assets", StaticFiles(directory=os.path.join(_dashboard_dist, "assets")), name="dashboard-assets")
 
 if __name__ == "__main__":
     import uvicorn

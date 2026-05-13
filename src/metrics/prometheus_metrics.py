@@ -340,6 +340,74 @@ class MetricsRegistry:
             "HCS processing failures"
         ))
 
+        # v2: Proof loop metrics
+        self.proofs_emitted = self._register(Counter(
+            "vera_proofs_emitted_total",
+            "Total proof receipts emitted to HCS",
+            ["mode"]
+        ))
+
+        self.proofs_errors = self._register(Counter(
+            "vera_proofs_errors_total",
+            "Total proof emission errors"
+        ))
+
+        self.proof_chain_length = self._register(Gauge(
+            "vera_proof_chain_length",
+            "Current proof chain length"
+        ))
+
+        # v2: Proof loop tracker
+        self.loops_opened = self._register(Counter(
+            "vera_loops_opened_total",
+            "Total proof loops opened"
+        ))
+
+        self.loops_closed = self._register(Counter(
+            "vera_loops_closed_total",
+            "Total proof loops closed"
+        ))
+
+        # v2: Verifiable AI
+        self.agent_executions = self._register(Counter(
+            "vera_agent_executions_total",
+            "First-party agent task executions",
+            ["agent_id"]
+        ))
+
+        self.tasks_settled = self._register(Counter(
+            "vera_tasks_settled_total",
+            "Marketplace tasks settled"
+        ))
+
+        self.verifications_total = self._register(Counter(
+            "vera_verifications_total",
+            "Result verifications performed",
+            ["outcome"]
+        ))
+
+        # v2: Learning lane
+        self.lessons_extracted = self._register(Counter(
+            "vera_lessons_extracted_total",
+            "Lessons extracted from closed loops"
+        ))
+
+        self.lessons_approved = self._register(Counter(
+            "vera_lessons_approved_total",
+            "Operator-approved lessons"
+        ))
+
+        self.packages_published = self._register(Counter(
+            "vera_packages_published_total",
+            "Upgrade packages published to HCS"
+        ))
+
+        # v2: Persistence
+        self.db_receipts_persisted = self._register(Counter(
+            "vera_db_receipts_persisted_total",
+            "Proof receipts persisted to SQLite"
+        ))
+
     def _register(self, metric):
         self._metrics[metric.name] = metric
         return metric

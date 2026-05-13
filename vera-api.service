@@ -1,0 +1,58 @@
+[Unit]
+Description=Vera OS v2 — Python API Server (FastAPI + Uvicorn)
+After=network.target
+Wants=network-online.target
+Documentation=https://github.com/livevnx8/Hedera-vnx-
+
+[Service]
+Type=notify
+User=vera-live-0-1
+WorkingDirectory=/home/vera-live-0-1/hedera-llm-api
+EnvironmentFile=/home/vera-live-0-1/hedera-llm-api/.env
+
+# Pre-start: ensure data directory exists
+ExecStartPre=/usr/bin/mkdir -p /home/vera-live-0-1/hedera-llm-api/data
+
+# Main process
+ExecStart=/usr/bin/python3 -m uvicorn prediction_server_v3:app \
+    --host 0.0.0.0 \
+    --port 8080 \
+    --workers 4 \
+    --log-level info
+
+# Restart policy — always restart, 5s backoff, max 5 tries per 120s
+Restart=always
+RestartSec=5
+StartLimitInterval=120s
+StartLimitBurst=5
+
+# Watchdog — service must notify within 60s or gets killed
+WatchdogSec=60
+
+# Graceful shutdown — give 30s for DB flush and connection drain
+TimeoutStopSec=30
+KillSignal=SIGTERM
+KillMode=mixed
+
+# Resource limits
+LimitNOFILE=65535
+MemoryMax=6G
+MemoryHigh=4G
+CPUQuota=300%
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/vera-live-0-1/hedera-llm-api/data
+ReadWritePaths=/home/vera-live-0-1/hedera-llm-api/logs
+ReadWritePaths=/home/vera-live-0-1/hedera-llm-api/cache
+PrivateTmp=true
+NoNewPrivileges=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vera-api
+
+[Install]
+WantedBy=multi-user.target
