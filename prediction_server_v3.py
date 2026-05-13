@@ -80,6 +80,21 @@ from src.ai_backbone.summarizer import ResultSummarizer
 from src.ai_backbone.rag_context import RAGContext
 from src.ai_backbone.ai_api import create_ai_router
 
+# v2: Hedera Proof Infrastructure
+from src.hedera_proof.hcs_emitter import HCSProofEmitter
+from src.hedera_proof.mirror_verifier import MirrorVerifier
+from src.hedera_proof.proof_api import create_proof_router
+
+# v2: Verifiable AI (First-Party Agents)
+from src.verifiable_ai.first_party_agents import FirstPartyAgentRegistry
+from src.verifiable_ai.verifiable_ai_api import create_verifiable_ai_router
+
+# v2: Learning Lane (Elliptical Proof Workflows)
+from src.learning_lane.proof_loop_tracker import ProofLoopTracker, LoopStage
+from src.learning_lane.lesson_engine import LessonEngine
+from src.learning_lane.upgrade_packages import UpgradePackageBuilder
+from src.learning_lane.learning_api import create_learning_router
+
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
 analytics_engine = AnalyticsEngine()
@@ -240,6 +255,91 @@ ai_router = create_ai_router(
     rag=rag_context,
 )
 app.include_router(ai_router)
+
+# ── v2: Hedera Proof Infrastructure ───────────────────────────
+proof_emitter = HCSProofEmitter()
+mirror_verifier = MirrorVerifier()
+
+# Bridge marketplace events → HCS proof emission
+def _proof_bridge(event_name: str, data):
+    proof_emitter.emit_marketplace_event(event_name, data if isinstance(data, dict) else {"value": data})
+event_bus.subscribe("marketplace.*", _proof_bridge)
+event_bus.subscribe("escrow.*", _proof_bridge)
+
+# Mount Proof API
+proof_router = create_proof_router(emitter=proof_emitter, verifier=mirror_verifier)
+app.include_router(proof_router)
+
+# ── v2: Verifiable AI ─────────────────────────────────────────
+first_party_registry = FirstPartyAgentRegistry()
+
+# Register first-party agents in the reputation system
+for _fp_agent in first_party_registry.list_agents():
+    if not reputation_engine.get_agent(_fp_agent["agent_id"]):
+        reputation_engine.register_agent(
+            _fp_agent["agent_id"], _fp_agent["display_name"], _fp_agent["domain"]
+        )
+
+verifiable_ai_router = create_verifiable_ai_router(
+    registry=first_party_registry,
+    task_engine=task_engine,
+    reputation_engine=reputation_engine,
+    escrow_engine=escrow_engine,
+    verifier=result_verifier,
+    proof_emitter=proof_emitter,
+)
+app.include_router(verifiable_ai_router)
+
+# ── v2: Learning Lane ─────────────────────────────────────────
+proof_loop_tracker = ProofLoopTracker()
+lesson_engine = LessonEngine(llm_router=llm_router)
+package_builder = UpgradePackageBuilder(proof_emitter=proof_emitter)
+
+# Bridge: marketplace events → proof loop tracker
+def _loop_tracker_bridge(event_name: str, data):
+    task_id = data.get("task_id", "") if isinstance(data, dict) else ""
+    if not task_id:
+        return
+    stage_map = {
+        "task.posted": LoopStage.TASK,
+        "bid.submitted": LoopStage.BID,
+        "task.awarded": LoopStage.AWARD,
+        "task.executing": LoopStage.EXECUTION,
+        "result.submitted": LoopStage.EXECUTION,
+        "result.verified": LoopStage.VERIFICATION,
+        "result.disputed": LoopStage.VERIFICATION,
+        "task.settled": LoopStage.SETTLEMENT,
+    }
+    event_suffix = event_name.replace("marketplace.", "")
+    stage = stage_map.get(event_suffix)
+    if stage:
+        proof_loop_tracker.record_stage(
+            task_id=task_id,
+            stage=stage,
+            evidence_type="marketplace_event",
+            data=data if isinstance(data, dict) else {},
+            proof_hash=data.get("proof_hash", "") if isinstance(data, dict) else "",
+        )
+event_bus.subscribe("marketplace.*", _loop_tracker_bridge)
+
+# Bridge: proof emission → loop tracker receipt stage
+def _receipt_bridge(event_name: str, data):
+    task_id = data.get("task_id", "") if isinstance(data, dict) else ""
+    if task_id:
+        proof_loop_tracker.record_stage(
+            task_id=task_id,
+            stage=LoopStage.RECEIPT,
+            evidence_type="hcs_receipt",
+            data=data if isinstance(data, dict) else {},
+        )
+event_bus.subscribe("proof.*", _receipt_bridge)
+
+learning_router = create_learning_router(
+    tracker=proof_loop_tracker,
+    lesson_engine=lesson_engine,
+    package_builder=package_builder,
+)
+app.include_router(learning_router)
 
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)

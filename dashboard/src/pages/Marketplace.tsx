@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Store, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Store, Clock, CheckCircle, XCircle, Shield } from 'lucide-react'
 import { api } from '../lib/api'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -88,9 +88,17 @@ export default function Marketplace() {
                       {task.category} • {task.bids?.length ?? 0} bids • {task.budget_hbar} ℏ budget
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[task.status] || 'bg-gray-700 text-gray-400'}`}>
-                    {task.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {task.result?.proof_hash && (
+                      <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400">
+                        <Shield size={10} />
+                        proof
+                      </span>
+                    )}
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[task.status] || 'bg-gray-700 text-gray-400'}`}>
+                      {task.status}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

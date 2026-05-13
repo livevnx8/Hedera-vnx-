@@ -32,4 +32,27 @@ export const api = {
   ask: (question: string) => fetchJSON('/ai/ask', { method: 'POST', body: JSON.stringify({ question }) }),
   getModels: () => fetchJSON('/ai/models'),
   getAIStats: () => fetchJSON('/ai/stats'),
+
+  // Generic
+  get: (path: string) => fetchJSON(path),
+  post: (path: string, data: any) => fetchJSON(path, { method: 'POST', body: JSON.stringify(data) }),
+
+  // Proof
+  getProofStats: () => fetchJSON('/proof/stats'),
+  getProofReceipts: (limit = 20) => fetchJSON(`/proof/receipts?limit=${limit}`),
+  getProofChain: (taskId: string) => fetchJSON(`/proof/chain/${taskId}`),
+  verifyProof: (data: any) => fetchJSON('/proof/verify', { method: 'POST', body: JSON.stringify(data) }),
+
+  // Verifiable AI
+  getVerifiableAgents: () => fetchJSON('/api/vera/verifiable-ai/agents'),
+  runVerifiableTask: (data: any) => fetchJSON('/api/vera/verifiable-ai/tasks', { method: 'POST', body: JSON.stringify(data) }),
+  runNow: (data: any) => fetchJSON('/api/vera/verifiable-ai/run-now', { method: 'POST', body: JSON.stringify(data) }),
+  getProofRuns: (limit = 20) => fetchJSON(`/api/vera/verifiable-ai/runs?limit=${limit}`),
+  getProofRun: (id: string) => fetchJSON(`/api/vera/verifiable-ai/runs/${id}`),
+
+  // Learning
+  getLearningStats: () => fetchJSON('/api/vera/learning/stats'),
+  getLoops: (status?: string) => fetchJSON(`/api/vera/learning/loops${status ? `?status=${status}` : ''}`),
+  getLessons: () => fetchJSON('/api/vera/learning/lessons'),
+  getPackages: () => fetchJSON('/api/vera/learning/packages'),
 }

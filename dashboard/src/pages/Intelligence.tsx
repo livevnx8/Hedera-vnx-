@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Send, Loader2 } from 'lucide-react'
+import { Brain, Send, Loader2, Shield, Zap } from 'lucide-react'
 import { api } from '../lib/api'
 
 export default function Intelligence() {
@@ -8,6 +8,9 @@ export default function Intelligence() {
   const [answer, setAnswer] = useState<any>(null)
   const [decomposition, setDecomposition] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [proofRun, setProofRun] = useState<any>(null)
+  const [runType, setRunType] = useState('health_check')
+  const [runLoading, setRunLoading] = useState(false)
 
   const handleAsk = async () => {
     if (!question.trim()) return
@@ -116,6 +119,92 @@ export default function Intelligence() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Verifiable AI Runner */}
+      <div className="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h3 className="text-sm font-medium text-gray-300 mb-4 flex items-center gap-2">
+          <Zap size={16} className="text-green-400" />
+          Run Verifiable Task
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-900/30 text-green-400">proof loop</span>
+        </h3>
+        <div className="flex gap-2 mb-4">
+          <select
+            value={runType}
+            onChange={(e) => setRunType(e.target.value)}
+            className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-vera-500"
+          >
+            <option value="health_check">Health Check</option>
+            <option value="topic_audit">HCS Topic Audit</option>
+            <option value="carbon_verify">Carbon Verification</option>
+            <option value="compliance_review">Compliance Review</option>
+            <option value="quality_score">Quality Score</option>
+            <option value="proof_publish">Proof Publish</option>
+          </select>
+          <button
+            onClick={async () => {
+              setRunLoading(true)
+              try {
+                const result = await api.runNow({ task_type: runType, budget_hbar: 10.0, data: {} })
+                setProofRun(result)
+              } catch (e: any) {
+                setProofRun({ status: 'error', error: e.message })
+              }
+              setRunLoading(false)
+            }}
+            disabled={runLoading}
+            className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-white text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {runLoading ? <Loader2 size={14} className="animate-spin" /> : <Shield size={14} />}
+            Run Now
+          </button>
+        </div>
+
+        {proofRun && (
+          <div className="bg-gray-800 rounded-lg p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">Status</span>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                proofRun.status === 'settled' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
+              }`}>
+                {proofRun.status}
+              </span>
+            </div>
+            {proofRun.agent_name && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Agent</span>
+                <span className="text-xs text-white">{proofRun.agent_name}</span>
+              </div>
+            )}
+            {proofRun.verification && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Verification</span>
+                <span className="text-xs text-white">score: {Math.round((proofRun.verification.score || 0) * 100)}%</span>
+              </div>
+            )}
+            {proofRun.settlement && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Settlement</span>
+                <span className="text-xs text-vera-400">{proofRun.settlement.amount_hbar} HBAR</span>
+              </div>
+            )}
+            {proofRun.proof && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Proof Receipts</span>
+                <span className="text-xs text-gray-300">{proofRun.proof.receipts?.length || 0} ({proofRun.proof.mode})</span>
+              </div>
+            )}
+            {proofRun.duration_s && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Duration</span>
+                <span className="text-xs text-gray-300">{proofRun.duration_s}s</span>
+              </div>
+            )}
+            {proofRun.error && (
+              <p className="text-xs text-red-400">{proofRun.error}</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
