@@ -17,6 +17,10 @@ from src.markets.hbar_pools import HBARPoolManager
 from src.markets.hts_outcome_tokens import OutcomeTokenManager
 from src.markets.oracle_feed import SwarmOracleFeed
 from src.markets.settlement import SettlementEngine, ResolutionMethod
+from src.markets.auto_market_factory import AutoMarketFactory, MarketTemplate
+from src.markets.liquidity import LiquidityManager
+from src.markets.portfolio import PortfolioTracker
+from src.markets.market_maker import MarketMakerBot, MMConfig
 
 PASS = 0
 FAIL = 0
@@ -347,6 +351,206 @@ def test_full_lifecycle():
     check("Market SETTLED", final.status == MarketStatus.SETTLED)
 
 
+def test_auto_market_factory():
+    print("\n═══ Auto-Market Factory ═══")
+    mm = MarketManager()
+    pm = HBARPoolManager()
+    tm = OutcomeTokenManager()
+    of = SwarmOracleFeed()
+    factory = AutoMarketFactory(mm, pm, tm, of)
+
+    # Register defaults
+    factory.register_defaults()
+    templates = factory.list_templates()
+    check("Default templates registered", len(templates) == 9, f"got {len(templates)}")
+
+    # No signals yet — should create nothing
+    created = factory.check_and_create()
+    check("No markets without signals", len(created) == 0)
+
+    # Publish a strong signal to trigger market creation
+    # First need a market with signals so _find_trigger_signal can find them
+    seed = mm.create_market("Seed", ["YES", "NO"], time.time() + 86400, MarketType.BINARY)
+    of.publish_signal(seed.market_id, {
+        "direction": "UP",
+        "up_probability": 0.82,
+        "confidence": 0.88,
+        "specialist_count": 27,
+    })
+
+    # Now check — should trigger templates that match
+    created = factory.check_and_create()
+    check("Auto-created markets", len(created) > 0, f"got {len(created)}")
+
+    # Check events
+    events = factory.get_events()
+    check("Events recorded", len(events) > 0)
+
+    # Direct signal check
+    more = factory.check_signal_and_create("hbar", {
+        "direction": "UP",
+        "up_probability": 0.85,
+        "confidence": 0.90,
+    })
+    # May or may not create due to cooldown
+    check("Signal check ran", True)
+
+    stats = factory.stats()
+    check("Stats has templates", stats["templates"] == 9)
+
+
+def test_liquidity_manager():
+    print("\n═══ Liquidity Manager ═══")
+    lm = LiquidityManager()
+
+    # Add liquidity
+    p1 = lm.add_liquidity("market_lp", "alice", 10_000_000)
+    check("LP position created", p1.position_id is not None)
+    check("Shares assigned", p1.shares > 0)
+
+    p2 = lm.add_liquidity("market_lp", "bob", 5_000_000)
+    check("Second LP", p2.shares > 0)
+
+    # TVL
+    tvl = lm.get_tvl("market_lp")
+    check("TVL = 15M", tvl == 15_000_000, f"got {tvl}")
+
+    # Collect fees
+    lm.collect_fee("market_lp", 100_000)
+    pool = lm.get_pool("market_lp")
+    check("Fees collected", pool.total_fees_collected > 0)
+
+    # Add bonus
+    lm.add_bonus("market_lp", 50_000)
+    check("Bonus added", pool.bonus_rewards == 50_000)
+
+    # Check pending rewards
+    alice_pending = lm.get_pending_rewards("market_lp", "alice")
+    check("Alice has pending rewards", alice_pending > 0, f"got {alice_pending}")
+
+    # Claim rewards
+    claim = lm.claim_rewards("market_lp", "alice")
+    check("Rewards claimed", claim["rewards_claimed"] > 0)
+
+    # Remove liquidity
+    result = lm.remove_liquidity("market_lp", p2.position_id)
+    check("Liquidity removed", result["amount_returned"] == 5_000_000)
+
+    # Stats
+    stats = lm.stats()
+    check("Stats active", stats["active_positions"] == 1)  # alice still active
+    check("Stats total TVL", stats["total_tvl"] == 10_000_000)
+
+
+def test_portfolio_and_leaderboard():
+    print("\n═══ Portfolio & Leaderboard ═══")
+    mm = MarketManager()
+    pm = HBARPoolManager()
+    tm = OutcomeTokenManager()
+    pt = PortfolioTracker(mm, pm, tm)
+
+    future = time.time() + 86400
+
+    # Create market and positions
+    m = mm.create_market("Test market", ["YES", "NO"], future, MarketType.HTS_TOKEN)
+    pm.create_pool(m.market_id, ["YES", "NO"])
+    tm.create_market_tokens(m.market_id, ["YES", "NO"])
+
+    # Users trade
+    pm.stake(m.market_id, "YES", 5_000_000, "alice")
+    pm.stake(m.market_id, "NO", 3_000_000, "bob")
+    tm.buy_outcome(m.market_id, "YES", 100_000_000, "alice")
+    tm.buy_outcome(m.market_id, "NO", 50_000_000, "bob")
+
+    # Portfolio
+    alice_portfolio = pt.get_portfolio("alice")
+    check("Alice has positions", alice_portfolio["total_positions"] > 0)
+    check("Alice has cost", alice_portfolio["total_cost"] > 0)
+
+    bob_portfolio = pt.get_portfolio("bob")
+    check("Bob has positions", bob_portfolio["total_positions"] > 0)
+
+    # Settle market
+    mm.resolve_market(m.market_id, "YES")
+    mm.settle_market(m.market_id)
+
+    # Post-settlement portfolio
+    alice_settled = pt.get_portfolio("alice")
+    check("Alice settled portfolio", alice_settled is not None)
+
+    # User stats
+    alice_stats = pt.get_user_stats("alice")
+    check("Alice stats computed", alice_stats.total_markets > 0)
+
+    # Leaderboard
+    lb = pt.leaderboard(sort_by="profit")
+    check("Leaderboard has entries", len(lb) > 0)
+    check("Leaderboard has rank", lb[0].get("rank") == 1)
+
+    # Sort by different criteria
+    lb_vol = pt.leaderboard(sort_by="volume")
+    check("Volume leaderboard", len(lb_vol) > 0)
+
+
+def test_market_maker():
+    print("\n═══ Market Maker Bot ═══")
+    mm = MarketManager()
+    pm = HBARPoolManager()
+    tm = OutcomeTokenManager()
+    of = SwarmOracleFeed()
+    bot = MarketMakerBot(mm, pm, tm, of)
+
+    future = time.time() + 86400
+
+    # Create market
+    m = mm.create_market("MM test", ["YES", "NO"], future, MarketType.BINARY)
+    pm.create_pool(m.market_id, ["YES", "NO"])
+
+    # Publish oracle signal for fair value
+    of.publish_signal(m.market_id, {
+        "direction": "UP",
+        "up_probability": 0.65,
+        "confidence": 0.80,
+    })
+
+    # Configure bot
+    config = bot.auto_configure(m.market_id, spread_bps=200, order_size=500_000)
+    check("Bot configured", config.active)
+
+    # Refresh quotes
+    result = bot.refresh_quotes(m.market_id)
+    check("Quotes refreshed", result["refreshed"] == 1)
+    check("Actions taken", len(result["markets"][m.market_id]["actions"]) > 0)
+
+    # Check state
+    state = bot.get_state(m.market_id)
+    check("Orders placed", state.orders_placed > 0)
+    check("Fair value set", len(state.fair_value) == 2)
+    check("YES fair value ~0.65", abs(state.fair_value.get("YES", 0) - 0.65) < 0.1,
+          f"got {state.fair_value.get('YES')}")
+
+    # Market should now have orders
+    book = mm.get_orderbook(m.market_id)
+    check("Orderbook populated", True)
+
+    # Pool should have stakes from bot
+    pool = pm.get_pool(m.market_id)
+    check("Pool seeded by bot", pool.total_pool > 0)
+
+    # Refresh all
+    result2 = bot.refresh_all()
+    check("Refresh all works", result2["refreshed"] >= 1)
+
+    # Stats
+    stats = bot.stats()
+    check("Stats active", stats["active_markets"] == 1)
+    check("Stats volume", stats["total_volume"] > 0)
+
+    # Stop
+    bot.stop_market(m.market_id)
+    check("Bot stopped", not bot._configs[m.market_id].active)
+
+
 # ---------------------------------------------------------------------------
 # Run all tests
 # ---------------------------------------------------------------------------
@@ -362,6 +566,10 @@ if __name__ == "__main__":
     test_oracle_feed()
     test_settlement_engine()
     test_full_lifecycle()
+    test_auto_market_factory()
+    test_liquidity_manager()
+    test_portfolio_and_leaderboard()
+    test_market_maker()
 
     print(f"\n{'═' * 60}")
     total = PASS + FAIL

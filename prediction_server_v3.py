@@ -37,6 +37,18 @@ from hedera_vnx_specialists import SwarmOrchestrator
 from hedera_vnx_specialists_extended import ExtendedSwarmOrchestrator
 from hedera_vnx_specialists_advanced import AdvancedSwarmOrchestrator
 
+# Prediction Market Infrastructure
+from src.markets.market_core import MarketManager, MarketType
+from src.markets.hbar_pools import HBARPoolManager
+from src.markets.hts_outcome_tokens import OutcomeTokenManager
+from src.markets.oracle_feed import SwarmOracleFeed
+from src.markets.settlement import SettlementEngine
+from src.markets.auto_market_factory import AutoMarketFactory
+from src.markets.liquidity import LiquidityManager
+from src.markets.portfolio import PortfolioTracker
+from src.markets.market_maker import MarketMakerBot, MMConfig
+from src.markets.market_api import create_market_router
+
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
 analytics_engine = AnalyticsEngine()
@@ -62,6 +74,18 @@ vnx_swarm = VNXSwarmEngine()
 # Hedera VNX Micro-Specialists Swarm (27 specialists)
 hedera_swarm = AdvancedSwarmOrchestrator()
 
+# Prediction Market Infrastructure
+market_manager = MarketManager()
+pool_manager = HBARPoolManager()
+token_manager = OutcomeTokenManager(hedera_toolkit=hedera_toolkit)
+oracle_feed = SwarmOracleFeed(hedera_connector=hedera)
+settlement_engine = SettlementEngine(market_manager, pool_manager, token_manager, oracle_feed, hedera)
+auto_factory = AutoMarketFactory(market_manager, pool_manager, token_manager, oracle_feed)
+auto_factory.register_defaults()
+liquidity_manager = LiquidityManager()
+portfolio_tracker = PortfolioTracker(market_manager, pool_manager, token_manager)
+market_maker = MarketMakerBot(market_manager, pool_manager, token_manager, oracle_feed)
+
 # Register validator and agent with auditor
 auditor.register_entity(validator.validator_id, "validator", validator.get_secret_key())
 auditor.register_entity(reward_agent.agent_id, "agent", reward_agent.get_secret_key())
@@ -76,9 +100,19 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# Mount Prediction Market Router
+market_router = create_market_router(
+    market_manager=market_manager,
+    pool_manager=pool_manager,
+    token_manager=token_manager,
+    oracle_feed=oracle_feed,
+    settlement_engine=settlement_engine,
+)
+app.include_router(market_router, prefix="/markets")
 
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)
@@ -599,54 +633,154 @@ async def hedera_swarm_network():
         "nodes_online": next((r.get("nodes_online") for r in network_results if "nodes_online" in r), None),
     }
 
+# ============================================================
+# PREDICTION MARKET ADVANCED ENDPOINTS (v3.5)
+# ============================================================
+
+@app.get("/factory/templates")
+async def factory_templates():
+    """List auto-market factory templates."""
+    return {
+        "templates": [t.to_dict() for t in auto_factory.list_templates()],
+        "stats": auto_factory.stats(),
+    }
+
+@app.post("/factory/check")
+async def factory_check():
+    """Check signals and auto-create markets if thresholds met."""
+    created = auto_factory.check_and_create()
+    return {
+        "created_count": len(created),
+        "markets": [m.to_dict() for m in created],
+    }
+
+@app.get("/factory/events")
+async def factory_events():
+    """Get auto-creation event history."""
+    return {"events": [e.to_dict() for e in auto_factory.get_events()]}
+
+@app.post("/liquidity/{market_id}/add")
+async def add_liquidity(market_id: str, user: str, amount: int):
+    """Add HBAR liquidity to earn LP rewards."""
+    try:
+        pos = liquidity_manager.add_liquidity(market_id, user, amount)
+        return pos.to_dict()
+    except (ValueError, KeyError) as e:
+        raise HTTPException(400, str(e))
+
+@app.post("/liquidity/{market_id}/remove/{position_id}")
+async def remove_liquidity(market_id: str, position_id: str):
+    """Remove liquidity and claim rewards."""
+    try:
+        return liquidity_manager.remove_liquidity(market_id, position_id)
+    except (ValueError, KeyError) as e:
+        raise HTTPException(400, str(e))
+
+@app.get("/liquidity/{market_id}/rewards/{user}")
+async def lp_rewards(market_id: str, user: str):
+    """Get pending LP rewards for a user."""
+    return {
+        "market_id": market_id,
+        "user": user,
+        "pending_rewards": liquidity_manager.get_pending_rewards(market_id, user),
+    }
+
+@app.get("/liquidity/{market_id}/tvl")
+async def lp_tvl(market_id: str):
+    """Get total value locked in market LP pool."""
+    return {
+        "market_id": market_id,
+        "tvl": liquidity_manager.get_tvl(market_id),
+        "pool": (liquidity_manager.get_pool(market_id) or {}).to_dict() if liquidity_manager.get_pool(market_id) else None,
+    }
+
+@app.get("/liquidity/stats")
+async def lp_stats():
+    """Global LP statistics."""
+    return liquidity_manager.stats()
+
+@app.get("/portfolio/{user}")
+async def user_portfolio(user: str):
+    """Get a user's full portfolio across all markets."""
+    return portfolio_tracker.get_portfolio(user)
+
+@app.get("/portfolio/{user}/stats")
+async def user_stats(user: str):
+    """Get aggregated stats for a user."""
+    return portfolio_tracker.get_user_stats(user).to_dict()
+
+@app.get("/leaderboard")
+async def leaderboard(sort_by: str = "profit", limit: int = 50):
+    """Global trader leaderboard."""
+    return {
+        "leaderboard": portfolio_tracker.leaderboard(sort_by=sort_by, limit=limit),
+        "sort_by": sort_by,
+    }
+
+@app.post("/mm/configure/{market_id}")
+async def mm_configure(market_id: str, spread_bps: int = 200, order_size: int = 1_000_000):
+    """Configure automated market maker for a market."""
+    config = market_maker.auto_configure(market_id, spread_bps, order_size)
+    return config.to_dict()
+
+@app.post("/mm/refresh")
+async def mm_refresh(market_id: str = None):
+    """Refresh market maker quotes."""
+    return market_maker.refresh_quotes(market_id)
+
+@app.get("/mm/stats")
+async def mm_stats():
+    """Market maker bot statistics."""
+    return market_maker.stats()
+
+@app.get("/mm/state/{market_id}")
+async def mm_state(market_id: str):
+    """Market maker state for a specific market."""
+    state = market_maker.get_state(market_id)
+    if not state:
+        raise HTTPException(404, "No MM state for this market")
+    return state.to_dict()
+
 if __name__ == "__main__":
     import uvicorn
-    print("=" * 60)
-    print("HEDERA PREDICTION MARKET ENGINE v3")
-    print("=" * 60)
-    print(f"Predictions: {len(prediction_engine.token_models)} tokens")
-    print(f"Analytics: Market-wide + per-token deep analysis")
-    print(f"Graph Data: Time-series for frontend charting")
-    print(f"Feature Infrastructure: Importance + Auto-engineering + Drift")
-    print(f"Governance: Validator + Reward Agent + Auditor")
-    print(f"Hedera Native: Mirror Node features + contract deploy")
-    print(f"Agent Toolkit: 4 specialized agents")
-    print(f"VNX Swarm: 20 BitLattice micro-specialists (3+14+3)")
-    print(f"Hedera VNX Swarm: 27 micro-specialists (Infrastructure/Market/Security/Governance/Cross-Chain)")
-    print("\nEndpoints:")
-    print("  GET /predict/{token}        - Price direction prediction")
-    print("  GET /analytics/market       - Market-wide analytics")
-    print("  GET /analytics/{token}        - Per-token deep analytics")
-    print("  GET /graph/{token}            - Probability time-series")
-    print("  GET /graph/{token}/dashboard  - All graph data")
-    print("  GET /features/importance/{token}     - Feature importance ranking")
-    print("  GET /features/engineer/{token}       - Auto-generate features")
-    print("  GET /features/drift/{token}          - Drift detection")
-    print("  GET /features/report/{token}         - Combined feature health")
-    print("  POST /governance/validate            - Validate bid + attestation")
-    print("  POST /governance/reward            - Calculate rewards + attestation")
-    print("  GET /governance/audit/{market_id}    - Market lifecycle audit")
-    print("  GET /governance/integrity          - Chain integrity check")
-    print("  GET /hedera/stats                  - Hedera network stats")
-    print("  GET /hedera/features               - Hedera-native ML features (14+)")
-    print("  GET /hedera/supply                 - HBAR supply")
-    print("  GET /hedera/staking/{account}      - Staking info")
-    print("  GET /hedera/blocks                 - Consensus blocks")
-    print("  GET /hedera/token/{token_id}       - HTS token metadata")
-    print("  GET /hedera/topic/{topic_id}       - HCS messages")
-    print("  GET /agents/network/health         - Network Health Agent")
-    print("  GET /agents/hcs/topic/{id}         - HCS Topic Agent")
-    print("  GET /agents/hts/token/{id}         - HTS Token Agent")
-    print("  GET /agents/hts/token/{id}/whales  - Whale Detection Agent")
-    print("  GET /agents/contract/{id}          - Contract Monitor Agent")
-    print("  GET /agents/toolkit/{tool}/{id}    - Direct toolkit access")
-    print("  GET /swarm/health                  - VNX swarm status")
-    print("  GET /swarm/predict/{token}         - BitLattice swarm prediction")
-    print("  GET /swarm/compare/{token}         - Swarm vs single-model comparison")
-    print("  GET /hedera-swarm/status           - Hedera VNX specialist types")
-    print("  GET /hedera-swarm/run              - Run all 6 Hedera specialists")
-    print("  GET /hedera-swarm/alerts           - Hedera swarm alerts")
-    print("  GET /hedera-swarm/network          - Hedera network swarm view")
-    print("\nSwagger UI: http://localhost:8000/docs")
-    print("=" * 60)
+    print("=" * 70)
+    print("  HEDERA PREDICTION MARKET ENGINE v3.5")
+    print("  Polymarket on Hedera — powered by BitLattice AI")
+    print("=" * 70)
+    print(f"  Predictions:      {len(prediction_engine.token_models)} tokens (HBAR, SAUCE, DOVU)")
+    print(f"  Analytics:        Market-wide + per-token deep analysis")
+    print(f"  Graph Data:       Time-series for frontend charting")
+    print(f"  Feature Infra:    Importance + Auto-engineering + Drift")
+    print(f"  Governance:       Validator + Reward Agent + Auditor")
+    print(f"  Hedera Native:    Mirror Node features + contract deploy")
+    print(f"  Agent Toolkit:    4 specialized agents")
+    print(f"  VNX Swarm:        20 BitLattice micro-specialists")
+    print(f"  Hedera Swarm:     27 micro-specialists (5 domains)")
+    print(f"  Market Infra:     Prediction markets (HTS tokens + HBAR pools)")
+    print(f"  Oracle Feed:      BitLattice → HCS signal publishing")
+    print(f"  Auto Factory:     {len(auto_factory.list_templates())} market templates")
+    print(f"  Market Maker:     Automated 2-sided quoting")
+    print(f"  Liquidity:        LP incentives + fee distribution")
+    print(f"  Portfolio:        Cross-market P&L + leaderboard")
+    print()
+    print("  Prediction Market API:")
+    print("    POST /markets                          Create market")
+    print("    GET  /markets                          List markets")
+    print("    GET  /markets/{id}                     Market details")
+    print("    POST /markets/{id}/order               Place order")
+    print("    POST /markets/{id}/pool/stake          Stake HBAR")
+    print("    POST /markets/{id}/tokens/buy          Buy outcome tokens")
+    print("    POST /markets/{id}/tokens/sell         Sell outcome tokens")
+    print("    GET  /markets/{id}/oracle              AI oracle signal")
+    print("    POST /markets/{id}/resolve             Resolve market")
+    print("    POST /markets/{id}/settle              Execute payouts")
+    print("    POST /markets/{id}/dispute             Open dispute")
+    print("    GET  /leaderboard                      Trader rankings")
+    print("    GET  /portfolio/{user}                 User positions")
+    print("    POST /factory/check                    Auto-create markets")
+    print("    POST /mm/refresh                       Market maker quotes")
+    print("    GET  /liquidity/{id}/tvl               LP pool value")
+    print()
+    print(f"  Swagger UI: http://localhost:8000/docs")
+    print("=" * 70)
     uvicorn.run(app, host="0.0.0.0", port=8000)
