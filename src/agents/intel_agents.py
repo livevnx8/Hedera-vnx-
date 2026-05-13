@@ -3,9 +3,6 @@ Intelligence & Analytics Agents — 5 specialists for signal aggregation,
 sentiment, whale profiling, volume anomaly detection, and cross-chain arb.
 """
 
-import hashlib
-import math
-import time
 from typing import Any, Dict, List
 
 from .base_agent import (

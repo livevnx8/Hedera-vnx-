@@ -14,18 +14,14 @@ Endpoints:
   /agents/stats        — Global agent statistics
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 
 from .base_agent import WorkflowEngine
 from .advanced_workflows import (
-    EventBus,
-    EventTrigger,
     TriggerManager,
     AgentScheduler,
-    ScheduleEntry,
-    resolve_pipeline_steps,
 )
 
 

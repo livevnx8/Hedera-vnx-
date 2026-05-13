@@ -5,10 +5,7 @@ These agents monitor SaucerSwap/HeliSwap pools, track LP positions,
 optimize swap routing, and harvest accrued fees.
 """
 
-import hashlib
 import math
-import random
-import time
 from typing import Any, Dict, List
 
 from .base_agent import (

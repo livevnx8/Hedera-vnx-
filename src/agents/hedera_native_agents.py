@@ -8,8 +8,6 @@ Hedera Native Agents — 5 specialists that deeply use HCS/HTS primitives.
 - Account Activity Profiler: tx frequency, holdings, risk score
 """
 
-import hashlib
-import json
 import time
 from typing import Any, Dict, List
 
