@@ -2,9 +2,9 @@
 
 ![Vera OS architecture](docs/visuals/vnx-architecture-diagram-png.png)
 
-**Verifiable prediction infrastructure for Hedera-native AI agents.**
+**Verifiable prediction infrastructure and prediction markets for Hedera.**
 
-Vera OS is a production-grade system that combines a live token prediction engine, a 27-agent Hedera specialist swarm, a novel ternary-weight BitLattice model architecture, and a full observability stack into a single deployable package. Every prediction is cryptographically anchored to Hedera Consensus Service (HCS), making outputs independently verifiable.
+Vera OS is a production-grade system that combines a live token prediction engine, a 27-agent Hedera specialist swarm, a novel ternary-weight BitLattice model architecture, a Polymarket-style prediction market infrastructure, and a full observability stack into a single deployable package. Every prediction, trade, and settlement is cryptographically anchored to Hedera Consensus Service (HCS), making outputs independently verifiable.
 
 ---
 
@@ -211,6 +211,106 @@ Traditional models need cloud GPUs for inference. BitLattice runs predictions **
 
 ---
 
+## Prediction Markets (Polymarket on Hedera)
+
+A complete prediction market system where the BitLattice swarm feeds AI probability signals into tradeable markets — HTS outcome tokens, HBAR pools, automated market making, and HCS-anchored settlement.
+
+### Architecture
+
+```
+BitLattice Swarm (27 agents)
+        │ probability signals
+        ▼
+   Oracle Feed ──► HCS Topics (verifiable)
+        │
+        ▼
+┌─────────────────────────────────┐
+│     Prediction Market Core      │
+│  ┌───────────┐  ┌───────────┐  │
+│  │ HTS Token │  │   HBAR    │  │
+│  │  Markets  │  │   Pools   │  │
+│  │  (AMM)    │  │ (simple)  │  │
+│  └───────────┘  └───────────┘  │
+│         ┌───────────┐          │
+│         │  Market    │          │
+│         │  Maker Bot │          │
+│         └───────────┘          │
+└─────────────────────────────────┘
+        │ resolution
+        ▼
+   Settlement Engine ──► HCS Merkle Proof
+        │
+        ▼
+   Leaderboard + Portfolio Tracker
+```
+
+### Market Types
+
+| Type | Mechanism | Best For |
+| --- | --- | --- |
+| **HTS Token** | Constant-product AMM; mint YES/NO outcome tokens via HTS | Liquid, advanced markets with real-time pricing |
+| **HBAR Pool** | Direct staking into outcome pools; winners split proportionally | Quick, simple markets with low overhead |
+| **Binary** | Standard YES/NO order book with FIFO matching | Traditional prediction market UX |
+| **Multi** | 3+ outcomes with weighted probability | Complex event forecasting |
+
+### How It Works
+
+```python
+from vera_os import PredictionMarketService
+
+pms = PredictionMarketService()
+
+# Create a market
+market = pms.create_market(
+    question="Will HBAR reach $0.15 by Friday?",
+    outcomes=["YES", "NO"],
+    market_type="hts_token",
+)
+
+# Users trade outcome tokens
+pms.token_manager.buy_outcome(market["market_id"], "YES", 100_000_000, "alice")
+
+# AI oracle feeds probability from BitLattice swarm
+pms.oracle_feed.publish_signal(market["market_id"], {
+    "direction": "UP",
+    "up_probability": 0.78,
+    "confidence": 0.85,
+    "specialist_count": 27,
+})
+
+# Resolve via oracle consensus
+pms.settlement_engine.resolve_with_oracle(market["market_id"])
+
+# Leaderboard
+print(pms.leaderboard(sort_by="profit"))
+```
+
+### Market Modules
+
+| Module | File | Purpose |
+| --- | --- | --- |
+| **Market Core** | `src/markets/market_core.py` | State machine, order book, FIFO matching |
+| **HBAR Pools** | `src/markets/hbar_pools.py` | Winner-takes-pool with 0.5% fee |
+| **HTS Tokens** | `src/markets/hts_outcome_tokens.py` | AMM pricing, mint/burn, 0.3% swap fee |
+| **Oracle Feed** | `src/markets/oracle_feed.py` | BitLattice → OracleSignal → HCS topics |
+| **Settlement** | `src/markets/settlement.py` | Oracle + manual resolution, disputes, Merkle proof |
+| **Auto Factory** | `src/markets/auto_market_factory.py` | 9 templates, auto-creates markets from signals |
+| **Liquidity** | `src/markets/liquidity.py` | LP incentives, fee distribution, TVL tracking |
+| **Portfolio** | `src/markets/portfolio.py` | Cross-market P&L, leaderboard |
+| **Market Maker** | `src/markets/market_maker.py` | Automated 2-sided quoting from oracle fair value |
+| **API** | `src/markets/market_api.py` | 22 FastAPI endpoints |
+
+### Key Advantages over Polymarket
+
+- **AI-first oracle** — BitLattice swarm is a built-in probability source, not bolted on
+- **Hedera-native** — HCS + HTS, no EVM dependency or gas complexity
+- **Verifiable** — every signal and settlement gets a Merkle proof on HCS
+- **Dual market types** — advanced HTS token AMM and simple HBAR pools
+- **Automated market making** — bot bootstraps liquidity using oracle fair value
+- **LP incentives** — fee sharing (66.67% to LPs) + platform bonus rewards
+
+---
+
 ## Production Infrastructure
 
 ### Docker Stack (13 services)
@@ -258,6 +358,8 @@ Schema includes: predictions, model_metadata, specialist_alerts, proof_anchors, 
 
 ## API Surface
 
+### Predictions and Analytics
+
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | `/predict/{token}` | GET | Run a token prediction with live features |
@@ -268,9 +370,37 @@ Schema includes: predictions, model_metadata, specialist_alerts, proof_anchors, 
 | `/analytics/{token}` | GET | Per-token performance analytics |
 | `/graph/*` | GET | Chart data and historical predictions |
 | `/features/*` | GET | Feature importance, drift detection, engineering data |
-| `/governance/*` | GET | Model governance and validation |
-| `/hedera/*` | GET | Hedera toolkit: topics, tokens, accounts |
+| `/governance/*` | GET/POST | Model governance, bid validation, reward calculation |
+| `/hedera/*` | GET | Hedera toolkit: topics, tokens, accounts, blocks |
 | `/hedera-swarm/*` | GET | Specialist swarm: status, execution, alerts |
+| `/swarm/*` | GET | VNX BitLattice swarm predictions and health |
+
+### Prediction Markets
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/markets` | POST | Create a prediction market (binary, multi, HTS token, HBAR pool) |
+| `/markets` | GET | List all markets with filtering |
+| `/markets/{id}` | GET | Market details with pool, tokens, oracle, settlement |
+| `/markets/{id}/order` | POST | Place a buy/sell order |
+| `/markets/{id}/pool/stake` | POST | Stake HBAR into an outcome pool |
+| `/markets/{id}/tokens/buy` | POST | Buy outcome tokens via AMM |
+| `/markets/{id}/tokens/sell` | POST | Sell outcome tokens back to AMM |
+| `/markets/{id}/oracle` | GET | Latest AI oracle signal and consensus probability |
+| `/markets/{id}/oracle/history` | GET | Historical oracle signal time series |
+| `/markets/{id}/resolve` | POST | Resolve market (manual) |
+| `/markets/{id}/resolve/oracle` | POST | Auto-resolve via oracle consensus |
+| `/markets/{id}/settle` | POST | Execute settlement payouts |
+| `/markets/{id}/dispute` | POST | Open a dispute against resolution |
+| `/markets/stats` | GET | Global market statistics |
+| `/portfolio/{user}` | GET | User portfolio across all markets |
+| `/leaderboard` | GET | Global trader rankings (profit, win rate, volume, ROI) |
+| `/factory/check` | POST | Auto-create markets from swarm signals |
+| `/factory/templates` | GET | List auto-market templates |
+| `/mm/configure/{id}` | POST | Configure market maker bot |
+| `/mm/refresh` | POST | Refresh market maker quotes |
+| `/liquidity/{id}/add` | POST | Add LP liquidity |
+| `/liquidity/{id}/tvl` | GET | Total value locked in LP pool |
 
 ---
 
@@ -280,12 +410,13 @@ The public `vera_os` package gives developers stable import points without needi
 
 ```python
 from vera_os import (
-    PredictionService,       # Token predictions with confidence scoring
-    HederaSpecialistSwarm,   # 27-agent Hedera monitoring swarm
-    HealthService,           # Deep health checks
-    VisualAsset,             # Visual asset dataclass
-    get_visual_assets,       # Get all 11 visual assets
-    get_visual_asset_pairs,  # Get PNG/SVG pairs
+    PredictionService,         # Token predictions with confidence scoring
+    HederaSpecialistSwarm,     # 27-agent Hedera monitoring swarm
+    PredictionMarketService,   # Polymarket-style markets on Hedera
+    HealthService,             # Deep health checks
+    VisualAsset,               # Visual asset dataclass
+    get_visual_assets,         # Get all 11 visual assets
+    get_visual_asset_pairs,    # Get PNG/SVG pairs
 )
 ```
 
@@ -317,11 +448,24 @@ All available at `docs/visuals/` as `*-png.png` and `*-svg.svg`.
 
 ```
 vera_os/                    → Public Python facade (pip install -e .)
-  __init__.py               → Exports: PredictionService, HederaSpecialistSwarm, ...
+  __init__.py               → Exports: PredictionService, PredictionMarketService, ...
   prediction.py             → PredictionService wrapper
   specialists.py            → HederaSpecialistSwarm wrapper
+  markets.py                → PredictionMarketService wrapper
   health.py                 → HealthService wrapper
   visuals.py                → Visual asset catalog
+
+src/markets/                → Prediction market infrastructure (Polymarket on Hedera)
+  market_core.py            → State machine, order book, FIFO matching
+  hbar_pools.py             → Winner-takes-pool HBAR markets
+  hts_outcome_tokens.py     → AMM-based HTS outcome token markets
+  oracle_feed.py            → BitLattice swarm → HCS oracle signals
+  settlement.py             → Resolution, disputes, Merkle proof anchoring
+  auto_market_factory.py    → Auto-create markets from swarm signals (9 templates)
+  liquidity.py              → LP incentives, fee distribution, TVL
+  portfolio.py              → Cross-market P&L, leaderboard
+  market_maker.py           → Automated 2-sided quoting
+  market_api.py             → 22 FastAPI market endpoints
 
 src/starlit/                → BitLattice ternary model system
   bitlattice_model.py       → Core ternary-weight lattice model
@@ -342,7 +486,7 @@ hedera_vnx_specialists_extended.py → Extended specialists (9 agents)
 hedera_connector.py                → Hedera SDK integration layer
 hedera_agent_toolkit.py            → Agent toolkit for HCS/HTS operations
 
-prediction_server_v3.py            → FastAPI application (all endpoints)
+prediction_server_v3.py            → FastAPI application (v3.5, 60+ endpoints)
 prediction_server_production.py    → Production server with full middleware
 
 monitoring/                 → Prometheus, Grafana, Loki, Promtail, alerts
@@ -353,7 +497,7 @@ docker-compose.production.yml → Production variant
 docker-compose.monitoring.yml → Monitoring-only stack
 
 examples/                   → Ready-to-run Python examples
-tests/                      → Validation suites (3 validators)
+tests/                      → Validation suites + market tests (111 checks)
 docs/visuals/               → 11 PNG + 11 SVG visual assets
 ```
 
@@ -370,6 +514,7 @@ make verify    # runs all three
 | `validate_vera_os_release.py` | Imports, exports, examples, docs, README links, visual integrity |
 | `validate_infrastructure.py` | Compose files, monitoring configs, alerts, migrations, wiring |
 | `smoke_test.py` | End-to-end: model loading, prediction, caching, health, metrics |
+| `test_prediction_markets.py` | 111 checks: market lifecycle, HTS tokens, HBAR pools, oracle, settlement, factory, LP, portfolio, leaderboard, market maker |
 
 ---
 
