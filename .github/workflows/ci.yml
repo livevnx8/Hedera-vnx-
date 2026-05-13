@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   # ── Python tests (Vera OS v2 core) ──────────────────────────
@@ -29,7 +30,7 @@ jobs:
         run: python -m pytest tests/ -v --tb=short
 
       - name: Verify vera_os version
-        run: python -c "import vera_os; assert vera_os.__version__ == '2.0.0', f'Version mismatch: {vera_os.__version__}'"
+        run: python -c "import vera_os; assert vera_os.__version__ == '2.1.0', f'Version mismatch: {vera_os.__version__}'"
 
   # ── Node.js / TypeScript ────────────────────────────────────
   build-and-test:
@@ -69,3 +70,58 @@ jobs:
       - name: Docker build (smoke test)
         run: docker build -t veralattice:ci .
         if: matrix.node-version == 20
+
+  # ── Testnet proof smoke test (manual only) ──────────────────
+  testnet-smoke:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[production]" 2>/dev/null || pip install -e .
+          pip install pytest
+
+      - name: Check testnet readiness
+        env:
+          HEDERA_OPERATOR_ACCOUNT_ID: ${{ secrets.HEDERA_OPERATOR_ACCOUNT_ID }}
+          HEDERA_OPERATOR_PRIVATE_KEY: ${{ secrets.HEDERA_OPERATOR_PRIVATE_KEY }}
+          VERA_TASK_TOPIC_ID: ${{ secrets.VERA_TASK_TOPIC_ID }}
+          VERA_AUDIT_TOPIC_ID: ${{ secrets.VERA_AUDIT_TOPIC_ID }}
+          HEDERA_NETWORK: testnet
+          VERA_DRY_RUN: "false"
+        run: |
+          python -c "
+          from src.hedera_proof.testnet_config import TestnetConfig
+          cfg = TestnetConfig.from_env()
+          print(cfg.summary())
+          assert cfg.is_testnet_ready, f'Not ready: {cfg.validate()}'
+          print('Testnet config validated.')
+          "
+
+      - name: Run testnet proof loop
+        env:
+          HEDERA_OPERATOR_ACCOUNT_ID: ${{ secrets.HEDERA_OPERATOR_ACCOUNT_ID }}
+          HEDERA_OPERATOR_PRIVATE_KEY: ${{ secrets.HEDERA_OPERATOR_PRIVATE_KEY }}
+          VERA_TASK_TOPIC_ID: ${{ secrets.VERA_TASK_TOPIC_ID }}
+          VERA_AUDIT_TOPIC_ID: ${{ secrets.VERA_AUDIT_TOPIC_ID }}
+          HEDERA_NETWORK: testnet
+          VERA_DRY_RUN: "false"
+        run: |
+          python -c "
+          from src.hedera_proof import HCSProofEmitter, ProofMode
+          emitter = HCSProofEmitter()
+          assert emitter.mode == ProofMode.TESTNET
+          receipt = emitter.emit('ci-test', 'ci.smoke_test', 'ci_hash_001')
+          print(f'Receipt: {receipt.to_dict()}')
+          assert receipt.error is None, f'Emission failed: {receipt.error}'
+          print('Testnet smoke test PASSED.')
+          "

@@ -26,6 +26,7 @@ logger = logging.getLogger("vera.hedera_proof")
 
 
 class ProofMode(str, Enum):
+    """Operating mode for the HCS proof emitter."""
     DRY_RUN = "dry_run"
     TESTNET = "testnet"
     MAINNET = "mainnet"
@@ -51,6 +52,10 @@ class ProofReceipt:
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
+    def __repr__(self) -> str:
+        status = "error" if self.error else "ok"
+        return f"ProofReceipt(id={self.receipt_id}, mode={self.mode}, status={status})"
+
 
 @dataclass
 class ProofPacket:
@@ -68,6 +73,9 @@ class ProofPacket:
 
     def packet_hash(self) -> str:
         return hashlib.sha256(self.to_json().encode()).hexdigest()
+
+    def __repr__(self) -> str:
+        return f"ProofPacket(task={self.task_id}, event={self.event_type})"
 
 
 class HCSProofEmitter:
@@ -89,6 +97,7 @@ class HCSProofEmitter:
         self._mode = mode or self._detect_mode()
         self._task_topic_id = task_topic_id or os.environ.get("VERA_TASK_TOPIC_ID", "")
         self._audit_topic_id = audit_topic_id or os.environ.get("VERA_AUDIT_TOPIC_ID", "")
+        self._learning_topic_id = os.environ.get("VERA_LEARNING_TOPIC_ID", "")
         self._bridge_url = bridge_url or os.environ.get("VERA_HCS_BRIDGE_URL", "http://localhost:8000")
         self._operator_id = operator_id or os.environ.get("HEDERA_OPERATOR_ACCOUNT_ID", "0.0.local")
 
@@ -126,9 +135,23 @@ class HCSProofEmitter:
         topic_override: Optional[str] = None,
     ) -> ProofReceipt:
         """
-        Emit a proof packet. In dry_run, stores locally. In testnet/mainnet,
-        submits to HCS via the TS bridge.
+        Emit a proof packet to HCS.
+
+        In ``dry_run`` mode, stores locally without network calls.
+        In ``testnet``/``mainnet`` mode, submits via the TS bridge endpoint.
+
+        Args:
+            task_id: Marketplace task identifier.
+            event_type: Dot-delimited event name (e.g. ``marketplace.task.posted``).
+            proof_hash: SHA-256 hash of the proof payload.
+            metadata: Optional extra fields attached to the packet.
+            topic_override: Override the auto-selected HCS topic ID.
+
+        Returns:
+            A :class:`ProofReceipt` with transaction details (or error).
         """
+        if not task_id or not event_type:
+            raise ValueError("task_id and event_type are required")
         packet = ProofPacket(
             task_id=task_id,
             event_type=event_type,
@@ -173,8 +196,11 @@ class HCSProofEmitter:
         )
 
     def _select_topic(self, event_type: str) -> str:
+        """Route event types to the appropriate HCS topic."""
         if "escrow" in event_type or "audit" in event_type:
             return self._audit_topic_id
+        if "learning" in event_type or "lesson" in event_type or "package" in event_type:
+            return self._learning_topic_id or self._task_topic_id
         return self._task_topic_id
 
     def _emit_dry_run(self, packet: ProofPacket, topic_id: str) -> ProofReceipt:
@@ -279,14 +305,18 @@ class HCSProofEmitter:
         }
 
     def stats(self) -> Dict[str, Any]:
+        """Return emitter health stats for dashboards and /health."""
         return {
             "mode": self._mode.value,
+            "operator_id": self._operator_id,
             "task_topic_id": self._task_topic_id or None,
             "audit_topic_id": self._audit_topic_id or None,
+            "learning_topic_id": self._learning_topic_id or None,
             "total_emitted": self._total_emitted,
             "total_errors": self._total_errors,
             "total_bytes": self._total_bytes,
             "chain_head": self._chain_head,
             "chain_length": self._total_emitted,
             "receipts_buffered": len(self._receipts),
+            "error_rate": round(self._total_errors / max(self._total_emitted, 1), 4),
         }

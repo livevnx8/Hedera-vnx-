@@ -2,11 +2,12 @@
 Proof Chain API — FastAPI routes for HCS proof emission and mirror-node verification.
 
 Endpoints:
-  GET  /proof/stats          — emitter + verifier health
-  GET  /proof/receipts       — recent HCS receipts
-  GET  /proof/chain/{task_id} — full proof chain for a task
-  POST /proof/verify         — trigger mirror-node verification
-  GET  /proof/verifications  — recent verification results
+  GET  /proof/stats            — emitter + verifier health
+  GET  /proof/testnet-status   — testnet operator readiness
+  GET  /proof/receipts         — recent HCS receipts
+  GET  /proof/chain/{task_id}  — full proof chain for a task
+  POST /proof/verify           — trigger mirror-node verification
+  GET  /proof/verifications    — recent verification results
 """
 
 from fastapi import APIRouter, Query
@@ -14,6 +15,7 @@ from typing import Optional
 
 from .hcs_emitter import HCSProofEmitter
 from .mirror_verifier import MirrorVerifier
+from .testnet_config import TestnetConfig
 
 
 def create_proof_router(
@@ -28,6 +30,12 @@ def create_proof_router(
             "emitter": emitter.stats(),
             "verifier": verifier.stats(),
         }
+
+    @router.get("/testnet-status")
+    async def testnet_status():
+        """Check whether the operator is configured for testnet HCS emission."""
+        cfg = TestnetConfig.from_env()
+        return cfg.summary()
 
     @router.get("/receipts")
     async def get_receipts(

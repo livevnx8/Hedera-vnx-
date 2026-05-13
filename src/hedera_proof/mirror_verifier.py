@@ -40,6 +40,9 @@ class OnChainMessage:
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
+    def __repr__(self) -> str:
+        return f"OnChainMessage(topic={self.topic_id}, seq={self.sequence_number})"
+
 
 @dataclass
 class VerificationResult:
@@ -57,6 +60,10 @@ class VerificationResult:
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+    def __repr__(self) -> str:
+        status = "verified" if self.verified else "failed"
+        return f"VerificationResult(task={self.task_id}, {status})"
 
 
 class MirrorVerifier:
@@ -281,12 +288,15 @@ class MirrorVerifier:
         return list(reversed(vrs[-limit:]))
 
     def stats(self) -> Dict[str, Any]:
+        """Return verifier health stats for dashboards and /health."""
+        total = self._total_verified + self._total_failed
         return {
             "network": self._network,
             "mirror_url": self._mirror_url,
             "total_verified": self._total_verified,
             "total_failed": self._total_failed,
-            "total_verifications": self._total_verified + self._total_failed,
+            "total_verifications": total,
+            "success_rate": round(self._total_verified / max(total, 1), 4),
             "total_requests": self._total_requests,
             "buffered": len(self._verifications),
         }

@@ -33,7 +33,7 @@ class TestUnifiedHealth:
     def test_returns_ok_status(self):
         result = self.health.check()
         assert result["status"] in ("ok", "degraded")
-        assert result["version"] == "2.0.0"
+        assert result["version"] == "2.1.0"
         assert result["uptime_s"] >= 0
 
     def test_has_all_7_layers(self):

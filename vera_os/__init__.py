@@ -1,4 +1,4 @@
-"""Public Python facade for Vera OS v2.
+"""Public Python facade for Vera OS v2.1.
 
 Seven layers of verifiable AI infrastructure for Hedera, exposed as stable
 imports.  Pick what you need — each layer stands alone.
@@ -7,9 +7,11 @@ Layer 1  Hedera Core         HederaSpecialistSwarm
 Layer 2  Predictions          PredictionService
 Layer 3  Workflow Agents      WorkflowAgentService
 Layer 4  Marketplace          MarketplaceService
-Layer 5  Live Proof Loop      HCSProofEmitter, MirrorVerifier
+Layer 5  Live Proof Loop      HCSProofEmitter, MirrorVerifier, TestnetConfig
 Layer 6  Verifiable AI        FirstPartyAgentRegistry
 Layer 7  Learning Lane        ProofLoopTracker, LessonEngine, UpgradePackageBuilder
+Cross    Persistence          VeraDB
+Cross    Health               UnifiedHealthCheck
 """
 
 # Layer 1–4: core services
@@ -25,6 +27,8 @@ from .workflows import WorkflowAgentService
 # Layer 5: live proof loop
 from src.hedera_proof.hcs_emitter import HCSProofEmitter
 from src.hedera_proof.mirror_verifier import MirrorVerifier
+from src.hedera_proof.testnet_config import TestnetConfig
+from src.hedera_proof.evidence_collector import EvidenceCollector
 
 # Layer 6: verifiable AI
 from src.verifiable_ai.first_party_agents import FirstPartyAgentRegistry
@@ -34,7 +38,11 @@ from src.learning_lane.proof_loop_tracker import ProofLoopTracker
 from src.learning_lane.lesson_engine import LessonEngine
 from src.learning_lane.upgrade_packages import UpgradePackageBuilder
 
-__version__ = "2.0.0"
+# Cross-cutting: persistence & health
+from src.persistence.vera_db import VeraDB
+from src.health.unified_health import UnifiedHealthCheck
+
+__version__ = "2.1.0"
 
 __all__ = [
     # Layer 1–4
@@ -51,12 +59,17 @@ __all__ = [
     # Layer 5: proof loop
     "HCSProofEmitter",
     "MirrorVerifier",
+    "TestnetConfig",
+    "EvidenceCollector",
     # Layer 6: verifiable AI
     "FirstPartyAgentRegistry",
     # Layer 7: learning lane
     "ProofLoopTracker",
     "LessonEngine",
     "UpgradePackageBuilder",
+    # Cross-cutting
+    "VeraDB",
+    "UnifiedHealthCheck",
     # meta
     "__version__",
 ]

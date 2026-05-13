@@ -57,7 +57,11 @@ class AgentResult:
 
 
 class FirstPartyAgent:
-    """Base class for VNX first-party agents."""
+    """Base class for VNX first-party agents.
+
+    Each agent declares a domain, supported task types, and pricing bounds.
+    Subclasses override ``_execute_impl`` for domain-specific logic.
+    """
 
     def __init__(
         self,
@@ -73,13 +77,18 @@ class FirstPartyAgent:
         self.total_executions = 0
         self.total_successes = 0
 
+    def __repr__(self) -> str:
+        return f"FirstPartyAgent(id={self.agent_id}, execs={self.total_executions})"
+
     def can_handle(self, task_type: str, budget_hbar: float = 0) -> bool:
+        """Return True if this agent supports the given task type and budget."""
         return (
             task_type in self.capability.task_types
             and budget_hbar <= self.capability.max_budget_hbar
         )
 
     def bid(self, task_id: str, budget_hbar: float) -> Dict[str, Any]:
+        """Generate a bid for the given task at 80% of the budget."""
         return {
             "agent_id": self.agent_id,
             "amount_hbar": round(budget_hbar * 0.8, 4),  # bid at 80% of budget
@@ -89,7 +98,7 @@ class FirstPartyAgent:
         }
 
     def execute(self, task_id: str, task_data: Dict[str, Any]) -> AgentResult:
-        """Override in subclass for real logic. Base returns structured placeholder."""
+        """Execute the task and return a verifiable result with proof hash."""
         start = time.time()
         result_data = self._execute_impl(task_data)
         elapsed = time.time() - start
@@ -381,7 +390,12 @@ class OperatorHarmonyAgent(FirstPartyAgent):
 # ═══════════════════════════════════════════════════════════════
 
 class FirstPartyAgentRegistry:
-    """Registry of all VNX first-party agents."""
+    """Registry of all VNX first-party agents.
+
+    Auto-registers 8 default agents on init.  Additional agents can be
+    added with :meth:`register`.  Use :meth:`best_agent` to find the
+    highest-confidence agent for a given task type.
+    """
 
     def __init__(self):
         self._agents: Dict[str, FirstPartyAgent] = {}

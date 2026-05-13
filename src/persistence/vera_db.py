@@ -106,6 +106,9 @@ class VeraDB:
         self._init_schema()
         logger.info(f"VeraDB initialized: {db_path}")
 
+    def __repr__(self) -> str:
+        return f"VeraDB(path={self._db_path})"
+
     def _init_schema(self):
         with self._lock:
             self._conn.executescript(_SCHEMA)

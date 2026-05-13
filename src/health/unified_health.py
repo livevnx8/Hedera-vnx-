@@ -108,8 +108,10 @@ class UnifiedHealthCheck:
     def _check_proof_loop(self) -> LayerHealth:
         try:
             if self._proof_emitter:
+                from src.hedera_proof.testnet_config import TestnetConfig
                 emitter_stats = self._proof_emitter.stats()
                 verifier_stats = self._mirror_verifier.stats() if self._mirror_verifier else {}
+                cfg = TestnetConfig.from_env()
                 return LayerHealth("proof_loop", 5, "ok", {
                     "mode": emitter_stats.get("mode", "unknown"),
                     "chain_length": emitter_stats.get("chain_length", 0),
@@ -117,6 +119,7 @@ class UnifiedHealthCheck:
                     "total_errors": emitter_stats.get("total_errors", 0),
                     "verifier_network": verifier_stats.get("network", "unknown"),
                     "total_verified": verifier_stats.get("total_verified", 0),
+                    "testnet_ready": cfg.is_testnet_ready,
                 })
             return LayerHealth("proof_loop", 5, "degraded", {"reason": "emitter not loaded"})
         except Exception as e:
@@ -176,7 +179,7 @@ class UnifiedHealthCheck:
 
         return {
             "status": overall,
-            "version": "2.0.0",
+            "version": "2.1.0",
             "uptime_s": self.uptime_s,
             "layers": {l.name: l.to_dict() for l in layers},
         }

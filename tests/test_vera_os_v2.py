@@ -464,7 +464,7 @@ class TestSmokeImports:
 
     def test_version(self):
         import vera_os
-        assert vera_os.__version__ == "2.0.0"
+        assert vera_os.__version__ == "2.1.0"
 
     def test_all_exports_resolve(self):
         import vera_os
