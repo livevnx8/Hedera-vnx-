@@ -18,7 +18,7 @@ import json
 import time
 import uuid
 from dataclasses import dataclass, field, asdict
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -386,6 +386,9 @@ class FirstPartyAgentRegistry:
     def __init__(self):
         self._agents: Dict[str, FirstPartyAgent] = {}
         self._register_defaults()
+
+    def __repr__(self) -> str:
+        return f"FirstPartyAgentRegistry(agents={len(self._agents)})"
 
     def _register_defaults(self):
         defaults = [

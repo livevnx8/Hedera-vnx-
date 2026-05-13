@@ -12,15 +12,15 @@ or operates in dry-run mode with full proof chain tracking.
 
 import hashlib
 import json
+import logging
 import os
 import time
 import uuid
-import logging
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from urllib.request import urlopen, Request
 from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 logger = logging.getLogger("vera.hedera_proof")
 
@@ -105,6 +105,9 @@ class HCSProofEmitter:
     @property
     def mode(self) -> ProofMode:
         return self._mode
+
+    def __repr__(self) -> str:
+        return f"HCSProofEmitter(mode={self._mode.value}, emitted={self._total_emitted})"
 
     def _detect_mode(self) -> ProofMode:
         if os.environ.get("VERA_DRY_RUN", "true").lower() == "true":
@@ -284,5 +287,6 @@ class HCSProofEmitter:
             "total_errors": self._total_errors,
             "total_bytes": self._total_bytes,
             "chain_head": self._chain_head,
+            "chain_length": self._total_emitted,
             "receipts_buffered": len(self._receipts),
         }

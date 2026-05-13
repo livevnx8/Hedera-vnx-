@@ -7,15 +7,16 @@ Uses the public Hedera Mirror Node REST API:
   - testnet: https://testnet.mirrornode.hedera.com
 """
 
+import base64
 import hashlib
 import json
+import logging
 import os
 import time
-import logging
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional
-from urllib.request import urlopen, Request
 from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 logger = logging.getLogger("vera.mirror_verifier")
 
@@ -80,6 +81,9 @@ class MirrorVerifier:
 
         logger.info(f"MirrorVerifier initialized: network={self._network}, mirror={self._mirror_url}")
 
+    def __repr__(self) -> str:
+        return f"MirrorVerifier(network={self._network}, verified={self._total_verified})"
+
     def fetch_topic_messages(
         self,
         topic_id: str,
@@ -103,7 +107,6 @@ class MirrorVerifier:
             for msg in data.get("messages", []):
                 content = {}
                 try:
-                    import base64
                     raw = base64.b64decode(msg.get("message", ""))
                     content = json.loads(raw)
                 except Exception:
@@ -283,6 +286,7 @@ class MirrorVerifier:
             "mirror_url": self._mirror_url,
             "total_verified": self._total_verified,
             "total_failed": self._total_failed,
+            "total_verifications": self._total_verified + self._total_failed,
             "total_requests": self._total_requests,
             "buffered": len(self._verifications),
         }
