@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vera-os-hedera"
+version = "0.2.0"
+description = "Verifiable prediction infrastructure for Hedera-native AI agents."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Vera OS" }]
+keywords = ["hedera", "prediction", "infrastructure", "agents", "observability"]
+dependencies = [
+  "fastapi>=0.111",
+  "numpy>=1.26",
+  "requests>=2.31",
+  "scipy>=1.12",
+  "torch>=2.2",
+]
+
+[project.optional-dependencies]
+api = ["uvicorn[standard]>=0.30"]
+cache = ["redis>=5.0"]
+database = ["SQLAlchemy>=2.0", "asyncpg>=0.29", "alembic>=1.13"]
+validation = ["PyYAML>=6.0"]
+production = [
+  "uvicorn[standard]>=0.30",
+  "redis>=5.0",
+  "SQLAlchemy>=2.0",
+  "asyncpg>=0.29",
+  "alembic>=1.13",
+  "PyYAML>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/livevnx8/hedera-vnx-"
+Repository = "https://github.com/livevnx8/hedera-vnx-"
+
+[tool.setuptools]
+py-modules = [
+  "analytics_engine",
+  "auditor_specialist",
+  "feature_infrastructure",
+  "graph_data_engine",
+  "hedera_agent_toolkit",
+  "hedera_connector",
+  "hedera_vnx_specialists",
+  "hedera_vnx_specialists_advanced",
+  "hedera_vnx_specialists_extended",
+  "prediction_server_production",
+  "prediction_server_v3",
+  "reward_agent",
+  "transaction_validator",
+  "vnx_swarm_engine",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vera_os*", "src*"]
+namespaces = true

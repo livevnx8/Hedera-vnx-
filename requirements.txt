@@ -1,0 +1,11 @@
+alembic>=1.13
+asyncpg>=0.29
+fastapi>=0.111
+numpy>=1.26
+PyYAML>=6.0
+redis>=5.0
+requests>=2.31
+scipy>=1.12
+SQLAlchemy>=2.0
+torch>=2.2
+uvicorn[standard]>=0.30
