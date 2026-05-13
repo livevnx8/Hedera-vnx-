@@ -60,6 +60,26 @@ from src.agents.ops_agents import create_ops_orchestrator
 from src.agents.advanced_workflows import EventBus, TriggerManager, AgentScheduler, ScheduleEntry, EventTrigger
 from src.agents.agent_api import create_agent_router
 
+# Marketplace Infrastructure
+from src.marketplace.task_engine import TaskEngine
+from src.marketplace.reputation import ReputationEngine
+from src.marketplace.escrow import EscrowEngine
+from src.marketplace.verifier import ResultVerifier
+from src.marketplace.marketplace_api import create_marketplace_router
+
+# Real-Time Streaming
+from src.streaming.event_stream import EventStream
+from src.streaming.ws_manager import ConnectionManager
+from src.streaming.live_pipeline import LivePipeline, create_default_rules
+from src.streaming.stream_api import create_stream_router
+
+# AI Backbone
+from src.ai_backbone.llm_router import LLMRouter
+from src.ai_backbone.task_decomposer import TaskDecomposer
+from src.ai_backbone.summarizer import ResultSummarizer
+from src.ai_backbone.rag_context import RAGContext
+from src.ai_backbone.ai_api import create_ai_router
+
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
 analytics_engine = AnalyticsEngine()
@@ -132,6 +152,41 @@ agent_scheduler.register(ScheduleEntry(
 auditor.register_entity(validator.validator_id, "validator", validator.get_secret_key())
 auditor.register_entity(reward_agent.agent_id, "agent", reward_agent.get_secret_key())
 
+# ── Marketplace Infrastructure ──────────────────────────────
+task_engine = TaskEngine(event_bus=event_bus)
+reputation_engine = ReputationEngine()
+escrow_engine = EscrowEngine(event_bus=event_bus)
+result_verifier = ResultVerifier()
+
+# Register all 30 workflow agents in the reputation system
+for _domain, _orch in workflow_engine._orchestrators.items():
+    for _agent in _orch.agents:
+        reputation_engine.register_agent(
+            _agent.agent_id, _agent.name, _agent.domain.value
+        )
+
+# ── Real-Time Streaming ─────────────────────────────────────
+event_stream = EventStream(max_history=1000)
+ws_manager = ConnectionManager()
+live_pipeline = LivePipeline(
+    run_pipeline_fn=workflow_engine.run_pipeline,
+    emit_fn=event_stream.emit,
+)
+for _rule in create_default_rules():
+    live_pipeline.add_rule(_rule)
+
+# Bridge: event_bus → event_stream so marketplace events flow to WS clients
+def _bridge_to_stream(event_type: str, data):
+    event_stream.emit(event_type, data if isinstance(data, dict) else {"value": data}, source="event_bus")
+event_bus.subscribe("marketplace.*", _bridge_to_stream)
+event_bus.subscribe("escrow.*", _bridge_to_stream)
+
+# ── AI Backbone ─────────────────────────────────────────────
+llm_router = LLMRouter()
+task_decomposer = TaskDecomposer(llm_router)
+result_summarizer = ResultSummarizer(llm_router)
+rag_context = RAGContext(llm_router)
+
 app = FastAPI(
     title="Hedera Prediction Market Engine v3",
     version="3.0.0",
@@ -159,6 +214,32 @@ app.include_router(market_router, prefix="/markets")
 # Mount Workflow Agent Router
 agent_router = create_agent_router(workflow_engine, trigger_manager, agent_scheduler)
 app.include_router(agent_router, prefix="/agents")
+
+# Mount Marketplace Router
+marketplace_router = create_marketplace_router(
+    task_engine=task_engine,
+    reputation_engine=reputation_engine,
+    escrow_engine=escrow_engine,
+    verifier=result_verifier,
+)
+app.include_router(marketplace_router)
+
+# Mount Streaming Router (WebSocket + SSE)
+stream_router = create_stream_router(
+    event_stream=event_stream,
+    ws_manager=ws_manager,
+    live_pipeline=live_pipeline,
+)
+app.include_router(stream_router)
+
+# Mount AI Backbone Router
+ai_router = create_ai_router(
+    llm_router=llm_router,
+    decomposer=task_decomposer,
+    summarizer=result_summarizer,
+    rag=rag_context,
+)
+app.include_router(ai_router)
 
 # ============================================================
 # PREDICTION ENDPOINTS (from v2)
