@@ -1,0 +1,130 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+
+# Logs
+*.log
+logs/
+*.log.*
+lerna-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.settings/
+.classpath
+*.sublime-project
+*.sublime-workspace
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Testing
+.mocha
+.tap
+.nyc_output
+coverage
+junit.xml
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Docker
+docker-compose.override.yml
+
+# Cache
+.cache/
+*.cache
+.eslintcache
+.prettier-cache
+
+# Hedera
+vera-sandbox
+vera-sandbox.http
+
+# Training
+training-data/
+checkpoints/
+fine-tuning/
+models/*.bin
+models/*.pt
+models/*.pth
+models/
+!models/README.md
+!models/.gitkeep
+unsloth_compiled_cache/
+
+# Database
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data.sqlite
+data.sqlite-shm
+data.sqlite-wal
+
+# Backup
+backup/
+backups/
+test-backups/
+*.backup
+*.bak
+
+# Migration
+migration-report.json
+quantum-duet-validation-report.json
+
+# Demo/Test
+demo-*.json
+test-results/
+test/*.out
+
+# CI/CD
+.github/workflows/node_modules/
+
+# Performance/Monitoring
+benchmark-results/
+performance-monitor/
+
+# Archive
+qvx-cold-storage/
+
+# Keep documentation
+!docs/
+!.github/
+!scripts/

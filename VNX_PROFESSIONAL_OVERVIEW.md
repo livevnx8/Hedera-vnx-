@@ -584,5 +584,5 @@ By building on Hedera, VNX leverages the safest, most viable blockchain infrastr
 
 - **Repository**: https://github.com/livevnx8/hedera-llm-api
 - **Documentation**: Complete technical documentation available
-- **Visual Assets**: Professional-grade charts and diagrams in `/assets/vnx-visuals/`
+- **Visual Assets**: Professional-grade charts and diagrams in `docs/visuals/`
 - **Benchmark Data**: All metrics based on factual performance testing

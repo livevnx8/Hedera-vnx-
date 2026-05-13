@@ -1,0 +1,239 @@
+{
+  "dashboard": {
+    "title": "VNX Swarm Overview",
+    "tags": ["vera", "vnx", "swarm", "hedera"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "API Requests / Second",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(vera_requests_total[1m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "req/s", "min": 0}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Response Time (p99)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(vera_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p99"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(vera_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p95"
+          }
+        ],
+        "yaxes": [
+          {"label": "seconds", "min": 0, "format": "s"}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Specialist Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "vera_swarm_specialists_active",
+            "legendFormat": "Active"
+          },
+          {
+            "expr": "scalar(47)",
+            "legendFormat": "Total"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 40, "color": "yellow"},
+                {"value": 47, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "VNX Swarm Health",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "vera_vnx_swarm_health",
+            "legendFormat": "Health Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.7, "color": "yellow"},
+                {"value": 0.9, "color": "green"}
+              ]
+            },
+            "unit": "percentunit"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Hedera VNX Swarm Health",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "vera_hedera_swarm_health",
+            "legendFormat": "Health Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.7, "color": "yellow"},
+                {"value": 0.9, "color": "green"}
+              ]
+            },
+            "unit": "percentunit"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Circuit Breaker Status",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "vera_circuit_breaker_state",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "indexByName": {
+                "name": 0,
+                "state": 1,
+                "failure_rate": 2,
+                "total_calls": 3
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Cache Hit Rate",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 12},
+        "targets": [
+          {
+            "expr": "sum(rate(vera_cache_hits_total[5m])) / clamp_min(sum(rate(vera_cache_hits_total[5m])) + sum(rate(vera_cache_misses_total[5m])), 1)",
+            "legendFormat": "Hit Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.8, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Prediction Accuracy (24h)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "vera_prediction_accuracy",
+            "legendFormat": "{{token}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "accuracy", "min": 0, "max": 1, "format": "percentunit"}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Alert Count",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "rate(vera_alerts_total[5m])",
+            "legendFormat": "{{severity}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "alerts/min", "min": 0}
+        ]
+      },
+      {
+        "id": 10,
+        "title": "HCS Messages / Second",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+        "targets": [
+          {
+            "expr": "rate(vera_hcs_messages_total[1m])",
+            "legendFormat": "HCS Messages"
+          }
+        ],
+        "yaxes": [
+          {"label": "msg/s", "min": 0}
+        ]
+      },
+      {
+        "id": 11,
+        "title": "System Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes{job=\"vera-api\"}",
+            "legendFormat": "API Memory"
+          },
+          {
+            "expr": "redis_memory_used_bytes",
+            "legendFormat": "Redis Memory"
+          }
+        ],
+        "yaxes": [
+          {"label": "bytes", "format": "bytes"}
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

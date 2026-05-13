@@ -1,344 +1,201 @@
-# VNX — Hedera Sovereign AI Marketplace
+# Vera OS
 
-![VNX](docs/visuals/vnx-performance-comparison-png.png)
+![Vera OS edge performance dashboard](docs/visuals/vnx-edge-performance-dashboard-png.png)
 
-**VNX** is a sovereign AI marketplace built on Hedera that makes AI workflows verifiable, auditable, and settlement-ready. It enables agents to bid on tasks, execute them with cryptographic proof, and settle payments with full audit trails.
+**Verifiable prediction infrastructure for Hedera-native AI agents.**
 
-## 🎯 Tested & Verified Capabilities
+Vera OS packages the working Hedera prediction API, VNX model swarm, Hedera specialist agents, health checks, cache, resilience layer, metrics, dashboards, alerts, and production Docker stack into one easy-to-review repository.
 
-Based on real test data from benchmark testing:
+It is built for three jobs:
 
-- **Verifiable AI**: Every decision backed by cryptographic proofs on Hedera HCS
-- **54% Faster**: 0.55s response time vs 1.2s for ChatGPT (tested)
-- **26x Scalability**: 4,304 ops/sec at 25 concurrent users (tested)
-- **67% Overall Accuracy**: Pattern analysis 100%, network metrics 67%, prediction 33% (tested)
-- **<5KB Models**: 60-vertex lattice artifact under 5KB vs GB-scale competitors (tested)
-- **Live Hedera Data**: Real-time network integration
+- **Predict:** serve token direction forecasts through a FastAPI API and the `PredictionService` Python facade.
+- **Specialize:** monitor Hedera with `HederaSpecialistSwarm`, a 27-agent micro-specialist swarm covering infrastructure, market, security, governance, and cross-chain signals.
+- **Operate:** run the same system with PostgreSQL, Redis, Prometheus, Grafana, Loki, Jaeger, Alertmanager, Traefik, backups, and release validators.
 
-**Data Sources**: [`vera-vs-ai-benchmark-report.json`](vera-vs-ai-benchmark-report.json) (March 26, 2026), [`vnxLmCore.test.ts`](src/tests/vnx/vnxLmCore.test.ts)
+## What Is Included
 
----
+| Area | Included |
+| --- | --- |
+| Prediction engine | HBAR/SAUCE/DOVU model loading, feature computation, confidence scoring, token health |
+| Hedera specialists | 27 micro-specialists with aggregate status, alert counts, confidence, and latency |
+| API service | `/predict/{token}`, `/tokens`, `/health`, `/metrics`, analytics, graph, governance, agent, swarm, and Hedera endpoints |
+| Production infrastructure | 13 Docker services with PostgreSQL, Redis, Redis exporter, Traefik, Prometheus, Grafana, Loki, Promtail, Jaeger, Node Exporter, Alertmanager, and backup |
+| Observability | 20 Prometheus metrics, 11 alert rules, Grafana provisioning, Loki logs, Jaeger tracing |
+| Release quality | Infrastructure validator, smoke tests, Vera OS release validator, professional PNG/SVG visual inventory |
 
-## 📊 Professional Documentation
-
-### Comprehensive Overview
-- **[VNX Professional Overview](VNX_PROFESSIONAL_OVERVIEW.md)** - Complete documentation covering:
-  - What VNX is and how it works
-  - Competitive analysis vs ChatGPT, Claude, Gemini
-  - Tested performance metrics and benchmarks
-  - BitLattice architecture (prototype)
-  - Why Hedera is the safest place to develop
-
-### BitLattice Deep Dive
-- **[BitLattice Architecture](BITLATTICE_DEEP_DIVE.md)** - Comprehensive technical documentation:
-  - Core philosophy and ternary-weight system
-  - How lattice topology works
-  - Weight packing scheme and .vnx artifact format
-  - Core findings and performance characteristics
-  - Current prototype status and future roadmap
-
----
-
-## 🎨 Visual Assets Gallery
-
-All charts are available in both **PNG (300 DPI)** and **SVG** formats in `docs/visuals/`:
-
-| Chart | Description | Data Source |
-|-------|-------------|-------------|
-| ![Performance Comparison](docs/visuals/vnx-performance-comparison-png.png) | VNX vs competitors response time | vera-vs-ai-benchmark-report.json |
-| ![Scalability](docs/visuals/vnx-scalability-visualization-png.png) | 26x performance multiplier | vera-vs-ai-benchmark-report.json |
-| ![Accuracy Metrics](docs/visuals/vnx-accuracy-metrics-png.png) | Real test accuracy breakdown | vera-vs-ai-benchmark-report.json |
-| ![Model Size](docs/visuals/vnx-model-size-comparison-png.png) | <5KB vs GB-scale competitors | vnxLmCore.test.ts |
-| ![BitLattice Architecture](docs/visuals/vnx-bitlattice-architecture-png.png) | Ternary-weight lattice system | BITLATTICE_DEEP_DIVE.md |
-| ![Architecture](docs/visuals/vnx-architecture-diagram-png.png) | Verifiable marketplace loop | Architectural design |
-| ![Verifiability](docs/visuals/vnx-verifiability-diagram-png.png) | Hedera-backed proof chains | Architectural design |
-| ![Competitive Advantages](docs/visuals/vnx-competitive-advantage-grid-png.png) | 6 unique advantages | Architectural design |
-| ![Research Timeline](docs/visuals/vnx-research-timeline-png.png) | Key achievement milestones | Project history |
-
-**Note**: Sustainability and edge performance charts are design targets requiring testing to verify.
-
----
-
-## 🔲 BitLattice Architecture
-
-BitLattice is VNX's sovereign edge-model architecture inspired by Microsoft's BitNet research. It uses ternary weights (-1, 0, +1) and lattice routing to achieve extreme model compression while maintaining functionality.
-
-**Key Features:**
-- **70% smaller**: <5KB models vs GB-scale competitors
-- **200,000× compression**: 5 weights packed per byte
-- **Local inference**: No API calls or vendor lock-in
-- **Deterministic**: Exact reproducibility across devices
-
-**Status**: Prototype (see [BITLATTICE_DEEP_DIVE.md](BITLATTICE_DEEP_DIVE.md) for comprehensive documentation)
-
----
-
-## 🔄 The Marketplace Loop
-
-The flagship loop enables verifiable AI task execution:
-
-```text
-post task → agents bid → winner executes → result verified → payment settles → reputation updates → HCS proof emitted
-```
-
-Each stage is cryptographically verifiable on Hedera Consensus Service, providing an immutable audit trail for all marketplace activities.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- **Docker** & **Docker Compose**
-- **Node.js** 18+ (for development)
-- **Hedera Operator Account** with HBAR
-
-### Installation
+## Quick Start
 
 ```bash
-# Clone the repository
 git clone https://github.com/livevnx8/Hedera-vnx-.git
 cd hedera-llm-api
 
-# Copy environment template
-cp .env.example .env.production
-
-# Edit configuration
-nano .env.production
+python3 tests/validate_vera_os_release.py
+python3 tests/validate_infrastructure.py
+python3 tests/smoke_test.py
 ```
 
-### Deployment
+Install the public facade in editable mode:
 
 ```bash
-# Production-style deployment
-./scripts/deploy.sh production
-
-# Development deployment
-./scripts/deploy.sh development
+python3 -m pip install -e ".[production]"
 ```
 
-### Verification
+List the visual assets:
 
 ```bash
-# Check service status
-docker-compose ps
-
-# View logs
-docker-compose logs -f vera-app
-
-# Health check
-curl http://localhost:8080/api/vnx/health
+python3 examples/vera_os_visual_assets.py
 ```
 
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌───────────────────────────┐    ┌─────────────────┐
-│   Nginx         │    │   Marketplace API Server   │    │   Inference     │
-│   (Load Balancer)│────│   (Fastify / Node.js)      │────│   Service       │
-│   Port: 80/443  │    │   Port: 8080              │    │   (GPU-backed)  │
-└─────────────────┘    └───────────────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   SSL/TLS       │    │   Redis Cache   │    │   GPU Memory    │
-│   Rate Limiting │    │   Port: 6379    │    │   Model Storage  │
-│   Compression   │    │   Session Store │    │   CUDA Support  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Category | Variable | Description | Required |
-|----------|----------|-------------|----------|
-| **AI Model** | `MODEL_PROVIDER` | Model provider configuration | ✅ |
-| | `MODEL_URL` | Model server URL | ✅ |
-| | `MODEL_API_KEY` | Model API key | ✅ |
-| **Hedera** | `HEDERA_NETWORK` | `mainnet`/`testnet` | ✅ |
-| | `HEDERA_OPERATOR_ACCOUNT_ID` | Operator account | ✅ |
-| | `HEDERA_OPERATOR_PRIVATE_KEY` | Private key | ✅ |
-| **Database** | `DATABASE_PATH` | SQLite path | ✅ |
-| **Monitoring** | `PROMETHEUS_ENABLED` | Enable metrics | ❌ |
-| | `GRAFANA_PASSWORD` | Grafana admin password | ❌ |
-
-### Rate Limiting
-
-| Endpoint | Limit | Burst |
-|----------|-------|-------|
-| General API | 10 req/s | 20 |
-| Chat API | 2 req/s | 5 |
-| Wallet Ops | 0.17 req/s | 1 |
-| Heavy Ops | 0.03 req/s | 1 |
-
----
-
-## 📊 Monitoring
-
-### Grafana Dashboards
-
-- **System Overview**: CPU, Memory, GPU usage
-- **API Metrics**: Request rates, error rates, latency
-- **Hedera Operations**: Transaction success rates, tool usage
-- **User Analytics**: Active sessions, feature usage
-
-Access: `http://localhost:3000` (admin/GRAFANA_PASSWORD)
-
-### Prometheus Metrics
-
-Key metrics:
-- `http_requests_total` - API request count
-- `tool_executions_total` - Tool usage count
-- `wallet_operations_total` - Wallet operation count
-- `active_sessions` - Active user sessions
-- `gpu_memory_usage` - GPU memory utilization
-
-Access: `http://localhost:9090`
-
----
-
-## 🛠️ Development
-
-### Local Development
+Inspect the Hedera specialist swarm without running network-heavy checks:
 
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
+python3 examples/vera_os_run_hedera_swarm.py
 ```
 
-### Code Structure
+Run a sample local prediction when model artifacts are available:
 
-```
-src/
-├── agent/           # AI agent logic
-├── cache/           # Caching system
-├── hedera/          # Hedera integrations
-├── middleware/      # Rate limiting, auth
-├── monitoring/      # Metrics, logging
-├── routes/          # API routes
-└── tests/           # Test suites
-```
-
----
-
-## 🔒 Security
-
-### Production Security
-- **SSL/TLS**: Automatic HTTPS with Let's Encrypt
-- **Rate Limiting**: Multi-tier rate limiting
-- **CORS**: Configurable origin restrictions
-- **Headers**: Security headers (HSTS, XSS protection)
-- **Authentication**: JWT-based auth (optional)
-
-### API Security
-- **Input Validation**: All inputs sanitized
-- **SQL Injection**: Parameterized queries
-- **XSS Protection**: Output encoding
-- **CSRF Protection**: Token validation
-
----
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-#### Model Memory Issues
 ```bash
-# Check GPU memory
-nvidia-smi
-
-# Reduce context size
-MODEL_MAX_TOKENS=256
-NATIVE_CONTEXT_SIZE=1024
+python3 examples/vera_os_predict_hbar.py --predict
 ```
 
-#### Service Health
+## Python Facade
+
+The public `vera_os` package gives developers stable import points without needing to understand the internal file layout.
+
+```python
+from vera_os import PredictionService, HederaSpecialistSwarm, get_visual_assets
+
+assets = get_visual_assets()
+print(assets[0].title, assets[0].png)
+
+swarm = HederaSpecialistSwarm()
+print(swarm.status()["total_specialists"])
+
+prediction = PredictionService()
+print(prediction.available_tokens())
+```
+
+Available exports:
+
+- `PredictionService`
+- `HederaSpecialistSwarm`
+- `HealthService`
+- `VisualAsset`
+- `get_visual_assets`
+- `get_visual_asset_pairs`
+
+## Production Deployment
+
+Create a production environment file from your template, set strong secrets, then validate the Compose graph before launch:
+
 ```bash
-# Check all services
-docker-compose ps
+export POSTGRES_PASSWORD="replace-me"
+export REDIS_PASSWORD="replace-me"
+export GRAFANA_PASSWORD="replace-me"
 
-# Restart specific service
-docker-compose restart vera-app
-
-# View detailed logs
-docker-compose logs -f vera-app
+docker compose -f docker-compose.production.yml config
+docker compose -f docker-compose.production.yml up -d
 ```
 
-#### Performance Issues
+Core service ports:
+
+| Service | URL |
+| --- | --- |
+| API | `http://localhost:8080` |
+| Prometheus | `http://localhost:9090` |
+| Grafana | `http://localhost:3000` |
+| Jaeger | `http://localhost:16686` |
+| Alertmanager | `http://localhost:9093` |
+
+## API Surface
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /predict/{token}` | Run a token prediction with live features |
+| `GET /tokens` | List loaded token models and accuracy metadata |
+| `GET /health` | Prediction engine health |
+| `GET /metrics` | Prometheus metrics |
+| `GET /analytics/market` | Market-wide analytics |
+| `GET /analytics/{token}` | Token-level analytics |
+| `GET /graph/*` | Chart and historical data |
+| `GET /features/*` | Feature importance, drift, and engineering data |
+| `GET /governance/*` | Governance and validation surfaces |
+| `GET /hedera/*` | Hedera toolkit and agent endpoints |
+| `GET /hedera-swarm/*` | Hedera specialist swarm status, execution, and alerts |
+
+## Hedera Specialist Families
+
+`HederaSpecialistSwarm` wraps the advanced Hedera VNX orchestrator. The current swarm includes specialists for:
+
+- Hedera infrastructure: HCS consensus, HTS tokens, network health, staking, contracts, and transaction volume
+- Market intelligence: volatility, trend, momentum, support/resistance, correlation, liquidity, sentiment, and regime detection
+- Security and risk: whale watch, flash-loan detection, reentrancy guard, anomaly detection, and rug-pull prediction
+- Governance and economics: proposal tracking, treasury monitoring, inflation tracking, fee optimization, and yield monitoring
+- Cross-chain health: bridge health and wrapped asset monitoring
+
+## Visual Assets
+
+Every public visual is available as both high-resolution PNG and editable SVG in `docs/visuals/`.
+
+| Visual | PNG | SVG |
+| --- | --- | --- |
+| ![Architecture diagram](docs/visuals/vnx-architecture-diagram-png.png) | [PNG](docs/visuals/vnx-architecture-diagram-png.png) | [SVG](docs/visuals/vnx-architecture-diagram-svg.svg) |
+| ![Performance comparison](docs/visuals/vnx-performance-comparison-png.png) | [PNG](docs/visuals/vnx-performance-comparison-png.png) | [SVG](docs/visuals/vnx-performance-comparison-svg.svg) |
+| ![Accuracy metrics](docs/visuals/vnx-accuracy-metrics-png.png) | [PNG](docs/visuals/vnx-accuracy-metrics-png.png) | [SVG](docs/visuals/vnx-accuracy-metrics-svg.svg) |
+| ![BitLattice architecture](docs/visuals/vnx-bitlattice-architecture-png.png) | [PNG](docs/visuals/vnx-bitlattice-architecture-png.png) | [SVG](docs/visuals/vnx-bitlattice-architecture-svg.svg) |
+| ![Competitive advantage grid](docs/visuals/vnx-competitive-advantage-grid-png.png) | [PNG](docs/visuals/vnx-competitive-advantage-grid-png.png) | [SVG](docs/visuals/vnx-competitive-advantage-grid-svg.svg) |
+| ![Model size comparison](docs/visuals/vnx-model-size-comparison-png.png) | [PNG](docs/visuals/vnx-model-size-comparison-png.png) | [SVG](docs/visuals/vnx-model-size-comparison-svg.svg) |
+| ![Scalability visualization](docs/visuals/vnx-scalability-visualization-png.png) | [PNG](docs/visuals/vnx-scalability-visualization-png.png) | [SVG](docs/visuals/vnx-scalability-visualization-svg.svg) |
+| ![Verifiability diagram](docs/visuals/vnx-verifiability-diagram-png.png) | [PNG](docs/visuals/vnx-verifiability-diagram-png.png) | [SVG](docs/visuals/vnx-verifiability-diagram-svg.svg) |
+| ![Sustainability infographic](docs/visuals/vnx-sustainability-infographic-png.png) | [PNG](docs/visuals/vnx-sustainability-infographic-png.png) | [SVG](docs/visuals/vnx-sustainability-infographic-svg.svg) |
+| ![Research timeline](docs/visuals/vnx-research-timeline-png.png) | [PNG](docs/visuals/vnx-research-timeline-png.png) | [SVG](docs/visuals/vnx-research-timeline-svg.svg) |
+| ![Edge performance dashboard](docs/visuals/vnx-edge-performance-dashboard-png.png) | [PNG](docs/visuals/vnx-edge-performance-dashboard-png.png) | [SVG](docs/visuals/vnx-edge-performance-dashboard-svg.svg) |
+
+See [Visual Assets](docs/visual-assets.md) for usage guidance.
+
+## Validation
+
+Use the validators before publishing, tagging, or sharing a release candidate:
+
 ```bash
-# Check cache hit rates
-curl http://localhost:8080/metrics | grep cache
-
-# Monitor GPU usage
-nvidia-smi -l 1
-
-# Check rate limits
-curl http://localhost:8080/admin/rate-limits
+python3 tests/validate_vera_os_release.py
+python3 tests/validate_infrastructure.py
+python3 tests/smoke_test.py
 ```
 
----
+The release validator checks `vera_os` imports, examples, docs, README image links, and PNG/SVG integrity. The infrastructure validator checks Compose, monitoring, alerts, migrations, and production wiring.
 
-## 📚 API Documentation
+## Repository Map
 
-### Core Endpoints
+| Path | Purpose |
+| --- | --- |
+| `vera_os/` | Public Python facade |
+| `examples/` | Small developer examples |
+| `prediction_server_v3.py` | FastAPI application surface |
+| `hedera_vnx_specialists*.py` | Hedera specialist swarm implementations |
+| `src/health/`, `src/cache/`, `src/resilience/`, `src/metrics/` | Health, cache, circuit breaker, and metrics modules |
+| `infrastructure/postgres/` and `alembic/` | Database schema and migrations |
+| `monitoring/` | Prometheus, Grafana, Loki, Promtail, alerts |
+| `docs/visuals/` | Professional PNG and SVG visual assets |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/v1/chat/agent` | Chat with AI assistant |
-| GET | `/health` | Health check |
-| GET | `/metrics` | Prometheus metrics |
-| POST | `/v1/wallet/connect` | Connect wallet |
-| GET | `/wallet/overview` | Wallet overview |
+## Security Notes
 
----
+- Do not commit `.env`, `.env.production`, private keys, operator IDs, or API tokens.
+- Use strong values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, and `GRAFANA_PASSWORD`.
+- Treat live Hedera mainnet operations as production actions and keep them gated, logged, and auditable.
+- Public claims should stay tied to checked artifacts, benchmark files, or docs that explain their status.
 
-## 🤝 Contributing
+## More Documentation
 
-1. Create a focused branch for the change
-2. Keep new production claims tied to the flagship marketplace loop
-3. Run `npm run build` and `npm test` before promotion
-4. Update [`VNX_PRODUCT_PATH.md`](VNX_PRODUCT_PATH.md) when a change alters the product path
+- [Vera OS Overview](docs/vera-os-overview.md)
+- [Prediction Infrastructure](docs/prediction-infrastructure.md)
+- [Hedera Specialists](docs/hedera-specialists.md)
+- [Visual Assets](docs/visual-assets.md)
+- [Model Artifacts](docs/model-artifacts.md)
+- [GitHub Release Checklist](docs/github-release-checklist.md)
+- [Build Manifest](BUILD_MANIFEST.md)
+- [Infrastructure Completion Report](INFRASTRUCTURE_COMPLETE.md)
 
-### Development Guidelines
-- **Code Style**: TypeScript-first, following local Fastify and module patterns
-- **Tests**: Vitest coverage for happy paths and important failure modes
-- **Documentation**: Label features as production, prototype, demo, research, or planned
-- **Security**: Keep mainnet operations gated and auditable
+## License
 
-### GitHub Branching Policy
-- `main` — production-ready code only
-- `feature/vnx-marketplace/*` — core marketplace/orchestrator product work
-- `feature/experimental-research/*` — research, prototype, or model experimentation work
-- `chore/branding/*`, `chore/docs/*`, `chore/cleanup/*` — non-feature maintenance work
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🆘 Support
-
-For detailed documentation, see:
-- [`docs/vnx-product-overview.md`](docs/vnx-product-overview.md) - Current product boundary and route surface
-- [`VNX_PRODUCT_PATH.md`](VNX_PRODUCT_PATH.md) - Production readiness bar
-- [`docs/github-branching-labels.md`](docs/github-branching-labels.md) - Branching and labeling policy
-- [`docs/vnx-legacy-archive.md`](docs/vnx-legacy-archive.md) - Legacy Vera archive
-
-**Note**: The codebase retains legacy internal route names such as `/api/vera` and `VERA_*` for compatibility. Public-facing documentation and branding use VNX.
+This project is released under the MIT License. See [LICENSE](LICENSE).
