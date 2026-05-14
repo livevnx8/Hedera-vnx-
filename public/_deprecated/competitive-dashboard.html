@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Competitive Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .gradient-border {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2px;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        Vera Competitive Intelligence
+                    </h1>
+                    <p class="text-gray-400 mt-2">Real-time AI performance comparison and market analysis</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-400">Last Updated</div>
+                    <div id="lastUpdated" class="text-lg font-semibold">Loading...</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="gradient-border rounded-lg">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Market Rank</p>
+                            <p id="marketRank" class="text-3xl font-bold text-green-400">#1</p>
+                        </div>
+                        <div class="text-4xl">🏆</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gradient-border rounded-lg">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Market Share</p>
+                            <p id="marketShare" class="text-3xl font-bold text-blue-400">23.5%</p>
+                        </div>
+                        <div class="text-4xl">📊</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gradient-border rounded-lg">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Growth Rate</p>
+                            <p id="growthRate" class="text-3xl font-bold text-purple-400">18.2%</p>
+                        </div>
+                        <div class="text-4xl">📈</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gradient-border rounded-lg">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Competitive Alerts</p>
+                            <p id="alertCount" class="text-3xl font-bold text-yellow-400">2</p>
+                        </div>
+                        <div class="text-4xl">⚠️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Comparison Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Performance Comparison</h2>
+                <canvas id="performanceChart" width="400" height="300"></canvas>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Market Share Distribution</h2>
+                <canvas id="marketShareChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Comparison Table -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Detailed Performance Metrics</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="text-left py-3 px-4">AI System</th>
+                            <th class="text-center py-3 px-4">Reasoning Accuracy</th>
+                            <th class="text-center py-3 px-4">Response Time</th>
+                            <th class="text-center py-3 px-4">Tool Integration</th>
+                            <th class="text-center py-3 px-4">Domain Expertise</th>
+                            <th class="text-center py-3 px-4">Overall Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTable">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Competitive Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Vera's Strengths</h2>
+                <ul id="strengthsList" class="space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </ul>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Market Opportunities</h2>
+                <ul id="opportunitiesList" class="space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Competitive Alerts</h2>
+            <div id="alertsContainer" class="space-y-3">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Real-time Status -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">System Status</h2>
+                    <p class="text-gray-400">Real-time competitive intelligence monitoring</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse-slow"></div>
+                    <span class="text-green-400">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = '/api/competitive';
+        
+        // Chart configurations
+        Chart.defaults.color = '#fff';
+        Chart.defaults.borderColor = '#374151';
+        
+        // Initialize charts
+        let performanceChart, marketShareChart;
+        
+        // Initialize dashboard
+        async function initDashboard() {
+            try {
+                await loadDashboardData();
+                await loadComparisonData();
+                await loadMarketData();
+                await loadAlerts();
+                
+                // Set up auto-refresh
+                setInterval(updateDashboard, 30000); // Update every 30 seconds
+                
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showError('Failed to load dashboard data');
+            }
+        }
+        
+        // Load main dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateKeyMetrics(data.data);
+                    updateLastUpdated();
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        // Load comparison data
+        async function loadComparisonData() {
+            try {
+                const response = await fetch(`${API_BASE}/comparison`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateComparisonTable(data.data);
+                    updatePerformanceChart(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading comparison data:', error);
+            }
+        }
+        
+        // Load market data
+        async function loadMarketData() {
+            try {
+                const response = await fetch(`${API_BASE}/market-position`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateMarketPosition(data.data);
+                    updateMarketShareChart(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading market data:', error);
+            }
+        }
+        
+        // Load alerts
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/alerts`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateAlerts(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+            }
+        }
+        
+        // Update key metrics
+        function updateKeyMetrics(data) {
+            document.getElementById('marketRank').textContent = `#${data.marketPosition.overallRanking}`;
+            document.getElementById('marketShare').textContent = `${data.marketPosition.marketShare.toFixed(1)}%`;
+            document.getElementById('growthRate').textContent = `${(data.marketPosition.growthRate * 100).toFixed(1)}%`;
+            document.getElementById('alertCount').textContent = data.alerts.length;
+        }
+        
+        // Update comparison table
+        function updateComparisonTable(comparison) {
+            const tbody = document.getElementById('comparisonTable');
+            tbody.innerHTML = '';
+            
+            const systems = [
+                { name: 'Vera Enhanced', data: comparison.vera, color: 'text-green-400' },
+                { name: 'GPT-4', data: comparison.gpt4, color: 'text-blue-400' },
+                { name: 'Claude 3.5', data: comparison.claude35, color: 'text-purple-400' },
+                { name: 'Gemini Pro', data: comparison.geminiPro, color: 'text-yellow-400' },
+                { name: 'Llama 3.1', data: comparison.llama31, color: 'text-red-400' }
+            ];
+            
+            systems.forEach(system => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-700 transition-colors';
+                row.innerHTML = `
+                    <td class="py-3 px-4 font-medium ${system.color}">${system.name}</td>
+                    <td class="text-center py-3 px-4">${(system.data.reasoningAccuracy * 100).toFixed(1)}%</td>
+                    <td class="text-center py-3 px-4">${system.data.responseTime}ms</td>
+                    <td class="text-center py-3 px-4">${(system.data.toolIntegration * 100).toFixed(1)}%</td>
+                    <td class="text-center py-3 px-4">${(system.data.domainExpertise * 100).toFixed(1)}%</td>
+                    <td class="text-center py-3 px-4 font-semibold">${calculateOverallScore(system.data).toFixed(1)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Update performance chart
+        function updatePerformanceChart(comparison) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            
+            performanceChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Reasoning', 'Speed', 'Tools', 'Expertise', 'Confidence'],
+                    datasets: [
+                        {
+                            label: 'Vera Enhanced',
+                            data: [
+                                comparison.vera.reasoningAccuracy * 100,
+                                (1 - comparison.vera.responseTime / 5000) * 100,
+                                comparison.vera.toolIntegration * 100,
+                                comparison.vera.domainExpertise * 100,
+                                comparison.vera.confidenceScore * 100
+                            ],
+                            borderColor: 'rgb(34, 197, 94)',
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            pointBackgroundColor: 'rgb(34, 197, 94)',
+                        },
+                        {
+                            label: 'GPT-4',
+                            data: [
+                                comparison.gpt4.reasoningAccuracy * 100,
+                                (1 - comparison.gpt4.responseTime / 5000) * 100,
+                                comparison.gpt4.toolIntegration * 100,
+                                comparison.gpt4.domainExpertise * 100,
+                                comparison.gpt4.confidenceScore * 100
+                            ],
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update market share chart
+        function updateMarketShareChart(marketData) {
+            const ctx = document.getElementById('marketShareChart').getContext('2d');
+            
+            if (marketShareChart) {
+                marketShareChart.destroy();
+            }
+            
+            marketShareChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Vera', 'GPT-4', 'Claude 3.5', 'Gemini Pro', 'Llama 3.1', 'Others'],
+                    datasets: [{
+                        data: [
+                            marketData.marketShare,
+                            25,
+                            20,
+                            15,
+                            10,
+                            100 - marketData.marketShare - 25 - 20 - 15 - 10
+                        ],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(147, 51, 234, 0.8)',
+                            'rgba(250, 204, 21, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(107, 114, 128, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(147, 51, 234)',
+                            'rgb(250, 204, 21)',
+                            'rgb(239, 68, 68)',
+                            'rgb(107, 114, 128)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update market position
+        function updateMarketPosition(marketData) {
+            const strengthsList = document.getElementById('strengthsList');
+            const opportunitiesList = document.getElementById('opportunitiesList');
+            
+            strengthsList.innerHTML = marketData.strengths.map(strength => 
+                `<li class="flex items-center space-x-2">
+                    <span class="text-green-400">✓</span>
+                    <span>${strength}</span>
+                </li>`
+            ).join('');
+            
+            opportunitiesList.innerHTML = marketData.opportunities.map(opportunity => 
+                `<li class="flex items-center space-x-2">
+                    <span class="text-blue-400">→</span>
+                    <span>${opportunity}</span>
+                </li>`
+            ).join('');
+        }
+        
+        // Update alerts
+        function updateAlerts(alerts) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            
+            if (alerts.length === 0) {
+                alertsContainer.innerHTML = '<p class="text-gray-400">No competitive alerts at this time.</p>';
+                return;
+            }
+            
+            alertsContainer.innerHTML = alerts.map(alert => {
+                const severityColors = {
+                    low: 'bg-blue-900 border-blue-700',
+                    medium: 'bg-yellow-900 border-yellow-700',
+                    high: 'bg-red-900 border-red-700'
+                };
+                
+                const severityIcons = {
+                    low: 'ℹ️',
+                    medium: '⚠️',
+                    high: '🚨'
+                };
+                
+                return `
+                    <div class="border-l-4 p-4 rounded ${severityColors[alert.severity]}">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xl">${severityIcons[alert.severity]}</span>
+                            <span class="font-medium">${alert.type.toUpperCase()} ALERT</span>
+                            <span class="text-gray-400 text-sm">${alert.severity}</span>
+                        </div>
+                        <p class="mt-2">${alert.message}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString();
+        }
+        
+        // Calculate overall score
+        function calculateOverallScore(metrics) {
+            const weights = {
+                reasoningAccuracy: 0.3,
+                responseTime: 0.2,
+                toolIntegration: 0.2,
+                domainExpertise: 0.2,
+                confidenceScore: 0.1
+            };
+            
+            const responseTimeScore = Math.max(0, 1 - (metrics.responseTime / 5000));
+            
+            return Object.entries(weights).reduce((sum, [key, weight]) => {
+                const value = key === 'responseTime' ? responseTimeScore : metrics[key];
+                return sum + (value * weight);
+            }, 0) * 100;
+        }
+        
+        // Update dashboard (auto-refresh)
+        async function updateDashboard() {
+            await loadDashboardData();
+            await loadAlerts();
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded mb-4';
+            errorDiv.textContent = message;
+            document.querySelector('.container').prepend(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

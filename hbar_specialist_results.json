@@ -1,0 +1,144 @@
+{
+  "dataset": "hbar_price_prediction",
+  "total_samples": 227,
+  "specialists": {
+    "1": {
+      "accuracy_mean": 0.42857144474983216,
+      "accuracy_std": 0.12777531871198974,
+      "runs": [
+        {
+          "seed": 11,
+          "accuracy": 0.4285714328289032,
+          "tp": 3,
+          "tn": 0,
+          "fp": 3,
+          "fn": 1
+        },
+        {
+          "seed": 23,
+          "accuracy": 0.2857142984867096,
+          "tp": 2,
+          "tn": 0,
+          "fp": 3,
+          "fn": 2
+        },
+        {
+          "seed": 42,
+          "accuracy": 0.5714285969734192,
+          "tp": 1,
+          "tn": 3,
+          "fp": 0,
+          "fn": 3
+        },
+        {
+          "seed": 77,
+          "accuracy": 0.2857142984867096,
+          "tp": 1,
+          "tn": 1,
+          "fp": 2,
+          "fn": 3
+        },
+        {
+          "seed": 101,
+          "accuracy": 0.5714285969734192,
+          "tp": 2,
+          "tn": 2,
+          "fp": 1,
+          "fn": 2
+        }
+      ]
+    },
+    "4": {
+      "accuracy_mean": 0.6875,
+      "accuracy_std": 0.11858541225631422,
+      "runs": [
+        {
+          "seed": 11,
+          "accuracy": 0.6875,
+          "tp": 6,
+          "tn": 5,
+          "fp": 1,
+          "fn": 4
+        },
+        {
+          "seed": 23,
+          "accuracy": 0.8125,
+          "tp": 8,
+          "tn": 5,
+          "fp": 1,
+          "fn": 2
+        },
+        {
+          "seed": 42,
+          "accuracy": 0.5,
+          "tp": 3,
+          "tn": 5,
+          "fp": 1,
+          "fn": 7
+        },
+        {
+          "seed": 77,
+          "accuracy": 0.625,
+          "tp": 5,
+          "tn": 5,
+          "fp": 1,
+          "fn": 5
+        },
+        {
+          "seed": 101,
+          "accuracy": 0.8125,
+          "tp": 8,
+          "tn": 5,
+          "fp": 1,
+          "fn": 2
+        }
+      ]
+    },
+    "24": {
+      "accuracy_mean": 0.7916666746139527,
+      "accuracy_std": 0.07905693522132862,
+      "runs": [
+        {
+          "seed": 11,
+          "accuracy": 0.7916666865348816,
+          "tp": 9,
+          "tn": 10,
+          "fp": 4,
+          "fn": 1
+        },
+        {
+          "seed": 23,
+          "accuracy": 0.75,
+          "tp": 7,
+          "tn": 11,
+          "fp": 3,
+          "fn": 3
+        },
+        {
+          "seed": 42,
+          "accuracy": 0.875,
+          "tp": 10,
+          "tn": 11,
+          "fp": 3,
+          "fn": 0
+        },
+        {
+          "seed": 77,
+          "accuracy": 0.875,
+          "tp": 10,
+          "tn": 11,
+          "fp": 3,
+          "fn": 0
+        },
+        {
+          "seed": 101,
+          "accuracy": 0.6666666865348816,
+          "tp": 10,
+          "tn": 6,
+          "fp": 8,
+          "fn": 0
+        }
+      ]
+    }
+  }
+}

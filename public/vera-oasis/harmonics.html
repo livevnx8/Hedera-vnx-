@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Oasis | Resonance Harmonics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        .harmonic-wave {
+            stroke: url(#waveGradient);
+            stroke-width: 2;
+            fill: none;
+            filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.6));
+        }
+        .frequency-label {
+            font-size: 10px;
+            fill: #8b93b0;
+        }
+        .amplitude-bar {
+            transition: height 0.1s ease;
+        }
+        .pattern-btn {
+            transition: all 0.3s ease;
+        }
+        .pattern-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+        .node-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(102, 126, 234, 0.6)); }
+            50% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 1)); }
+        }
+        .coherence-ring {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="min-h-screen p-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <header class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-xl font-bold">V</div>
+                    <div>
+                        <h1 class="text-2xl font-semibold">Resonance Harmonics</h1>
+                        <p class="text-sm text-gray-400">Flower of Life Lattice • Balance & Coherence</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">Balance Score</div>
+                        <div id="balance-score" class="text-2xl font-bold text-green-400">85%</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">Coherence</div>
+                        <div id="coherence-score" class="text-2xl font-bold text-blue-400">92%</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Left: Wave Visualization -->
+                <div class="col-span-8 space-y-6">
+                    <!-- Wave Canvas -->
+                    <div class="bg-black/30 rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-sm font-medium mb-4 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                            Harmonic Waveforms
+                        </h3>
+                        <svg id="wave-canvas" class="w-full h-64" viewBox="0 0 800 200">
+                            <defs>
+                                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Grid lines -->
+                            <line x1="0" y1="100" x2="800" y2="100" stroke="#1e1e3f" stroke-width="1"/>
+                            <line x1="0" y1="50" x2="800" y2="50" stroke="#1e1e3f" stroke-width="0.5" stroke-dasharray="5,5"/>
+                            <line x1="0" y1="150" x2="800" y2="150" stroke="#1e1e3f" stroke-width="0.5" stroke-dasharray="5,5"/>
+                            <!-- Waves will be drawn here -->
+                            <g id="waves"></g>
+                        </svg>
+                    </div>
+
+                    <!-- Node Amplitudes -->
+                    <div class="bg-black/30 rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-sm font-medium mb-4">Node Amplitudes</h3>
+                        <div class="grid grid-cols-6 gap-4">
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Center-0</div>
+                                <div class="text-xs text-purple-400 mb-2">432 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-center" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-purple-600 to-purple-400" style="height: 100%"></div>
+                                </div>
+                                <div id="val-center" class="text-xs mt-1">1.00</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Layer 1</div>
+                                <div class="text-xs text-green-400 mb-2">528 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-layer1" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-green-600 to-green-400" style="height: 70%"></div>
+                                </div>
+                                <div id="val-layer1" class="text-xs mt-1">0.70</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Layer 2</div>
+                                <div class="text-xs text-blue-400 mb-2">639 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-layer2" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-blue-600 to-blue-400" style="height: 70%"></div>
+                                </div>
+                                <div id="val-layer2" class="text-xs mt-1">0.70</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Layer 3</div>
+                                <div class="text-xs text-yellow-400 mb-2">741 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-layer3" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-yellow-600 to-yellow-400" style="height: 70%"></div>
+                                </div>
+                                <div id="val-layer3" class="text-xs mt-1">0.70</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Inner</div>
+                                <div class="text-xs text-pink-400 mb-2">963 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-inner" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-pink-600 to-pink-400" style="height: 80%"></div>
+                                </div>
+                                <div id="val-inner" class="text-xs mt-1">0.80</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-gray-400 mb-1">Outer</div>
+                                <div class="text-xs text-cyan-400 mb-2">852 Hz</div>
+                                <div class="h-24 bg-gray-800 rounded-lg relative overflow-hidden">
+                                    <div id="amp-outer" class="amplitude-bar absolute bottom-0 w-full bg-gradient-to-t from-cyan-600 to-cyan-400" style="height: 80%"></div>
+                                </div>
+                                <div id="val-outer" class="text-xs mt-1">0.80</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Controls & Info -->
+                <div class="col-span-4 space-y-6">
+                    <!-- Pattern Selector -->
+                    <div class="bg-black/30 rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-sm font-medium mb-4">Resonance Patterns</h3>
+                        <div class="space-y-2">
+                            <button class="pattern-btn w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left" onclick="setPattern('Unity')">
+                                <div class="font-medium text-sm">Unity</div>
+                                <div class="text-xs text-gray-400 mt-1">All layers at center frequency</div>
+                                <div class="text-xs text-purple-400 mt-1">432-432-432-432-432</div>
+                            </button>
+                            <button class="pattern-btn w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left" onclick="setPattern('Fibonacci Flow')">
+                                <div class="font-medium text-sm">Fibonacci Flow</div>
+                                <div class="text-xs text-gray-400 mt-1">Natural growth pattern</div>
+                                <div class="text-xs text-green-400 mt-1">432-528-639-741-963</div>
+                            </button>
+                            <button class="pattern-btn w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left" onclick="setPattern('Heart-Mind Bridge')">
+                                <div class="font-medium text-sm">Heart-Mind Bridge</div>
+                                <div class="text-xs text-gray-400 mt-1">Emotional-mental dialogue</div>
+                                <div class="text-xs text-blue-400 mt-1">528-639-528-639-852</div>
+                            </button>
+                            <button class="pattern-btn w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-left" onclick="setPattern('Toroidal Balance')">
+                                <div class="font-medium text-sm">Toroidal Balance</div>
+                                <div class="text-xs text-gray-400 mt-1">Energy recycling pattern</div>
+                                <div class="text-xs text-yellow-400 mt-1">432-741-432-741-432</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Coherence Ring -->
+                    <div class="bg-black/30 rounded-2xl p-6 border border-white/10 text-center">
+                        <h3 class="text-sm font-medium mb-4">Phase Coherence</h3>
+                        <div class="relative inline-block">
+                            <svg width="150" height="150" class="transform -rotate-90">
+                                <circle cx="75" cy="75" r="65" stroke="#1e1e3f" stroke-width="10" fill="none"/>
+                                <circle id="coherence-ring" cx="75" cy="75" r="65" stroke="#667eea" stroke-width="10" fill="none" 
+                                    class="coherence-ring" stroke-linecap="round"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div id="coherence-text" class="text-2xl font-bold">92%</div>
+                            </div>
+                        </div>
+                        <div id="coherence-meaning" class="text-xs text-gray-400 mt-3">High coherence - lattice synchronized</div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="bg-black/30 rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-sm font-medium mb-4">Balance Recommendations</h3>
+                        <div id="recommendations" class="space-y-2 text-xs">
+                            <div class="p-3 bg-white/5 rounded-lg text-gray-300">
+                                Lattice harmonics in balance. Maintain current resonance.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Frequencies (Hz)
+        const frequencies = {
+            center: 432,
+            layer1: 528,
+            layer2: 639,
+            layer3: 741,
+            inner: 963,
+            outer: 852
+        };
+
+        // Amplitudes (0-1)
+        let amplitudes = {
+            center: 1.0,
+            layer1: 0.7,
+            layer2: 0.7,
+            layer3: 0.7,
+            inner: 0.8,
+            outer: 0.8
+        };
+
+        // Phases (0-2π)
+        let phases = {
+            center: 0,
+            layer1: Math.PI,
+            layer2: Math.PI / 2,
+            layer3: 3 * Math.PI / 2,
+            inner: Math.PI / 4,
+            outer: 3 * Math.PI / 4
+        };
+
+        let time = 0;
+
+        // Draw wave
+        function drawWave(node, yOffset, color) {
+            const points = [];
+            const width = 800;
+            const samples = 100;
+            
+            for (let i = 0; i <= samples; i++) {
+                const x = (i / samples) * width;
+                const t = time * frequencies[node] * 0.001;
+                const y = yOffset + Math.sin(2 * Math.PI * (i / samples) * 3 + phases[node] + t) * amplitudes[node] * 40;
+                points.push(`${x},${y}`);
+            }
+            
+            return `<polyline points="${points.join(' ')}" class="harmonic-wave" stroke="${color}" opacity="${amplitudes[node] * 0.8}"/>`;
+        }
+
+        // Animation loop
+        function animate() {
+            time += 0.016; // ~60fps
+            
+            // Update phases
+            for (const node of Object.keys(phases)) {
+                phases[node] += frequencies[node] * 0.001;
+            }
+
+            // Draw all waves
+            const canvas = document.getElementById('waves');
+            const waves = [
+                drawWave('center', 100, '#a78bfa'),
+                drawWave('layer1', 100, '#34d399'),
+                drawWave('layer2', 100, '#60a5fa'),
+                drawWave('layer3', 100, '#fbbf24'),
+                drawWave('inner', 100, '#f472b6'),
+                drawWave('outer', 100, '#22d3ee')
+            ];
+            canvas.innerHTML = waves.join('');
+
+            // Update amplitude bars
+            for (const [node, amp] of Object.entries(amplitudes)) {
+                const bar = document.getElementById(`amp-${node}`);
+                const val = document.getElementById(`val-${node}`);
+                if (bar && val) {
+                    bar.style.height = `${amp * 100}%`;
+                    val.textContent = amp.toFixed(2);
+                }
+            }
+
+            // Calculate and display coherence
+            const phaseValues = Object.values(phases);
+            const sinSum = phaseValues.reduce((sum, p) => sum + Math.sin(p), 0);
+            const cosSum = phaseValues.reduce((sum, p) => sum + Math.cos(p), 0);
+            const coherence = Math.sqrt(sinSum ** 2 + cosSum ** 2) / phaseValues.length;
+            
+            // Update coherence ring
+            const ring = document.getElementById('coherence-ring');
+            const circumference = 2 * Math.PI * 65;
+            const offset = circumference - (coherence * circumference);
+            ring.style.strokeDashoffset = offset;
+            ring.style.stroke = coherence > 0.8 ? '#667eea' : coherence > 0.5 ? '#fbbf24' : '#ef4444';
+            
+            document.getElementById('coherence-text').textContent = `${Math.round(coherence * 100)}%`;
+            document.getElementById('coherence-score').textContent = `${Math.round(coherence * 100)}%`;
+            
+            // Update coherence meaning
+            const meaning = document.getElementById('coherence-meaning');
+            if (coherence > 0.8) meaning.textContent = 'High coherence - lattice synchronized';
+            else if (coherence > 0.5) meaning.textContent = 'Medium coherence - partial alignment';
+            else meaning.textContent = 'Low coherence - desynchronization detected';
+
+            // Calculate balance
+            const ampValues = Object.values(amplitudes);
+            const meanAmp = ampValues.reduce((a, b) => a + b, 0) / ampValues.length;
+            const variance = ampValues.reduce((sum, amp) => sum + (amp - meanAmp) ** 2, 0) / ampValues.length;
+            const balance = Math.round((1 - Math.min(variance * 4, 1)) * 100);
+            
+            document.getElementById('balance-score').textContent = `${balance}%`;
+
+            requestAnimationFrame(animate);
+        }
+
+        // Set resonance pattern
+        function setPattern(name) {
+            // Update button states
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(name)) btn.classList.add('active');
+            });
+
+            // Apply pattern
+            const patterns = {
+                'Unity': [432, 432, 432, 432, 432],
+                'Fibonacci Flow': [432, 528, 639, 741, 963],
+                'Heart-Mind Bridge': [528, 639, 528, 639, 852],
+                'Toroidal Balance': [432, 741, 432, 741, 432]
+            };
+
+            const nodes = ['center', 'layer1', 'layer2', 'layer3', 'inner'];
+            const freqs = patterns[name] || patterns['Unity'];
+            
+            nodes.forEach((node, i) => {
+                if (freqs[i]) frequencies[node] = freqs[i];
+            });
+
+            // Update frequency labels
+            document.querySelectorAll('[class*="frequency-label"]').forEach(el => {
+                const node = el.id?.replace('freq-', '');
+                if (node && frequencies[node]) {
+                    el.textContent = `${frequencies[node]} Hz`;
+                }
+            });
+        }
+
+        // Start animation
+        animate();
+
+        // Update frequency displays
+        document.querySelectorAll('.text-xs').forEach(el => {
+            const text = el.textContent;
+            if (text.includes('432')) el.textContent = text.replace(/\d+/, frequencies.center);
+            if (text.includes('528')) el.textContent = text.replace(/\d+/, frequencies.layer1);
+            if (text.includes('639')) el.textContent = text.replace(/\d+/, frequencies.layer2);
+            if (text.includes('741')) el.textContent = text.replace(/\d+/, frequencies.layer3);
+            if (text.includes('963')) el.textContent = text.replace(/\d+/, frequencies.inner);
+            if (text.includes('852')) el.textContent = text.replace(/\d+/, frequencies.outer);
+        });
+    </script>
+</body>
+</html>

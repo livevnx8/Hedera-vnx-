@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  vera-eu-west:
+    build: .
+    container_name: vera-eu-west
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - VERA_REGION=eu-west
+      - VERA_EU_WEST_TOPIC_ID=${VERA_EU_WEST_TOPIC_ID}
+      - VERA_PRIMARY_REGION=us-east
+      - VERA_GEO_ROUTING_ENABLED=true
+      - VERA_AUTO_FAILOVER=true
+      - PORT=8080
+      - HEDERA_NETWORK=mainnet
+      - NODE_ENV=production
+    env_file:
+      - .env.eu-west
+    volumes:
+      - ./data.eu:/app/data
+      - ./logs.eu:/app/logs
+      - ./backups.eu:/app/backups
+    networks:
+      - vera-eu-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  nginx-eu:
+    image: nginx:alpine
+    container_name: vera-eu-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.eu.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - vera-eu-west
+    networks:
+      - vera-eu-network
+
+  redis-eu:
+    image: redis:7-alpine
+    container_name: vera-eu-redis
+    restart: unless-stopped
+    volumes:
+      - redis-eu-data:/data
+    networks:
+      - vera-eu-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+volumes:
+  redis-eu-data:
+
+networks:
+  vera-eu-network:
+    driver: bridge

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-04-28T22:56:26.827Z",
+  "network": "mainnet",
+  "topicId": "0.0.10416185",
+  "proof": {
+    "runId": "proof-run-1777416978477-ac639df0-e",
+    "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+    "status": "proof_complete",
+    "packetHash": "9iN3Cx+EjHIDbrT9oA2PrzTb/A9aksLvQuQWh3pTFqM="
+  },
+  "hcs": {
+    "transactionId": "0.0.10294360@1777416974.587628706",
+    "sequenceNumber": 2749,
+    "hashscanUrl": "https://hashscan.io/mainnet/topic/0.0.10416185/2749",
+    "mirrorNodeUrl": "https://mainnet-public.mirrornode.hedera.com/api/v1/topics/0.0.10416185/messages/2749",
+    "chunkCount": 1,
+    "totalBytes": 1061
+  },
+  "verification": {
+    "replayed": false,
+    "hashMatch": false
+  },
+  "evidenceUrls": {
+    "hashscan": "https://hashscan.io/mainnet/topic/0.0.10416185/2749",
+    "mirrorNode": "https://mainnet-public.mirrornode.hedera.com/api/v1/topics/0.0.10416185/messages/2749",
+    "localReport": ""
+  }
+}

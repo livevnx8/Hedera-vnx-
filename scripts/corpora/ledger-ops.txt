@@ -1,0 +1,23 @@
+Hedera Consensus Service topic create transaction submitted
+Topic ID assigned 0.0.987654 by network node 0.0.3
+Message submit to topic 0.0.987654 sequence number 1
+Receipt status SUCCESS consensus timestamp 2024-01-15T10:30:00.000Z
+Account 0.0.123456 balance 10000.00000000 HBAR
+Transfer 500.00000000 HBAR from 0.0.123456 to 0.0.789012
+Transaction ID 0.0.123456@1715000000.000000000
+Record query returned valid_start 1715000000 transfer_list confirmed
+Crypto create account public key ed25519:abcd1234...
+Account ID assigned 0.0.555666 with initial balance 1.0
+HCS topic update admin key rotated to new threshold 2 of 3
+Topic message chunk 1 of 3 submitted size 2048 bytes
+Mirror node REST query /api/v1/topics/0.0.987654/messages limit 100
+Consensus message decoded payload schema vnx-lm-proof-1
+Scheduled transaction execute after 24 hours delay set
+Multi-sig transaction requires 3 signatures collected 2 of 3
+Token create fungible token name VERA symbol VRA decimals 8
+Token ID 0.0.111222 supply initial 10000000000
+Token associate account 0.0.789012 with token 0.0.111222
+Token transfer 1000000 of 0.0.111222 from treasury to 0.0.789012
+Smart contract deploy bytecode size 4096 gas 500000
+Contract ID 0.0.333444 created with evm address 0xabc...
+Contract call query result status success gas used 12345

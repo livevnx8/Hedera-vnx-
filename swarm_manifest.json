@@ -1,0 +1,71 @@
+{
+  "individual_specialists": {
+    "CRYPTOTRANSFER": {
+      "accuracy": 0.9950690269470215,
+      "samples": 5069
+    },
+    "CONTRACTCALL": {
+      "accuracy": 0.973372757434845,
+      "samples": 5069
+    },
+    "CONSENSUSSUBMITMESSAGE": {
+      "accuracy": 0.9940828680992126,
+      "samples": 5069
+    },
+    "TOKENMINT": {
+      "accuracy": 1.0,
+      "samples": 5069
+    },
+    "TOKENBURN": {
+      "accuracy": 0.9783037304878235,
+      "samples": 5069
+    },
+    "ETHEREUMTRANSACTION": {
+      "accuracy": 0.9950690269470215,
+      "samples": 5069
+    },
+    "SCHEDULECREATE": {
+      "accuracy": 1.0,
+      "samples": 5069
+    },
+    "SCHEDULESIGN": {
+      "accuracy": 1.0,
+      "samples": 5069
+    },
+    "CRYPTOAPPROVEALLOWANCE": {
+      "accuracy": 0.9921104311943054,
+      "samples": 5069
+    },
+    "CRYPTOCREATEACCOUNT": {
+      "accuracy": 1.0,
+      "samples": 5069
+    },
+    "CRYPTOUPDATEACCOUNT": {
+      "accuracy": 0.9960552453994751,
+      "samples": 5069
+    },
+    "FILECREATE": {
+      "accuracy": 0.9980276226997375,
+      "samples": 5069
+    },
+    "FILEUPDATE": {
+      "accuracy": 0.9960552453994751,
+      "samples": 5069
+    },
+    "FREEZE": {
+      "accuracy": 1.0,
+      "samples": 5069
+    }
+  },
+  "domain_specialists": {
+    "financial": {
+      "accuracy": 1.0,
+      "classes": [
+        0
+      ],
+      "samples": 2327
+    }
+  },
+  "ensemble_accuracy": 0.477,
+  "total_models": 15
+}

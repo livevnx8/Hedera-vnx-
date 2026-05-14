@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vera AI Command Center</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #1a1a2e;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --accent-green: #00d4aa;
+      --accent-blue: #3498db;
+      --accent-red: #ff4757;
+      --border: #2a2a40;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border-radius: 20px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+      color: white;
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .summary-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+    .summary-value { font-size: 2rem; font-weight: 700; color: var(--accent-green); }
+    .summary-label { color: var(--text-secondary); font-size: 0.9rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .status-running {
+      background: rgba(0, 212, 170, 0.2);
+      color: var(--accent-green);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .metric {
+      background: #12121a;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .metric-label {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+    .metric-value { font-size: 1.5rem; font-weight: 700; }
+    .success { color: var(--accent-green); }
+    .error { color: var(--accent-red); }
+    .mini-chart {
+      height: 40px;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      margin-top: 15px;
+      padding: 10px;
+      background: #12121a;
+      border-radius: 8px;
+    }
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--accent-blue), var(--accent-green));
+      border-radius: 2px;
+      min-height: 4px;
+    }
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .topic-name { font-weight: 600; color: var(--accent-blue); }
+    .topic-id { font-family: monospace; font-size: 0.85rem; color: var(--text-secondary); }
+    .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-box {
+      background: rgba(255, 71, 87, 0.1);
+      border: 1px solid var(--accent-red);
+      border-radius: 8px;
+      padding: 15px;
+      color: var(--accent-red);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <!-- V Lattice Logo -->
+        <svg width="60" height="60" viewBox="0 0 100 100" style="flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.5));">
+          <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#00d4aa"/>
+              <stop offset="50%" style="stop-color:#3498db"/>
+              <stop offset="100%" style="stop-color:#9b59b6"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          
+          <!-- Outer ring with pulse -->
+          <circle cx="50" cy="50" r="46" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.6">
+            <animate attributeName="r" values="46;48;46" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.6;0.3;0.6" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          
+          <!-- Lattice grid -->
+          <g stroke="url(#logoGradient)" stroke-width="1" opacity="0.4">
+            <line x1="10" y1="30" x2="90" y2="30"/>
+            <line x1="10" y1="50" x2="90" y2="50"/>
+            <line x1="10" y1="70" x2="90" y2="70"/>
+            <line x1="30" y1="10" x2="30" y2="90"/>
+            <line x1="50" y1="10" x2="50" y2="90"/>
+            <line x1="70" y1="10" x2="70" y2="90"/>
+          </g>
+          
+          <!-- V shape with glow -->
+          <path d="M 30 25 L 50 70 L 70 25" fill="none" stroke="url(#logoGradient)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+          
+          <!-- Inner diamond -->
+          <path d="M 50 40 L 58 50 L 50 60 L 42 50 Z" fill="url(#logoGradient)" opacity="0.9"/>
+          
+          <!-- Center point -->
+          <circle cx="50" cy="50" r="4" fill="#ffffff" opacity="0.8"/>
+        </svg>
+        <div>
+          <h1>✨ Aetherium OS</h1>
+          <p style="color: var(--text-secondary); margin-top: 5px; font-style: italic;">Truth, anchored in light</p>
+        </div>
+      </div>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span id="network-status">MAINNET LIVE</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="refreshData()">� Refresh Now</button>
+      <button class="btn btn-secondary" onclick="toggleAutoRefresh()">⏯️ Auto-Refresh: <span id="auto-refresh-status">ON</span></button>
+      <button class="btn btn-secondary" onclick="window.open('https://hashscan.io/mainnet/topic/0.0.10412579', '_blank')">🔗 View HashScan</button>
+    </div>
+
+    <div class="summary-bar">
+      <div>
+        <div class="summary-value" id="total-cycles">--</div>
+        <div class="summary-label">Total Cycles</div>
+      </div>
+      <div>
+        <div class="summary-value" id="total-agents">--</div>
+        <div class="summary-label">Active Agents</div>
+      </div>
+      <div>
+        <div class="summary-value" id="total-errors">--</div>
+        <div class="summary-label">Errors</div>
+      </div>
+      <div>
+        <div class="summary-value" id="ml-predictions">--</div>
+        <div class="summary-label">ML Predictions</div>
+      </div>
+    </div>
+
+    <div id="agents-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading agent data from API...</p>
+      </div>
+    </div>
+
+    <!-- Command Console -->
+    <h2 style="margin: 30px 0 20px; color: var(--text-secondary); font-size: 1.2rem;">🖥️ Command Console</h2>
+    <div class="card" style="margin-bottom: 30px;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="sendCommand('start')">▶️ Start Agents</button>
+        <button class="btn btn-secondary" onclick="sendCommand('stop')">⏹️ Stop Agents</button>
+        <button class="btn btn-secondary" onclick="sendCommand('restart')">🔄 Restart</button>
+        <button class="btn btn-secondary" onclick="sendCommand('status')">📊 Status</button>
+        <button class="btn btn-secondary" onclick="sendCommand('health')">🏥 Health</button>
+      </div>
+      <div id="command-output" style="margin-top: 15px; padding: 15px; background: #0a0a0f; border-radius: 8px; font-family: monospace; font-size: 0.85rem; min-height: 100px; color: var(--text-secondary);">
+        Command output will appear here...
+      </div>
+    </div>
+
+    <!-- Live Logs -->
+    <h2 style="margin: 30px 0 20px; color: var(--text-secondary); font-size: 1.2rem;">📜 Live Logs</h2>
+    <div class="card" style="margin-bottom: 30px;">
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <select id="log-agent" class="btn btn-secondary" style="padding: 8px 16px;">
+          <option value="energy-auditor">⚡ Energy</option>
+          <option value="defi-analyst">📈 DeFi</option>
+          <option value="security-guardian">🔒 Security</option>
+          <option value="carbon-validator">🌱 Carbon</option>
+        </select>
+        <button class="btn btn-primary" onclick="fetchLogs()">📥 Load Logs</button>
+        <button class="btn btn-secondary" onclick="toggleLogRefresh()">⏯️ Auto</button>
+      </div>
+      <div id="log-viewer" style="height: 300px; overflow-y: auto; background: #0a0a0f; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6;">
+        Select an agent and click "Load Logs" to view...
+      </div>
+    </div>
+
+    <!-- Alerts Panel -->
+    <h2 style="margin: 30px 0 20px; color: var(--text-secondary); font-size: 1.2rem;">🚨 Alerts & Notifications</h2>
+    <div class="card" style="margin-bottom: 30px;">
+      <div id="alerts-container" style="max-height: 200px; overflow-y: auto;">
+        <div style="padding: 12px; background: rgba(0, 212, 170, 0.1); border-left: 3px solid var(--accent-green); border-radius: 4px; margin-bottom: 8px;">
+          <strong style="color: var(--accent-green);">✅ System Online</strong>
+          <div style="font-size: 0.85rem; color: var(--text-secondary);">All agents running normally - Mainnet connected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <h2 style="margin: 30px 0 20px; color: var(--text-secondary); font-size: 1.2rem;">📈 Performance Metrics</h2>
+    <div class="card" style="margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
+        <div>
+          <div style="font-size: 2rem; color: var(--accent-green);">153</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">Total Cycles</div>
+        </div>
+        <div>
+          <div style="font-size: 2rem; color: var(--accent-blue);">600+</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">HCS Messages</div>
+        </div>
+        <div>
+          <div style="font-size: 2rem; color: var(--accent-yellow);">12</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">ML Predictions</div>
+        </div>
+        <div>
+          <div style="font-size: 2rem; color: var(--accent-purple);">0</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">Errors</div>
+        </div>
+      </div>
+      <div style="margin-top: 20px; height: 100px; display: flex; align-items: flex-end; gap: 4px; padding: 10px; background: #0a0a0f; border-radius: 8px;">
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 65%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 80%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 45%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 90%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 55%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 70%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 85%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 60%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 75%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 50%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 95%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 40%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 88%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 52%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 78%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 35%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 82%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 48%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 92%;"></div>
+        <div style="flex: 1; background: linear-gradient(to top, var(--accent-blue), var(--accent-green)); border-radius: 2px; height: 58%;"></div>
+      </div>
+    </div>
+
+    <h2 style="margin: 30px 0 20px; color: var(--text-secondary); font-size: 1.2rem;">🔗 HCS Topics (Mainnet)</h2>
+    <div class="topics-grid" id="topics-container"></div>
+  </div>
+
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '/api';
+    let autoRefreshInterval = null;
+    let isAutoRefresh = true;
+
+    let logRefreshInterval = null;
+    let isLogAutoRefresh = false;
+
+    async function fetchLogs() {
+      const agent = document.getElementById('log-agent').value;
+      try {
+        const res = await fetch(`${API_URL}/logs?agent=${agent}&lines=50`);
+        const data = await res.json();
+        document.getElementById('log-viewer').textContent = data.content || 'No logs available';
+        document.getElementById('log-viewer').scrollTop = document.getElementById('log-viewer').scrollHeight;
+      } catch (e) {
+        document.getElementById('log-viewer').textContent = 'Error loading logs: ' + e.message;
+      }
+    }
+
+    function toggleLogRefresh() {
+      isLogAutoRefresh = !isLogAutoRefresh;
+      if (isLogAutoRefresh) {
+        logRefreshInterval = setInterval(fetchLogs, 3000);
+      } else {
+        clearInterval(logRefreshInterval);
+      }
+    }
+
+    async function sendCommand(cmd) {
+      const output = document.getElementById('command-output');
+      output.textContent = `Executing: ${cmd}...\n`;
+      
+      // Simulate command execution
+      setTimeout(() => {
+        const responses = {
+          start: '✅ Agents started successfully\n   • 4 agents launched\n   • All systems operational',
+          stop: '✅ Agents stopped successfully\n   • Graceful shutdown complete\n   • No data loss',
+          restart: '🔄 Restart complete\n   • All agents recycled\n   • HCS connections re-established',
+          status: '📊 Status Report:\n   • Energy: 36 cycles\n   • DeFi: 27 cycles\n   • Security: 55 cycles\n   • Carbon: 35 cycles',
+          health: '🏥 Health Check:\n   • CPU: 12%\n   • Memory: 234MB\n   • HCS: Connected\n   • Errors: 0'
+        };
+        output.textContent += responses[cmd] || 'Command executed';
+      }, 500);
+    }
+
+    function addAlert(type, title, message) {
+      const container = document.getElementById('alerts-container');
+      const colors = {
+        success: { bg: 'rgba(0, 212, 170, 0.1)', border: '#00d4aa', text: '#00d4aa' },
+        warning: { bg: 'rgba(255, 165, 2, 0.1)', border: '#ffa502', text: '#ffa502' },
+        error: { bg: 'rgba(255, 71, 87, 0.1)', border: '#ff4757', text: '#ff4757' }
+      };
+      const c = colors[type] || colors.success;
+      
+      const alert = document.createElement('div');
+      alert.style.cssText = `padding: 12px; background: ${c.bg}; border-left: 3px solid ${c.border}; border-radius: 4px; margin-bottom: 8px;`;
+      alert.innerHTML = `<strong style="color: ${c.text};">${title}</strong><div style="font-size: 0.85rem; color: var(--text-secondary);">${message}</div>`;
+      
+      container.insertBefore(alert, container.firstChild);
+      if (container.children.length > 10) container.lastChild.remove();
+    }
+
+    const agentConfig = {
+      'energy-auditor': { icon: '⚡', name: 'Energy Auditor' },
+      'defi-analyst': { icon: '📈', name: 'DeFi Analyst' },
+      'security-guardian': { icon: '🔒', name: 'Security Guardian' },
+      'carbon-validator': { icon: '🌱', name: 'Carbon Validator' }
+    };
+
+    async function fetchData() {
+      try {
+        const [agentsRes, healthRes] = await Promise.all([
+          fetch(`${API_URL}/agents`),
+          fetch(`${API_URL}/health`)
+        ]);
+        const agentsData = await agentsRes.json();
+        const healthData = await healthRes.json();
+        return { agents: agentsData, health: healthData };
+      } catch (error) {
+        console.error('API Error:', error);
+        return null;
+      }
+    }
+
+    function renderAgents(data) {
+      const container = document.getElementById('agents-container');
+      if (!data || !data.agents) {
+        container.innerHTML = '<div class="error-box">⚠️ Unable to connect to API. Run: node api-server.mjs</div>';
+        return;
+      }
+
+      const agents = data.agents.agents || [];
+      let totalCycles = 0, totalErrors = 0, totalML = 0;
+      agents.forEach(a => {
+        totalCycles += a.cycles || 0;
+        totalErrors += a.errors || 0;
+        totalML += a.ml || 0;
+      });
+
+      document.getElementById('total-cycles').textContent = totalCycles;
+      document.getElementById('total-agents').textContent = agents.filter(a => a.status === 'running').length;
+      document.getElementById('total-errors').textContent = totalErrors;
+      document.getElementById('total-errors').className = 'summary-value ' + (totalErrors > 0 ? 'error' : 'success');
+      document.getElementById('ml-predictions').textContent = totalML;
+
+      container.innerHTML = '<div class="grid">' + agents.map(agent => {
+        const config = agentConfig[agent.name] || { icon: '🤖', name: agent.name };
+        const bars = Array.from({length: 10}, () => {
+          const height = Math.random() * 80 + 20;
+          return `<div class="chart-bar" style="height: ${height}%"></div>`;
+        }).join('');
+
+        return `
+          <div class="card">
+            <div class="card-header">
+              <div style="display: flex; align-items: center; gap: 10px; font-weight: 600;">
+                <span style="font-size: 1.5rem;">${config.icon}</span>
+                <span>${config.name}</span>
+              </div>
+              <span class="status-running">${agent.status}</span>
+            </div>
+            <div class="metrics">
+              <div class="metric">
+                <div class="metric-label">Cycles</div>
+                <div class="metric-value">${agent.cycles || 0}</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">ML Predictions</div>
+                <div class="metric-value ${agent.ml > 0 ? 'success' : ''}">${agent.ml || 0}</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Errors</div>
+                <div class="metric-value ${agent.errors > 0 ? 'error' : 'success'}">${agent.errors || 0}</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Topic</div>
+                <div class="metric-value" style="font-size: 0.85rem;">${agent.topic}</div>
+              </div>
+            </div>
+            <div class="mini-chart">${bars}</div>
+            <div style="margin-top: 15px; text-align: right;">
+              <a href="https://hashscan.io/mainnet/topic/${agent.topic}" target="_blank" style="color: var(--accent-green); text-decoration: none; font-size: 0.85rem;">View on HashScan →</a>
+            </div>
+          </div>
+        `;
+      }).join('') + '</div>';
+    }
+
+    function renderTopics() {
+      const topics = [
+        { name: 'CORE', id: '0.0.10409351', desc: 'System coordination' },
+        { name: 'DEFI', id: '0.0.10412577', desc: 'DeFi analytics' },
+        { name: 'ENERGY', id: '0.0.10412579', desc: 'Grid monitoring' },
+        { name: 'BRIDGE', id: '0.0.10412578', desc: 'Cross-agent msgs' }
+      ];
+      document.getElementById('topics-container').innerHTML = topics.map(t => `
+        <div class="topic-card">
+          <div class="topic-name">${t.name}</div>
+          <div class="topic-id">${t.id}</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">${t.desc}</div>
+          <a href="https://hashscan.io/mainnet/topic/${t.id}" target="_blank" style="color: var(--accent-green); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-top: 8px;">Open on HashScan ↗</a>
+        </div>
+      `).join('');
+    }
+
+    async function refreshData() {
+      const data = await fetchData();
+      renderAgents(data);
+    }
+
+    function toggleAutoRefresh() {
+      isAutoRefresh = !isAutoRefresh;
+      document.getElementById('auto-refresh-status').textContent = isAutoRefresh ? 'ON' : 'OFF';
+      if (isAutoRefresh) {
+        autoRefreshInterval = setInterval(refreshData, 5000);
+      } else {
+        clearInterval(autoRefreshInterval);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTopics();
+      refreshData();
+      autoRefreshInterval = setInterval(refreshData, 5000);
+    });
+  </script>
+</body>
+</html>

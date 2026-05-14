@@ -1,0 +1,38 @@
+[Unit]
+Description=Vera Hedera AI Supercomputer
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vera-live-0-1
+WorkingDirectory=/home/vera-live-0-1/hedera-llm-api
+Environment=PORT=8088
+Environment=NODE_ENV=production
+Environment=HEDERA_NETWORK=mainnet
+EnvironmentFile=/home/vera-live-0-1/hedera-llm-api/.env
+
+# Start command
+ExecStart=/usr/bin/node /home/vera-live-0-1/hedera-llm-api/dist/index.js
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Graceful shutdown
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+# Logging
+StandardOutput=append:/mnt/vera-mirror-shards/vera-lattice/logs/vera-out.log
+StandardError=append:/mnt/vera-mirror-shards/vera-lattice/logs/vera-err.log
+
+# Resource limits
+LimitNOFILE=65535
+MemoryMax=8G
+CPUQuota=400%
+
+[Install]
+WantedBy=multi-user.target

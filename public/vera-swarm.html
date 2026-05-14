@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Vera Swarm — Live HIP-993 Feed</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  :root {
+    --bg:#08090d; --bg2:#0f1118; --bg3:#161923; --bg4:#1e2230;
+    --fg:#e8ecef; --muted:#7a828e; --dim:#474d57;
+    --accent:#5eead4; --accent2:#a78bfa; --warn:#fbbf24;
+    --ok:#4ade80; --fail:#f87171; --live:#38bdf8;
+    --mono: ui-monospace, 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background: radial-gradient(1200px 800px at 70% -10%, #1a1d2e 0%, var(--bg) 60%);
+    color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
+    min-height:100vh; padding:20px;
+  }
+  h1 { font-size:20px; font-weight:600; margin-bottom:16px; }
+  h1 .live { color:var(--live); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .layout { display:grid; grid-template-columns: 360px 1fr; gap:16px; max-width:1700px; margin:0 auto; }
+  @media (max-width:1000px) { .layout { grid-template-columns:1fr; } }
+
+  .panel {
+    background:var(--bg2); border:1px solid var(--bg3); border-radius:12px;
+    padding:18px; margin-bottom:16px;
+  }
+  .panel h2 {
+    font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--muted); margin-bottom:12px;
+  }
+
+  .stat { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg3); }
+  .stat:last-child { border:none; }
+  .stat .k { color:var(--muted); font-size:13px; }
+  .stat .v { font-family:var(--mono); font-size:13px; color:var(--fg); font-weight:500; }
+  .stat .v.big { color:var(--accent); font-size:15px; }
+
+  .kinds { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip {
+    background:var(--bg3); border:1px solid transparent; color:var(--muted);
+    padding:3px 8px; border-radius:6px; font-family:var(--mono); font-size:11px;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .chip.active { border-color:var(--accent); color:var(--accent); background:rgba(94,234,212,0.08); }
+  .chip:hover { color:var(--fg); }
+
+  /* Search bar */
+  .search-row {
+    display:flex; gap:8px; align-items:center; margin-bottom:12px;
+  }
+  .search-input {
+    flex:1; background:var(--bg3); border:1px solid transparent; color:var(--fg);
+    padding:8px 12px; border-radius:8px; font-family:var(--mono); font-size:12px;
+    outline:none; transition:border-color 0.2s;
+  }
+  .search-input:focus { border-color:var(--accent); }
+  .search-input::placeholder { color:var(--dim); }
+  .toggle {
+    display:inline-flex; align-items:center; gap:6px; font-size:11px;
+    color:var(--muted); cursor:pointer; user-select:none;
+  }
+  .toggle input { accent-color:var(--accent); }
+
+  .feed-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:12px;
+  }
+  .feed-header .status {
+    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px;
+  }
+  .dot {
+    width:8px; height:8px; border-radius:50%; background:var(--dim);
+    transition:all 0.3s;
+  }
+  .dot.live { background:var(--live); box-shadow:0 0 12px var(--live); animation:pulse 1.6s infinite; }
+
+  .feed { max-height:calc(100vh - 220px); overflow-y:auto; }
+  .feed::-webkit-scrollbar { width:6px; }
+  .feed::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:3px; }
+
+  .event {
+    border-left:3px solid var(--dim); padding:10px 14px; margin-bottom:6px;
+    background:var(--bg3); border-radius:0 8px 8px 0; font-family:var(--mono); font-size:12px;
+    display:grid; grid-template-columns:90px 1fr auto; gap:14px; align-items:center;
+    transition:all 0.3s;
+  }
+  .event.pending { border-left-color:var(--warn); }
+  .event.onchain { border-left-color:var(--ok); }
+  .event.failed  { border-left-color:var(--fail); }
+  .event.fresh   { animation:slideIn 0.4s ease; background:rgba(94,234,212,0.06); }
+  .event.collapsed { opacity:0.55; }
+  @keyframes slideIn {
+    from { transform:translateX(-20px); opacity:0; }
+    to   { transform:translateX(0); opacity:1; }
+  }
+
+  .event .ts { color:var(--muted); font-size:11px; }
+  .event .kind {
+    font-weight:600;
+    padding:2px 6px; background:var(--bg2); border-radius:4px;
+    color:var(--accent2); display:inline-block; margin-right:6px;
+  }
+  .event .kind.route    { color:#5eead4; }
+  .event .kind.decision { color:#a78bfa; }
+  .event .kind.pulse    { color:#fbbf24; }
+  .event .kind.agent    { color:#f87171; }
+  .event .kind.handshake{ color:#38bdf8; }
+  .event .kind.consensus{ color:#ec4899; }
+  .event .kind.payment  { color:#22d3ee; }
+  .event .kind.gossip   { color:#fb7185; }
+  .event .kind.task     { color:#a3e635; }
+
+  .event .path { color:var(--muted); }
+  .event .path .arrow { color:var(--dim); margin:0 4px; }
+  .event .path .node  { color:var(--fg); }
+  .event .meta { color:var(--muted); font-size:11px; margin-top:2px; }
+  .event .right { text-align:right; min-width:0; }
+  .event .hash {
+    font-size:10px; color:var(--dim); margin-top:3px; word-break:break-all;
+  }
+  .event .hash a { color:var(--accent); text-decoration:none; }
+  .event .hash a:hover { text-decoration:underline; }
+  .event .hash .seq { color:var(--ok); }
+  .event .latency {
+    font-size:10px; color:var(--live); margin-top:2px;
+  }
+
+  /* Grouped heartbeat row */
+  .group-row {
+    background:var(--bg3); border-left:3px solid var(--warn); opacity:0.55;
+    padding:8px 14px; margin-bottom:6px; border-radius:0 8px 8px 0;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    display:flex; gap:10px; align-items:center; cursor:pointer;
+    transition:opacity 0.2s;
+  }
+  .group-row:hover { opacity:0.9; }
+  .group-row .badge {
+    background:var(--bg2); color:var(--warn); padding:1px 6px; border-radius:4px;
+    font-weight:600;
+  }
+
+  .empty { text-align:center; padding:40px 20px; color:var(--muted); font-size:13px; }
+
+  .footer {
+    text-align:center; padding:20px 0 0 0; color:var(--muted); font-size:11px;
+    font-family:var(--mono); max-width:1700px; margin:0 auto;
+  }
+
+  /* Latency sparkline */
+  .sparkline-wrap {
+    background:var(--bg3); border-radius:8px; padding:10px; margin-top:6px;
+  }
+  .sparkline { width:100%; height:40px; display:block; }
+  .latency-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; margin-top:8px; font-family:var(--mono); font-size:11px; }
+  .latency-grid .k { color:var(--muted); }
+  .latency-grid .v { color:var(--fg); text-align:right; }
+  .latency-grid .v.ok { color:var(--ok); }
+  .latency-grid .v.warn { color:var(--warn); }
+
+  /* Topology canvas */
+  #topology {
+    width:100%; height:240px; background:var(--bg3); border-radius:8px;
+    display:block;
+  }
+  .topo-legend {
+    font-size:10px; color:var(--muted); margin-top:6px; font-family:var(--mono);
+    display:flex; gap:12px; flex-wrap:wrap;
+  }
+  .topo-legend .dot-sm { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+
+  /* Modal for event detail */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.7);
+    display:flex; align-items:center; justify-content:center;
+    z-index:1000; opacity:0; pointer-events:none; transition:opacity 0.2s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:auto; }
+  .modal {
+    background:var(--bg2); border:1px solid var(--bg3); border-radius:12px;
+    width:min(900px, 95vw); max-height:90vh; display:flex; flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 18px; border-bottom:1px solid var(--bg3);
+  }
+  .modal-header h3 { font-size:14px; font-weight:600; margin:0; }
+  .modal-close {
+    background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;
+    padding:4px 8px; border-radius:6px; transition:all 0.2s;
+  }
+  .modal-close:hover { background:var(--bg3); color:var(--fg); }
+  .modal-body {
+    padding:18px; overflow:auto; font-family:var(--mono); font-size:12px;
+  }
+  .modal pre {
+    background:var(--bg3); padding:14px; border-radius:8px;
+    overflow:auto; white-space:pre-wrap; word-break:break-word;
+    border:1px solid var(--bg4);
+  }
+  .modal-actions {
+    display:flex; gap:8px; padding:14px 18px; border-top:1px solid var(--bg3);
+  }
+  .btn {
+    background:var(--bg3); border:1px solid var(--bg4); color:var(--fg);
+    padding:8px 14px; border-radius:6px; font-size:12px; cursor:pointer;
+    font-family:var(--mono); transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover { background:var(--bg4); border-color:var(--accent); }
+  .btn.primary { background:var(--accent); color:#08090d; border-color:var(--accent); }
+  .btn.primary:hover { filter:brightness(1.1); }
+
+  /* Toast notifications */
+  .toast-container {
+    position:fixed; top:20px; right:20px; display:flex; flex-direction:column; gap:8px;
+    z-index:1100; pointer-events:none;
+  }
+  .toast {
+    background:var(--bg2); border:1px solid var(--bg3); border-radius:8px;
+    padding:12px 16px; font-size:12px; font-family:var(--mono);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    transform:translateX(120%); transition:transform 0.3s ease;
+    pointer-events:auto; display:flex; align-items:center; gap:10px;
+    max-width:360px;
+  }
+  .toast.show { transform:translateX(0); }
+  .toast.success { border-left:3px solid var(--ok); }
+  .toast.warn { border-left:3px solid var(--warn); }
+  .toast .icon { font-size:14px; }
+  .toast .msg { flex:1; }
+  .toast .close { color:var(--dim); cursor:pointer; padding:2px 6px; }
+  .toast .close:hover { color:var(--fg); }
+
+  /* Copy feedback */
+  .copied-flash { animation:copiedFlash 0.4s; }
+  @keyframes copiedFlash { 0%,100%{color:inherit} 50%{color:var(--ok)} }
+
+  /* Mobile tweaks */
+  @media (max-width:600px) {
+    .layout { grid-template-columns:1fr; }
+    .event { grid-template-columns:70px 1fr auto; font-size:11px; }
+    .search-row { flex-direction:column; align-items:stretch; }
+    .toggle { margin-top:4px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🕸️  Vera Swarm <span class="live">LIVE</span> — HIP-993 Feed</h1>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>Swarm Telemetry</h2>
+      <div id="stats">loading…</div>
+      <div id="rateLimitWarning" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(251,191,36,0.15);border-left:3px solid var(--warn);border-radius:4px;font-size:11px;font-family:var(--mono);color:var(--warn)">
+        ⚠️ Rate limited: HCS throttling detected
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Anchor Latency</h2>
+      <div class="sparkline-wrap">
+        <svg class="sparkline" id="sparkline" viewBox="0 0 300 40" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="latency-grid">
+        <span class="k">avg</span><span class="v" id="lat-avg">—</span>
+        <span class="k">p50</span><span class="v" id="lat-p50">—</span>
+        <span class="k">p95</span><span class="v" id="lat-p95">—</span>
+        <span class="k">max</span><span class="v" id="lat-max">—</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Live Topology</h2>
+      <canvas id="topology"></canvas>
+      <div class="topo-legend">
+        <span><span class="dot-sm" style="background:#5eead4"></span>recent sender</span>
+        <span><span class="dot-sm" style="background:#a78bfa"></span>recent receiver</span>
+        <span><span class="dot-sm" style="background:var(--live)"></span>active edge</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Filter by Kind</h2>
+      <div class="kinds" id="kinds"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Agent Health <span id="healthCount" style="color:var(--muted)"></span></h2>
+      <div id="agentHealth" style="font-size:11px;font-family:var(--mono)">
+        <div class="empty" style="padding:10px 0">Waiting for agents…</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Anchor</h2>
+      <div class="stat"><span class="k">Topic</span><span class="v" id="topic">—</span></div>
+      <div class="stat"><span class="k">Network</span><span class="v">mainnet</span></div>
+      <div class="stat"><span class="k">Fees</span><span class="v" id="fees">—</span></div>
+      <div class="stat"><span class="k">Verifier</span><span class="v">npx @vera/verify &lt;hash&gt;</span></div>
+      <a id="hashscanLink" href="#" target="_blank" style="
+        display:block; margin-top:14px; text-align:center;
+        padding:10px 14px; background:linear-gradient(135deg,#5eead4 0%, #38bdf8 100%);
+        color:#08090d; font-weight:600; font-size:13px; border-radius:8px;
+        text-decoration:none; transition:transform 0.2s;
+      " onmouseover="this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.transform='translateY(0)'">
+        🔗 Open on HashScan ↗
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="feed-header">
+        <h2 style="margin:0">Live Event Stream</h2>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button id="btnExport" class="btn" title="Download visible events as JSON">⬇ Export</button>
+          <div class="status">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">connecting…</span>
+          </div>
+        </div>
+      </div>
+      <div class="search-row">
+        <input id="search" class="search-input" type="text"
+               placeholder="Search from, to, hash, tx-id, kind, or data… (press / to focus)" />
+        <label class="toggle">
+          <input type="checkbox" id="showHeartbeats" />
+          <span>pulses</span>
+        </label>
+        <label class="toggle" title="Auto-scroll to new events">
+          <input type="checkbox" id="autoScroll" checked />
+          <span>auto-scroll</span>
+        </label>
+        <button class="btn" id="btnHelp" title="Keyboard shortcuts (?)">?</button>
+      </div>
+      <div class="feed" id="feed">
+        <div class="empty">Waiting for swarm events…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Every event anchored to Hedera mainnet via HIP-993. Tap any hash to verify on HashScan.
+</div>
+
+<!-- Help modal -->
+<div class="modal-overlay" id="helpOverlay">
+  <div class="modal" style="width:min(500px,95vw)">
+    <div class="modal-header">
+      <h3>Keyboard Shortcuts</h3>
+      <button class="modal-close" id="helpClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:12px">
+        <span style="color:var(--accent);font-family:var(--mono)">/</span><span>Focus search box</span>
+        <span style="color:var(--accent);font-family:var(--mono)">Esc</span><span>Clear search / Close modal</span>
+        <span style="color:var(--accent);font-family:var(--mono)">?</span><span>Show this help</span>
+        <span style="color:var(--accent);font-family:var(--mono)">Click event</span><span>Open detail modal</span>
+        <span style="color:var(--accent);font-family:var(--mono)">Click node</span><span>Filter by that agent</span>
+        <span style="color:var(--accent);font-family:var(--mono)">Scroll feed</span><span>Auto-pause scrolling</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" id="helpDismiss">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for event detail -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Event Detail</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <pre id="modalContent">{}</pre>
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" id="btnCopyEvent">📋 Copy Event JSON</button>
+      <button class="btn" id="btnCopyHash">📋 Copy Hash</button>
+      <button class="btn" id="btnCopyTx">📋 Copy Tx ID</button>
+      <button class="btn" id="btnHashscan">🔗 Open HashScan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const feedEl  = document.getElementById('feed');
+const statsEl = document.getElementById('stats');
+const kindsEl = document.getElementById('kinds');
+const topicEl = document.getElementById('topic');
+const hashscanLinkEl = document.getElementById('hashscanLink');
+const dotEl   = document.getElementById('statusDot');
+const txtEl   = document.getElementById('statusText');
+const searchEl = document.getElementById('search');
+const showHeartbeatsEl = document.getElementById('showHeartbeats');
+const topoCanvas = document.getElementById('topology');
+const sparkEl  = document.getElementById('sparkline');
+
+// Modal elements
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+const modalClose = document.getElementById('modalClose');
+const btnCopyEvent = document.getElementById('btnCopyEvent');
+const btnCopyHash = document.getElementById('btnCopyHash');
+const btnCopyTx = document.getElementById('btnCopyTx');
+const btnHashscan = document.getElementById('btnHashscan');
+const toastContainer = document.getElementById('toastContainer');
+const autoScrollEl = document.getElementById('autoScroll');
+const btnHelp = document.getElementById('btnHelp');
+const helpOverlay = document.getElementById('helpOverlay');
+const helpClose = document.getElementById('helpClose');
+const helpDismiss = document.getElementById('helpDismiss');
+const agentHealthEl = document.getElementById('agentHealth');
+const healthCountEl = document.getElementById('healthCount');
+const feesEl = document.getElementById('fees');
+const rateLimitWarningEl = document.getElementById('rateLimitWarning');
+
+let currentModalEvent = null;
+let autoScroll = true;
+let scrollPaused = false;
+let scrollPauseTimeout = null;
+const agentHealth = new Map(); // agentId -> {lastSeen, status}
+let totalFeesHbar = 0;
+
+// ─── Modal & Copy ───────────────────────────────────────────────────────────
+
+function openModal(ev) {
+  currentModalEvent = ev;
+  modalTitle.textContent = `${ev.kind} — ${new Date(ev.ts).toLocaleString()}`;
+  modalContent.textContent = JSON.stringify(ev, null, 2);
+  modalOverlay.classList.add('open');
+}
+function closeModal() {
+  modalOverlay.classList.remove('open');
+  currentModalEvent = null;
+}
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+// Help modal
+function openHelp() { helpOverlay.classList.add('open'); }
+function closeHelp() { helpOverlay.classList.remove('open'); }
+btnHelp.addEventListener('click', openHelp);
+helpClose.addEventListener('click', closeHelp);
+helpDismiss.addEventListener('click', closeHelp);
+helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) closeHelp(); });
+
+// ─── Auto-scroll with pause-on-interaction ──────────────────────────────────
+
+autoScrollEl.addEventListener('change', () => {
+  autoScroll = autoScrollEl.checked;
+  if (autoScroll) scrollToTop();
+});
+
+function scrollToTop() {
+  if (!scrollPaused) feedEl.scrollTop = 0;
+}
+
+// Pause auto-scroll when user scrolls down, resume when at top
+feedEl.addEventListener('scroll', () => {
+  const atTop = feedEl.scrollTop < 10;
+  if (!atTop && autoScroll) {
+    scrollPaused = true;
+    clearTimeout(scrollPauseTimeout);
+    scrollPauseTimeout = setTimeout(() => { scrollPaused = false; }, 2000);
+  }
+  if (atTop) scrollPaused = false;
+});
+
+// ─── Agent Health Tracking ──────────────────────────────────────────────────
+
+const AGENT_TIMEOUT = 30000; // 30s without event = suspect
+
+function updateAgentHealth() {
+  const now = Date.now();
+  let changed = false;
+  for (const [id, info] of agentHealth) {
+    const age = now - info.lastSeen;
+    const newStatus = age > AGENT_TIMEOUT ? 'suspect' : 'healthy';
+    if (info.status !== newStatus) { info.status = newStatus; changed = true; }
+  }
+  if (changed || agentHealth.size === 0) renderAgentHealth();
+}
+
+function recordAgentActivity(id) {
+  if (!id) return;
+  const existing = agentHealth.get(id);
+  agentHealth.set(id, { lastSeen: Date.now(), status: existing?.status || 'healthy' });
+  renderAgentHealth();
+}
+
+function renderAgentHealth() {
+  if (agentHealth.size === 0) {
+    agentHealthEl.innerHTML = '<div class="empty" style="padding:10px 0">No agent activity yet</div>';
+    healthCountEl.textContent = '';
+    return;
+  }
+  const healthy = [...agentHealth.values()].filter(a => a.status === 'healthy').length;
+  healthCountEl.textContent = `(${healthy}/${agentHealth.size} healthy)`;
+  
+  const rows = [...agentHealth.entries()].sort((a,b) => b[1].lastSeen - a[1].lastSeen).slice(0, 12);
+  agentHealthEl.innerHTML = rows.map(([id, info]) => {
+    const age = Math.floor((Date.now() - info.lastSeen) / 1000);
+    const ageText = age < 60 ? `${age}s` : `${Math.floor(age/60)}m`;
+    const dotColor = info.status === 'healthy' ? 'var(--ok)' : 'var(--warn)';
+    const shortId = id.length > 16 ? id.slice(0,15)+'…' : id;
+    return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed var(--bg3);cursor:pointer;" onclick="filterByAgent('${id}')">
+      <span style="color:${info.status==='healthy'?'var(--fg)':'var(--warn)'}">${shortId}</span>
+      <span style="color:var(--muted)">${ageText}</span>
+    </div>`;
+  }).join('');
+}
+
+// Global function for onclick handlers
+window.filterByAgent = (id) => {
+  searchEl.value = id;
+  searchQuery = id;
+  rerender();
+  toast(`Filtered by agent: ${id.slice(0,12)}…`, 'success', '🔍');
+};
+
+setInterval(updateAgentHealth, 5000);
+
+async function copyText(text, label) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(`Copied ${label} to clipboard`, 'success', '✓');
+  } catch {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast(`Copied ${label} to clipboard`, 'success', '✓');
+  }
+}
+
+btnCopyEvent.addEventListener('click', () => {
+  if (currentModalEvent) copyText(JSON.stringify(currentModalEvent, null, 2), 'event JSON');
+});
+btnCopyHash.addEventListener('click', () => {
+  if (currentModalEvent?.hash) copyText(currentModalEvent.hash, 'hash');
+  else toast('No hash available', 'warn', '⚠');
+});
+btnCopyTx.addEventListener('click', () => {
+  if (currentModalEvent?.transactionId) copyText(currentModalEvent.transactionId, 'transaction ID');
+  else toast('No transaction ID available', 'warn', '⚠');
+});
+btnHashscan.addEventListener('click', () => {
+  if (!currentModalEvent) return;
+  const ev = currentModalEvent;
+  let url = '#';
+  if (ev.transactionId) {
+    const [acct, tsPart] = ev.transactionId.split('@');
+    const tx = tsPart ? `${acct}-${tsPart.replace('.', '-')}` : ev.transactionId;
+    url = `https://hashscan.io/mainnet/transaction/${tx}`;
+  } else if (ev.topicId) {
+    url = `https://hashscan.io/mainnet/topic/${ev.topicId}`;
+  }
+  if (url !== '#') window.open(url, '_blank');
+});
+
+// ─── Toast notifications ────────────────────────────────────────────────────
+
+function toast(message, type = 'success', icon = '✓') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="icon">${icon}</span><span class="msg">${escapeHtml(message)}</span><span class="close">&times;</span>`;
+  toastContainer.appendChild(t);
+  // Trigger animation
+  requestAnimationFrame(() => t.classList.add('show'));
+  // Auto dismiss
+  const dismiss = () => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 300);
+  };
+  t.querySelector('.close').addEventListener('click', dismiss);
+  setTimeout(dismiss, 4000);
+}
+
+// Track which events we've shown toast for
+const toastedAnchors = new Set();
+
+function maybeToastAnchor(ev) {
+  if (ev.onChain && ev.hash && !toastedAnchors.has(ev.id)) {
+    toastedAnchors.add(ev.id);
+    const short = ev.hash.slice(0, 12) + '…';
+    toast(`Anchored on HashScan: ${short}`, 'success', '🔗');
+  }
+}
+
+function setTopic(id) {
+  if (!id || id === '—') return;
+  topicEl.textContent = id;
+  hashscanLinkEl.href = `https://hashscan.io/mainnet/topic/${id}`;
+}
+
+let activeKind = null;
+let searchQuery = '';
+let showHeartbeats = false;
+const MAX_KEEP = 300;
+const events = [];               // newest first
+const eventById = new Map();     // id -> event object
+
+const KIND_LABELS = {
+  'lattice.route':        'route',
+  'lattice.decision':     'decision',
+  'lattice.pulse':        'pulse',
+  'lattice.reinforce':    'reinforce',
+  'lattice.agent-joined': 'agent-join',
+  'lattice.agent-left':   'agent-left',
+  'swarm.task-routed':    'task-route',
+  'swarm.task-complete':  'task-done',
+  'swarm.handshake':      'handshake',
+  'swarm.consensus':      'consensus',
+  'swarm.gossip':         'gossip',
+  'swarm.beacon':         'beacon',
+  'swarm.payment':        'payment',
+};
+
+function kindCategory(k) {
+  if (k.includes('route'))     return 'route';
+  if (k.includes('decision'))  return 'decision';
+  if (k.includes('pulse'))     return 'pulse';
+  if (k.includes('agent'))     return 'agent';
+  if (k.includes('handshake')) return 'handshake';
+  if (k.includes('consensus')) return 'consensus';
+  if (k.includes('payment'))   return 'payment';
+  if (k.includes('gossip'))    return 'gossip';
+  if (k.includes('task'))      return 'task';
+  return '';
+}
+
+const isHeartbeat = (e) => e.kind === 'lattice.pulse';
+
+function matchesSearch(ev, q) {
+  if (!q) return true;
+  const needle = q.toLowerCase();
+  const hay = [
+    ev.kind, ev.from, ev.to || '', ev.hash || '', ev.transactionId || '',
+    JSON.stringify(ev.data || {}),
+  ].join(' ').toLowerCase();
+  return hay.includes(needle);
+}
+
+function setStatus(state) {
+  if (state === 'live') { dotEl.classList.add('live'); txtEl.textContent = 'live'; }
+  else if (state === 'reconnect') { dotEl.classList.remove('live'); txtEl.textContent = 'reconnecting…'; }
+  else { dotEl.classList.remove('live'); txtEl.textContent = 'offline'; }
+}
+
+// ─── Stats panel ────────────────────────────────────────────────────────────
+
+let lastStats = null;
+function renderStats(stats) {
+  lastStats = stats;
+  statsEl.innerHTML = `
+    <div class="stat"><span class="k">Total events</span><span class="v big">${stats.totalEvents.toLocaleString()}</span></div>
+    <div class="stat"><span class="k">On-chain</span><span class="v" style="color:var(--ok)">${stats.onChainEvents.toLocaleString()}</span></div>
+    <div class="stat"><span class="k">Pending</span><span class="v" style="color:var(--warn)">${stats.pendingEvents.toLocaleString()}</span></div>
+    <div class="stat"><span class="k">Failed</span><span class="v" style="color:${stats.failedEvents>0?'var(--fail)':'var(--dim)'}">${stats.failedEvents.toLocaleString()}</span></div>
+    <div class="stat"><span class="k">Buffered</span><span class="v">${stats.bufferSize}</span></div>
+  `;
+
+  // Update kinds chips
+  kindsEl.innerHTML = '';
+  const all = document.createElement('div');
+  all.className = 'chip' + (activeKind === null ? ' active' : '');
+  all.textContent = 'all';
+  all.onclick = () => { activeKind = null; rerender(); };
+  kindsEl.appendChild(all);
+  for (const [kind, count] of Object.entries(stats.eventsByKind || {}).sort((a,b)=>b[1]-a[1])) {
+    const c = document.createElement('div');
+    c.className = 'chip' + (activeKind === kind ? ' active' : '');
+    c.textContent = `${KIND_LABELS[kind] || kind} ${count}`;
+    c.onclick = () => { activeKind = activeKind === kind ? null : kind; rerender(); };
+    kindsEl.appendChild(c);
+  }
+
+  // Latency panel
+  if (stats.latency) {
+    const L = stats.latency;
+    const fmt = (ms) => ms >= 1000 ? `${(ms/1000).toFixed(2)}s` : `${ms}ms`;
+    document.getElementById('lat-avg').textContent = L.count ? fmt(L.avgMs) : '—';
+    document.getElementById('lat-p50').textContent = L.count ? fmt(L.p50Ms) : '—';
+    document.getElementById('lat-p95').textContent = L.count ? fmt(L.p95Ms) : '—';
+    document.getElementById('lat-max').textContent = L.count ? fmt(L.maxMs) : '—';
+    // Mark warn if p95 > 8s
+    document.getElementById('lat-p95').className = 'v ' + (L.p95Ms > 8000 ? 'warn' : 'ok');
+    renderSparkline(L.recent || []);
+  }
+
+  // Rate limit warning
+  if (stats.rateLimit && stats.rateLimit.throttledEvents > 0) {
+    const recent = stats.rateLimit.lastThrottleAt && (Date.now() - stats.rateLimit.lastThrottleAt) < 60000;
+    rateLimitWarningEl.style.display = 'block';
+    rateLimitWarningEl.textContent = recent 
+      ? `⚠️ Rate limited: HCS throttling active (${stats.rateLimit.throttledEvents} events delayed)`
+      : `⚠️ Rate limited: ${stats.rateLimit.throttledEvents} events throttled (last: ${Math.floor((Date.now() - (stats.rateLimit.lastThrottleAt || 0))/60000)}m ago)`;
+  } else {
+    rateLimitWarningEl.style.display = 'none';
+  }
+}
+
+// ─── Sparkline ──────────────────────────────────────────────────────────────
+
+function renderSparkline(samples) {
+  if (!samples.length) { sparkEl.innerHTML = ''; return; }
+  const W = 300, H = 40, pad = 2;
+  const max = Math.max(...samples, 1);
+  const step = samples.length > 1 ? (W - pad*2) / (samples.length - 1) : 0;
+  const pts = samples.map((v, i) => {
+    const x = pad + i * step;
+    const y = H - pad - (v / max) * (H - pad*2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const poly = pts.join(' ');
+  const area = `${pad},${H} ${poly} ${pad + (samples.length-1)*step},${H}`;
+  sparkEl.innerHTML = `
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon points="${area}" fill="url(#sg)" />
+    <polyline points="${poly}" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+  `;
+}
+
+// ─── Topology mini-map ──────────────────────────────────────────────────────
+// Shows recent sender/receiver nodes arranged on a circle with animated
+// edges for events in the last few seconds.
+
+const topoCtx = topoCanvas.getContext('2d');
+function sizeCanvas() {
+  const r = topoCanvas.getBoundingClientRect();
+  topoCanvas.width = r.width * devicePixelRatio;
+  topoCanvas.height = r.height * devicePixelRatio;
+  topoCtx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+window.addEventListener('resize', sizeCanvas);
+setTimeout(sizeCanvas, 50);
+
+function drawTopology() {
+  sizeCanvas();
+  const W = topoCanvas.width / devicePixelRatio;
+  const H = topoCanvas.height / devicePixelRatio;
+  topoCtx.clearRect(0, 0, W, H);
+
+  // Collect nodes from recent events (last 60s)
+  const cutoff = Date.now() - 60_000;
+  const nodeActivity = new Map();  // node -> {sent, recv, lastTs}
+  const edgesByTime = [];          // for decay glow
+  for (const e of events) {
+    if (e.ts < cutoff) break;      // events are newest-first
+    const f = e.from, t = e.to;
+    if (f) {
+      const a = nodeActivity.get(f) || { sent:0, recv:0, lastTs:0 };
+      a.sent++; a.lastTs = Math.max(a.lastTs, e.ts);
+      nodeActivity.set(f, a);
+    }
+    if (t) {
+      const a = nodeActivity.get(t) || { sent:0, recv:0, lastTs:0 };
+      a.recv++; a.lastTs = Math.max(a.lastTs, e.ts);
+      nodeActivity.set(t, a);
+    }
+    if (f && t) edgesByTime.push({ from: f, to: t, ts: e.ts });
+  }
+
+  if (nodeActivity.size === 0) {
+    topoCtx.fillStyle = '#474d57';
+    topoCtx.font = '12px ui-monospace, monospace';
+    topoCtx.textAlign = 'center';
+    topoCtx.fillText('no recent interactions', W/2, H/2);
+    return;
+  }
+
+  // Place nodes on a circle
+  const nodes = [...nodeActivity.entries()]
+    .sort((a,b) => b[1].sent + b[1].recv - (a[1].sent + a[1].recv))
+    .slice(0, 20);
+  const cx = W/2, cy = H/2;
+  const radius = Math.min(W, H) / 2 - 20;
+  const pos = new Map();
+  nodes.forEach(([id], i) => {
+    const angle = (i / nodes.length) * 2 * Math.PI - Math.PI/2;
+    pos.set(id, { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) });
+  });
+
+  // Draw fading edges (recent = bright)
+  const now = Date.now();
+  for (const edge of edgesByTime.slice(-40)) {
+    const p1 = pos.get(edge.from), p2 = pos.get(edge.to);
+    if (!p1 || !p2) continue;
+    const age = (now - edge.ts) / 60000;
+    const alpha = Math.max(0, 1 - age);
+    topoCtx.strokeStyle = `rgba(56,189,248,${alpha * 0.5})`;
+    topoCtx.lineWidth = 0.8 + alpha * 1.2;
+    topoCtx.beginPath();
+    topoCtx.moveTo(p1.x, p1.y);
+    topoCtx.lineTo(p2.x, p2.y);
+    topoCtx.stroke();
+  }
+
+  // Draw nodes
+  for (const [id, p] of pos) {
+    const a = nodeActivity.get(id);
+    const size = Math.min(8, 3 + Math.sqrt(a.sent + a.recv));
+    const dominantSender = a.sent >= a.recv;
+    topoCtx.fillStyle = dominantSender ? '#5eead4' : '#a78bfa';
+    topoCtx.beginPath();
+    topoCtx.arc(p.x, p.y, size, 0, 2 * Math.PI);
+    topoCtx.fill();
+
+    // Label (shortened)
+    const label = id.length > 10 ? id.slice(0, 9) + '…' : id;
+    topoCtx.fillStyle = '#7a828e';
+    topoCtx.font = '9px ui-monospace, monospace';
+    topoCtx.textAlign = 'center';
+    // Push label outside circle
+    const angle = Math.atan2(p.y - cy, p.x - cx);
+    const lx = p.x + Math.cos(angle) * (size + 8);
+    const ly = p.y + Math.sin(angle) * (size + 8) + 3;
+    topoCtx.fillText(label, lx, ly);
+  }
+  
+  // Store node positions for click detection
+  topoCanvas._nodePositions = pos;
+}
+setInterval(drawTopology, 1000);
+
+// Click on topology to filter by agent
+topoCanvas.addEventListener('click', (e) => {
+  const rect = topoCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left);
+  const y = (e.clientY - rect.top);
+  const pos = topoCanvas._nodePositions;
+  if (!pos) return;
+  
+  // Find clicked node
+  for (const [id, p] of pos) {
+    const dx = x - p.x, dy = y - p.y;
+    if (dx*dx + dy*dy < 100) { // 10px radius hit area
+      filterByAgent(id);
+      return;
+    }
+  }
+});
+
+// ─── Feed rendering (with heartbeat grouping) ───────────────────────────────
+
+function eventCard(ev, isFresh = false) {
+  const label = KIND_LABELS[ev.kind] || ev.kind;
+  const cat = kindCategory(ev.kind);
+  const ts = new Date(ev.ts).toLocaleTimeString('en-US', { hour12:false });
+  const statusCls = ev.onChain ? 'onchain' : (ev.hash ? 'pending' : 'pending');
+  const extra = (isFresh ? ' fresh' : '') + (isHeartbeat(ev) ? ' collapsed' : '');
+
+  const pathHtml = ev.to
+    ? `<span class="node">${escapeHtml(ev.from)}</span><span class="arrow">→</span><span class="node">${escapeHtml(ev.to)}</span>`
+    : `<span class="node">${escapeHtml(ev.from)}</span>`;
+
+  const metaKeys = Object.keys(ev.data || {}).filter(k => !['id','ts'].includes(k));
+  const metaHtml = metaKeys.slice(0, 3).map(k => {
+    const val = ev.data[k];
+    const v = typeof val === 'object' ? JSON.stringify(val).slice(0, 30) : String(val).slice(0, 30);
+    return `${escapeHtml(k)}=${escapeHtml(v)}`;
+  }).join(' · ');
+
+  // HashScan URL: convert transactionId to dash format
+  let hashscanTx = null;
+  if (ev.transactionId) {
+    const [acct, tsPart] = ev.transactionId.split('@');
+    hashscanTx = tsPart ? `${acct}-${tsPart.replace('.', '-')}` : ev.transactionId;
+  }
+  const hashscanUrl = ev.hashscanUrl
+    || (hashscanTx ? `https://hashscan.io/mainnet/transaction/${hashscanTx}` : null)
+    || (ev.topicId ? `https://hashscan.io/mainnet/topic/${ev.topicId}` : '#');
+
+  const hashHtml = ev.hash
+    ? `<div class="hash">
+         ${ev.sequenceNumber ? `<span class="seq">seq ${ev.sequenceNumber}</span> · ` : ''}
+         <a href="${hashscanUrl}" target="_blank" title="Open on HashScan mainnet">${ev.hash.slice(0,20)}… ↗</a>
+       </div>`
+    : '<div class="hash">pending…</div>';
+
+  const latencyHtml = ev.anchorLatencyMs != null
+    ? `<div class="latency">⏱ ${ev.anchorLatencyMs < 1000 ? ev.anchorLatencyMs + 'ms' : (ev.anchorLatencyMs/1000).toFixed(2) + 's'}</div>`
+    : '';
+
+  const el = document.createElement('div');
+  el.className = `event ${statusCls}${extra}`;
+  el.setAttribute('data-id', ev.id);
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => openModal(ev));
+  el.innerHTML = `
+    <span class="ts">${ts}</span>
+    <div>
+      <span class="kind ${cat}">${label}</span>
+      <span class="path">${pathHtml}</span>
+      <div class="meta">${metaHtml || ''}</div>
+      ${hashHtml}
+    </div>
+    <div class="right">${latencyHtml}</div>
+  `;
+  return el;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function rerender() {
+  const visibleRows = [];
+  let pulseRun = []; // accumulator for consecutive heartbeats
+
+  const flushPulses = () => {
+    if (pulseRun.length === 0) return;
+    if (pulseRun.length === 1) {
+      visibleRows.push(eventCard(pulseRun[0]));
+    } else {
+      const group = document.createElement('div');
+      group.className = 'group-row';
+      const firstTs = new Date(pulseRun[pulseRun.length - 1].ts).toLocaleTimeString('en-US',{hour12:false});
+      const lastTs  = new Date(pulseRun[0].ts).toLocaleTimeString('en-US',{hour12:false});
+      group.innerHTML = `
+        <span class="badge">${pulseRun.length} × lattice.pulse</span>
+        <span>${firstTs} — ${lastTs}</span>
+        <span style="margin-left:auto">click to expand</span>
+      `;
+      group.addEventListener('click', () => {
+        showHeartbeatsEl.checked = true;
+        showHeartbeats = true;
+        rerender();
+      });
+      visibleRows.push(group);
+    }
+    pulseRun = [];
+  };
+
+  for (const ev of events) {
+    if (activeKind && ev.kind !== activeKind) continue;
+    if (!matchesSearch(ev, searchQuery)) continue;
+    if (!showHeartbeats && isHeartbeat(ev) && !activeKind) {
+      pulseRun.push(ev);
+      continue;
+    }
+    flushPulses();
+    visibleRows.push(eventCard(ev));
+  }
+  flushPulses();
+
+  feedEl.innerHTML = '';
+  if (visibleRows.length === 0) {
+    feedEl.innerHTML = '<div class="empty">No events match your filter. Try clearing the search or selecting a different kind.</div>';
+    return;
+  }
+  for (const r of visibleRows) feedEl.appendChild(r);
+}
+
+function upsertEvent(ev, isFresh = false) {
+  const existing = eventById.get(ev.id);
+  const wasOnChain = existing?.onChain;
+  if (existing) {
+    // Update in place (for the pending→anchored transition)
+    Object.assign(existing, ev);
+  } else {
+    events.unshift(ev);
+    eventById.set(ev.id, ev);
+    while (events.length > MAX_KEEP) {
+      const removed = events.pop();
+      if (removed) eventById.delete(removed.id);
+    }
+  }
+  // Track agent health
+  recordAgentActivity(ev.from);
+  recordAgentActivity(ev.to);
+  // Update fee estimate (0.0001 HBAR per message as rough estimate)
+  if (ev.onChain && !wasOnChain) {
+    totalFeesHbar += 0.0001;
+    feesEl.textContent = `${totalFeesHbar.toFixed(4)} ℏ`;
+  }
+  // Toast when transitioning to anchored
+  if (ev.onChain && !wasOnChain) maybeToastAnchor(ev);
+  rerender();
+  if (isFresh) {
+    flashHeader();
+    if (autoScroll && !scrollPaused) scrollToTop();
+  }
+}
+
+let headerFlashTimeout;
+function flashHeader() {
+  clearTimeout(headerFlashTimeout);
+  dotEl.style.transform = 'scale(1.8)';
+  headerFlashTimeout = setTimeout(() => { dotEl.style.transform = ''; }, 200);
+}
+
+// ─── UI bindings ────────────────────────────────────────────────────────────
+
+searchEl.addEventListener('input', () => {
+  searchQuery = searchEl.value.trim();
+  rerender();
+});
+showHeartbeatsEl.addEventListener('change', () => {
+  showHeartbeats = showHeartbeatsEl.checked;
+  rerender();
+});
+
+// Export visible events
+document.getElementById('btnExport').addEventListener('click', () => {
+  const visible = events.filter(ev => {
+    if (activeKind && ev.kind !== activeKind) return false;
+    return matchesSearch(ev, searchQuery);
+  });
+  const blob = new Blob([JSON.stringify(visible, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vera-swarm-events-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(`Exported ${visible.length} events`, 'success', '⬇');
+});
+
+// Keyboard shortcuts: `/` focuses search, `?` opens help, `Esc` closes
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== searchEl && !modalOverlay.classList.contains('open') && !helpOverlay.classList.contains('open')) {
+    e.preventDefault();
+    searchEl.focus();
+    searchEl.select();
+  }
+  if (e.key === '?' && document.activeElement !== searchEl) {
+    e.preventDefault();
+    openHelp();
+  }
+  if (e.key === 'Escape') {
+    if (helpOverlay.classList.contains('open')) { closeHelp(); return; }
+    if (modalOverlay.classList.contains('open')) { closeModal(); return; }
+    if (document.activeElement === searchEl) {
+      searchEl.value = '';
+      searchQuery = '';
+      rerender();
+      searchEl.blur();
+    }
+  }
+});
+
+// ─── SSE connection ─────────────────────────────────────────────────────────
+
+function connect() {
+  setStatus('reconnect');
+  const es = new EventSource('/api/vera/swarm/stream');
+
+  es.onopen  = () => setStatus('live');
+  es.onerror = () => { setStatus('reconnect'); setTimeout(() => { es.close(); connect(); }, 3000); };
+
+  es.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'snapshot') {
+        renderStats(msg.stats);
+        setTopic(msg.events[0]?.topicId || '—');
+        msg.events.slice().reverse().forEach(ev => upsertEvent(ev));
+      }
+    } catch {}
+  };
+  es.addEventListener('swarm', (e) => {
+    const { event } = JSON.parse(e.data);
+    upsertEvent(event, true);
+  });
+  es.addEventListener('anchored', (e) => {
+    const { event } = JSON.parse(e.data);
+    upsertEvent(event);
+    setTopic(event.topicId);
+  });
+
+  // Periodic stats refresh (for kind counts + latency)
+  setInterval(async () => {
+    try {
+      const s = await fetch('/api/vera/swarm/stats').then(r => r.json());
+      renderStats(s);
+    } catch {}
+  }, 3000);
+}
+
+connect();
+</script>
+
+</body>
+</html>

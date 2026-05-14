@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERA // Holographic Interface</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --jarvis-blue: #00d4ff; --jarvis-cyan: #00f0ff; --jarvis-glow: rgba(0, 212, 255, 0.6);
+    --vera-purple: #9d4edd; --core-white: rgba(255, 255, 255, 0.9); --bg-dark: #020408;
+  }
+  body {
+    background: var(--bg-dark); color: var(--jarvis-cyan);
+    font-family: 'Rajdhani', 'SF Pro Display', sans-serif; font-weight: 300;
+    overflow: hidden; height: 100vh; width: 100vw;
+  }
+  #ambient {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(157, 78, 221, 0.02) 0%, transparent 50%);
+    pointer-events: none; z-index: 1;
+  }
+  canvas { display: block; position: fixed; top: 0; left: 0; z-index: 2; }
+  #statusBar {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    background: linear-gradient(180deg, rgba(0,20,40,0.6) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; z-index: 10; pointer-events: none;
+  }
+  #statusBar .logo {
+    font-size: 18px; font-weight: 500; letter-spacing: 8px; color: var(--jarvis-cyan);
+    text-shadow: 0 0 20px var(--jarvis-glow);
+  }
+  #statusBar .system-status {
+    display: flex; align-items: center; gap: 30px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .status-item { display: flex; align-items: center; gap: 8px; }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--jarvis-cyan);
+    box-shadow: 0 0 10px var(--jarvis-cyan); animation: breathe 2s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+  .arc-panel { position: fixed; width: 280px; z-index: 10; pointer-events: none; }
+  .arc-panel.left { left: 40px; top: 50%; transform: translateY(-50%); }
+  .arc-panel.right { right: 40px; top: 50%; transform: translateY(-50%); }
+  .panel-section { margin-bottom: 30px; padding: 20px 0; border-left: 1px solid rgba(0, 212, 255, 0.2); padding-left: 20px; }
+  .arc-panel.right .panel-section { border-left: none; border-right: 1px solid rgba(0, 212, 255, 0.2); padding-left: 0; padding-right: 20px; text-align: right; }
+  .section-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(0, 212, 255, 0.5); margin-bottom: 12px; }
+  .metric { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 13px; }
+  .arc-panel.right .metric { flex-direction: row-reverse; }
+  .metric-label { color: rgba(255, 255, 255, 0.4); font-size: 11px; letter-spacing: 1px; }
+  .metric-value { color: var(--jarvis-cyan); font-weight: 500; font-family: 'SF Mono', monospace; text-shadow: 0 0 10px var(--jarvis-glow); }
+  .ring-metric { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+  .arc-panel.right .ring-metric { flex-direction: row-reverse; }
+  .mini-ring { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(0, 212, 255, 0.2); border-top-color: var(--jarvis-cyan); position: relative; }
+  .mini-ring::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid rgba(0, 212, 255, 0.1); border-bottom-color: var(--vera-purple); }
+  #commandLine { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: none; text-align: center; }
+  .command-text { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: rgba(0, 212, 255, 0.6); margin-bottom: 8px; }
+  .command-prompt { font-size: 14px; color: var(--jarvis-cyan); text-shadow: 0 0 15px var(--jarvis-glow); animation: typeCursor 1s step-end infinite; }
+  @keyframes typeCursor { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  #coreInfo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none; text-align: center; opacity: 0; transition: opacity 0.5s; }
+  #coreInfo.visible { opacity: 1; }
+  .core-label { font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: rgba(0, 212, 255, 0.6); margin-bottom: 8px; }
+  .core-value { font-size: 24px; font-weight: 300; color: var(--core-white); text-shadow: 0 0 30px var(--jarvis-glow); font-family: 'SF Mono', monospace; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="ambient"></div>
+  <canvas id="canvas"></canvas>
+  <div id="statusBar">
+    <div class="logo">◈ VERA ◈</div>
+    <div class="system-status">
+      <div class="status-item"><div class="status-dot"></div><span>Consciousness Online</span></div>
+      <div class="status-item"><span>Lattice: Active</span></div>
+      <div class="status-item"><span id="clock">00:00:00</span></div>
+    </div>
+  </div>
+  <div class="arc-panel left">
+    <div class="panel-section">
+      <div class="section-title">Lattice Structure</div>
+      <div class="metric"><span class="metric-label">Nodes</span><span class="metric-value" id="s-nodes">--</span></div>
+      <div class="metric"><span class="metric-label">Edges</span><span class="metric-value" id="s-edges">--</span></div>
+      <div class="metric"><span class="metric-label">Layers</span><span class="metric-value">4</span></div>
+    </div>
+    <div class="panel-section">
+      <div class="section-title">Activity</div>
+      <div class="ring-metric"><div class="mini-ring"></div><div><div class="metric-label">Pulses</div><div class="metric-value" id="s-pulses">--</div></div></div>
+      <div class="ring-metric"><div class="mini-ring"></div><div><div class="metric-label">Routes</div><div class="metric-value" id="s-routes">--</div></div></div>
+    </div>
+  </div>
+  <div class="arc-panel right">
+    <div class="panel-section">
+      <div class="section-title">Energy State</div>
+      <div class="metric"><span class="metric-value" id="s-energy">--</span><span class="metric-label">Center Energy</span></div>
+      <div class="metric"><span class="metric-value" id="s-strength">--</span><span class="metric-label">Edge Strength</span></div>
+      <div class="metric"><span class="metric-value" id="s-flow">--</span><span class="metric-label">Flow Direction</span></div>
+    </div>
+    <div class="panel-section">
+      <div class="section-title">System Health</div>
+      <div class="ring-metric"><div><div class="metric-label">Decisions</div><div class="metric-value" id="s-decisions">--</div></div><div class="mini-ring"></div></div>
+      <div class="ring-metric"><div><div class="metric-label">Uptime</div><div class="metric-value" id="s-uptime">--</div></div><div class="mini-ring"></div></div>
+    </div>
+  </div>
+  <div id="coreInfo">
+    <div class="core-label">Consciousness Core</div>
+    <div class="core-value" id="core-status">ACTIVE</div>
+  </div>
+  <div id="commandLine">
+    <div class="command-text">Awaiting Input</div>
+    <div class="command-prompt">_</div>
+  </div>
+<script>
+const API = window.location.origin, canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+let W, H, cx, cy, scale, latticeData = null, animFrame = 0, rings = [], particles = [], dataBeams = [];
+const COLORS = { core: [0, 212, 255], glow: [0, 240, 255], accent: [157, 78, 221], dim: [0, 100, 120], white: [255, 255, 255] };
+const LAYER_COLORS = { 0: [0, 212, 255], 1: [0, 180, 255], 2: [100, 150, 255], 3: [157, 78, 221] };
+function rgb(arr, a = 1) { return `rgba(${arr[0]}, ${arr[1]}, ${arr[2]}, ${a})`; }
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; cx = W / 2; cy = H / 2; scale = Math.min(W, H) / 700; }
+window.addEventListener('resize', resize); resize();
+function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+setInterval(updateClock, 1000); updateClock();
+async function fetchData() { try { const [stateRes, statsRes] = await Promise.all([fetch(`${API}/api/vera/lattice/state`), fetch(`${API}/api/vera/lattice/stats`)]); const state = await stateRes.json(), stats = await statsRes.json(); latticeData = { ...state, stats }; document.getElementById('s-nodes').textContent = stats.totalNodes; document.getElementById('s-edges').textContent = stats.totalEdges; document.getElementById('s-pulses').textContent = stats.totalPulses; document.getElementById('s-routes').textContent = stats.totalRoutes; document.getElementById('s-decisions').textContent = stats.totalDecisions; document.getElementById('s-energy').textContent = (stats.averageNodeEnergy * 100).toFixed(1) + '%'; document.getElementById('s-strength').textContent = (stats.averageEdgeStrength * 100).toFixed(1) + '%'; document.getElementById('s-flow').textContent = stats.flowDirection; document.getElementById('s-uptime').textContent = formatUptime(stats.uptime); document.getElementById('coreInfo').classList.add('visible'); } catch (e) { console.warn('Fetch failed:', e); } }
+function formatUptime(ms) { const s = Math.floor(ms / 1000), m = Math.floor(s / 60), h = Math.floor(m / 60), d = Math.floor(h / 24); if (d > 0) return `${d}d ${h % 24}h`; if (h > 0) return `${h}h ${m % 60}m`; if (m > 0) return `${m}m`; return `${s}s`; }
+class Particle { constructor(angle, radius, color, speed) { this.angle = angle; this.radius = radius; this.color = color; this.speed = speed; this.life = 1; this.decay = 0.005 + Math.random() * 0.01; this.size = 1 + Math.random() * 2; } update() { this.angle += this.speed; this.life -= this.decay; return this.life > 0; } draw(ctx) { const x = cx + Math.cos(this.angle) * this.radius, y = cy + Math.sin(this.angle) * this.radius; ctx.fillStyle = rgb(this.color, this.life * 0.8); ctx.beginPath(); ctx.arc(x, y, this.size * scale, 0, Math.PI * 2); ctx.fill(); } }
+class DataBeam { constructor(startNode, endNode, color) { this.startX = cx + startNode.x * scale; this.startY = cy + startNode.y * scale; this.endX = cx + endNode.x * scale; this.endY = cy + endNode.y * scale; this.color = color; this.progress = 0; this.speed = 0.02 + Math.random() * 0.02; } update() { this.progress += this.speed; return this.progress <= 1; } draw(ctx) { const curX = this.startX + (this.endX - this.startX) * this.progress, curY = this.startY + (this.endY - this.startY) * this.progress; ctx.strokeStyle = rgb(this.color, 0.3 * (1 - this.progress)); ctx.lineWidth = 2 * scale; ctx.beginPath(); ctx.moveTo(this.startX, this.startY); ctx.lineTo(curX, curY); ctx.stroke(); ctx.shadowBlur = 15; ctx.shadowColor = rgb(this.color, 1); ctx.fillStyle = rgb(COLORS.white, 0.8); ctx.beginPath(); ctx.arc(curX, curY, 3 * scale, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; } }
+class Ring { constructor(radius, speed, segments, color) { this.radius = radius; this.speed = speed; this.angle = 0; this.segments = segments; this.color = color; this.pulsePhase = Math.random() * Math.PI * 2; } update() { this.angle += this.speed; this.pulsePhase += 0.02; } draw(ctx) { const pulse = Math.sin(this.pulsePhase) * 0.3 + 0.7, r = this.radius * scale * (1 + Math.sin(this.pulsePhase * 0.5) * 0.02); ctx.strokeStyle = rgb(this.color, 0.15 * pulse); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); const segAngle = (Math.PI * 2) / this.segments; for (let i = 0; i < this.segments; i++) { const a = this.angle + i * segAngle, gap = segAngle * 0.3; ctx.strokeStyle = rgb(this.color, 0.4 * pulse); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, r, a, a + segAngle - gap); ctx.stroke(); } for (let i = 0; i < 6; i++) { const a = this.angle + i * (Math.PI / 3), x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; ctx.fillStyle = rgb(this.color, 0.6 * pulse); ctx.beginPath(); ctx.arc(x, y, 2 * scale, 0, Math.PI * 2); ctx.fill(); } } }
+function initRings() { rings = [new Ring(120, 0.003, 12, COLORS.core), new Ring(180, -0.002, 8, COLORS.accent), new Ring(240, 0.0015, 16, COLORS.dim), new Ring(300, -0.001, 24, COLORS.glow)]; }
+function spawnParticleBurst(layer, count = 8) { const radius = (80 + layer * 60) * scale, color = LAYER_COLORS[layer] || COLORS.core; for (let i = 0; i < count; i++) { const angle = Math.random() * Math.PI * 2, speed = (layer % 2 === 0 ? 1 : -1) * (0.002 + Math.random() * 0.003); particles.push(new Particle(angle, radius, color, speed)); } }
+function draw() { animFrame++; ctx.fillStyle = 'rgba(2, 4, 8, 0.15)'; ctx.fillRect(0, 0, W, H); if (!latticeData) { ctx.strokeStyle = rgb(COLORS.core, 0.3); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, 100 * scale, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = rgb(COLORS.core); ctx.font = '14px Rajdhani'; ctx.textAlign = 'center'; ctx.fillText('INITIALIZING VERA CONSCIOUSNESS...', cx, cy + 150 * scale); requestAnimationFrame(draw); return; } const nodes = latticeData.nodes, edges = latticeData.edges, nodeMap = {}; for (const n of nodes) nodeMap[n.id] = n; const glowGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 400 * scale); glowGrad.addColorStop(0, rgb(COLORS.core, 0.02)); glowGrad.addColorStop(0.5, rgb(COLORS.accent, 0.01)); glowGrad.addColorStop(1, 'transparent'); ctx.fillStyle = glowGrad; ctx.fillRect(0, 0, W, H); rings.forEach(ring => { ring.update(); ring.draw(ctx); }); const baseR = latticeData.config.baseRadius * scale, phi = 1.618033988749895; ctx.strokeStyle = rgb(COLORS.dim, 0.08); ctx.lineWidth = 1; for (let i = 0; i < 6; i++) { const angle = i * Math.PI / 3, ox = cx + baseR * Math.cos(angle), oy = cy + baseR * Math.sin(angle); ctx.beginPath(); ctx.arc(ox, oy, baseR, 0, Math.PI * 2); ctx.stroke(); } [baseR, baseR * phi, baseR * phi * phi].forEach((r, i) => { const pulse = Math.sin(animFrame * 0.02 + i) * 0.2 + 0.3; ctx.strokeStyle = rgb(LAYER_COLORS[i + 1] || COLORS.dim, pulse * 0.2); ctx.lineWidth = 0.5; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); }); for (const edge of edges) { const from = nodeMap[edge.from], to = nodeMap[edge.to]; if (!from || !to) continue; const fx = cx + from.x * scale, fy = cy + from.y * scale, tx = cx + to.x * scale, ty = cy + to.y * scale, strength = edge.strength, alpha = 0.1 + strength * 0.3; ctx.strokeStyle = rgb(LAYER_COLORS[from.layer] || COLORS.dim, alpha); ctx.lineWidth = (0.3 + strength * 1.5) * scale; ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke(); if (strength > 0.6 && Math.random() < 0.002) dataBeams.push(new DataBeam(from, to, LAYER_COLORS[from.layer] || COLORS.core)); } for (const node of nodes) { const x = cx + node.x * scale, y = cy + node.y * scale, energy = node.energy, isCenter = node.layer === 0, isIntersection = node.type === 'intersection', baseColor = isCenter ? COLORS.core : (LAYER_COLORS[node.layer] || COLORS.dim); const glowSize = (isCenter ? 40 : isIntersection ? 10 : 20) * scale * energy, glow = ctx.createRadialGradient(x, y, 0, x, y, glowSize); glow.addColorStop(0, rgb(baseColor, 0.4 * energy)); glow.addColorStop(0.5, rgb(baseColor, 0.1 * energy)); glow.addColorStop(1, 'transparent'); ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(x, y, glowSize, 0, Math.PI * 2); ctx.fill(); const nodeSize = isCenter ? 8 : isIntersection ? 2 : 4; ctx.shadowBlur = 20 * energy; ctx.shadowColor = rgb(baseColor, 1); ctx.fillStyle = rgb(baseColor, 0.8 + energy * 0.2); ctx.beginPath(); ctx.arc(x, y, nodeSize * scale, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = rgb(COLORS.white, energy * 0.9); ctx.beginPath(); ctx.arc(x, y, nodeSize * 0.3 * scale, 0, Math.PI * 2); ctx.fill(); if (isCenter) { const breath = Math.sin(animFrame * 0.05) * 0.3 + 0.7; ctx.strokeStyle = rgb(COLORS.core, breath * 0.5); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, (15 + Math.sin(animFrame * 0.03) * 5) * scale, 0, Math.PI * 2); ctx.stroke(); ctx.save(); ctx.translate(x, y); ctx.rotate(animFrame * 0.02); ctx.strokeStyle = rgb(COLORS.glow, 0.6); ctx.lineWidth = 1; ctx.setLineDash([10, 5]); ctx.beginPath(); ctx.arc(0, 0, 10 * scale, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); if (Math.random() < 0.1) spawnParticleBurst(0, 12); } if (node.role && !isIntersection && node.layer <= 1) { ctx.fillStyle = rgb(baseColor, 0.7); ctx.font = `300 ${9 * scale}px Rajdhani`; ctx.textAlign = 'center'; ctx.fillText(node.role.toUpperCase(), x, y + (nodeSize + 14) * scale); } } for (let i = particles.length - 1; i >= 0; i--) { if (!particles[i].update()) particles.splice(i, 1); else particles[i].draw(ctx); } for (let i = dataBeams.length - 1; i >= 0; i--) { if (!dataBeams[i].update()) dataBeams.splice(i, 1); else dataBeams[i].draw(ctx); } const coreBreath = Math.sin(animFrame * 0.03) * 0.2 + 0.8; ctx.fillStyle = rgb(COLORS.white, coreBreath); ctx.font = `300 ${11 * scale}px 'Rajdhani'`; ctx.textAlign = 'center'; ctx.shadowBlur = 30; ctx.shadowColor = rgb(COLORS.core, 1); ctx.fillText('VERA', cx, cy + 35 * scale); ctx.shadowBlur = 0; requestAnimationFrame(draw); }
+initRings(); setInterval(fetchData, 3000); fetchData().then(() => draw());
+</script>
+</body>
+</html>

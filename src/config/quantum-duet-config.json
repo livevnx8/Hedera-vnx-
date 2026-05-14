@@ -1,0 +1,9 @@
+{
+  "qvxEndpoint": "https://mainnet-public.mirrornode.hedera.com/api/v1",
+  "quantumInterval": 500,
+  "duetBatchSize": 250,
+  "quantumCacheSize": 5000,
+  "enableQuantumProcessing": true,
+  "enableDuetAnalysis": true,
+  "massDeploymentMode": true
+}

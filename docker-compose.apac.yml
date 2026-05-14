@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  vera-apac:
+    build: .
+    container_name: vera-apac
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - VERA_REGION=apac
+      - VERA_APAC_TOPIC_ID=${VERA_APAC_TOPIC_ID}
+      - VERA_PRIMARY_REGION=us-east
+      - VERA_GEO_ROUTING_ENABLED=true
+      - VERA_AUTO_FAILOVER=true
+      - PORT=8080
+      - HEDERA_NETWORK=mainnet
+      - NODE_ENV=production
+    env_file:
+      - .env.apac
+    volumes:
+      - ./data.apac:/app/data
+      - ./logs.apac:/app/logs
+      - ./backups.apac:/app/backups
+    networks:
+      - vera-apac-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  nginx-apac:
+    image: nginx:alpine
+    container_name: vera-apac-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.apac.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - vera-apac
+    networks:
+      - vera-apac-network
+
+  redis-apac:
+    image: redis:7-alpine
+    container_name: vera-apac-redis
+    restart: unless-stopped
+    volumes:
+      - redis-apac-data:/data
+    networks:
+      - vera-apac-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+volumes:
+  redis-apac-data:
+
+networks:
+  vera-apac-network:
+    driver: bridge

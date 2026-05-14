@@ -1,0 +1,176 @@
+[
+  {
+    "packet": {
+      "_vera": {
+        "schema": "vera.memory.packet.v1",
+        "eventType": "task.proof_complete",
+        "eventId": "evt-proof-run-1777461822450-52e7933e-0",
+        "network": "mainnet",
+        "source": "vera-proof-kernel",
+        "createdAt": "2026-04-29T11:23:42.450Z",
+        "taskId": "vera-ai-task-1777461822450-e4a01af9-e",
+        "agentId": "proof-publisher",
+        "runId": "proof-run-1777461822450-52e7933e-0",
+        "correlationId": "proof-run-1777461822450-52e7933e-0",
+        "learnable": false,
+        "privacy": "public_summary"
+      },
+      "_hip993": {
+        "type": "VERA_MEMORY_PACKET",
+        "version": "1.0.0",
+        "max_chunk_size": 4096,
+        "features": [
+          "chunking",
+          "sequence_tracking",
+          "integrity_hash",
+          "mirror_replay"
+        ]
+      },
+      "proof": {
+        "payloadHash": "6GEi5KZpy2go6uGxb9bIdta9hxRgc9ASRwQk92vBMu8=",
+        "resultHash": "nYSVXbH2x1VubyQfKjJR/gyeXwvbUx1zRpDAd+A079M=",
+        "settlementHash": "HpoERnc6gdVzDJcPDhTXio+c6S76WbslpU1A2SQ+VHE=",
+        "reputationHash": "dr3qob+XHR6ScNRNjYbTFXInR/jsjoIKq3sAqOMiHC4=",
+        "eventChainHash": "6IZhsaSIJkVg6lPdGARNm5600RFE2p+XfXPiJidL20A=",
+        "packetHash": "OEDjTi+o2sFdE4+OpbGn92V9Grvr17VdF6BLaZpN4FY="
+      },
+      "summary": {
+        "status": "proof_complete",
+        "confidence": 0.97,
+        "shortText": "Verifiable AI task vera-ai-task-1777461822450-e4a01af9-e closed with accepted verification and simulated settlement."
+      },
+      "refs": {
+        "localRecordId": "proof-run-1777461822450-52e7933e-0",
+        "dashboardPath": "/api/vera/verifiable-ai/runs/proof-run-1777461822450-52e7933e-0",
+        "blockStreamRef": null
+      }
+    },
+    "packetHash": "OEDjTi+o2sFdE4+OpbGn92V9Grvr17VdF6BLaZpN4FY=",
+    "eventId": "evt-proof-run-1777461822450-52e7933e-0",
+    "eventType": "task.proof_complete",
+    "taskId": "vera-ai-task-1777461822450-e4a01af9-e",
+    "agentId": "proof-publisher",
+    "runId": "proof-run-1777461822450-52e7933e-0",
+    "sequenceNumber": 1,
+    "consensusTimestamp": "2026-04-29T11:23:42.457Z",
+    "current": true,
+    "supersededBy": null,
+    "indexedAt": "2026-04-29T11:23:42.458Z"
+  },
+  {
+    "packet": {
+      "_vera": {
+        "schema": "vera.memory.packet.v1",
+        "eventType": "task.proof_complete",
+        "eventId": "evt-proof-run-1777461906244-04e7f691-0",
+        "network": "mainnet",
+        "source": "vera-proof-kernel",
+        "createdAt": "2026-04-29T11:25:06.244Z",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "agentId": "proof-publisher",
+        "runId": "proof-run-1777461906244-04e7f691-0",
+        "correlationId": "proof-run-1777461906244-04e7f691-0",
+        "learnable": false,
+        "privacy": "public_summary"
+      },
+      "_hip993": {
+        "type": "VERA_MEMORY_PACKET",
+        "version": "1.0.0",
+        "max_chunk_size": 4096,
+        "features": [
+          "chunking",
+          "sequence_tracking",
+          "integrity_hash",
+          "mirror_replay"
+        ]
+      },
+      "proof": {
+        "payloadHash": "6GEi5KZpy2go6uGxb9bIdta9hxRgc9ASRwQk92vBMu8=",
+        "resultHash": "SSdi2EA+xMb0jbmsJPTmQHYmW4IYg/+BaCseTPHJX60=",
+        "settlementHash": "HpoERnc6gdVzDJcPDhTXio+c6S76WbslpU1A2SQ+VHE=",
+        "reputationHash": "dr3qob+XHR6ScNRNjYbTFXInR/jsjoIKq3sAqOMiHC4=",
+        "eventChainHash": "m5fEtWEXkKY3RFijGeOJmfe/WXQzwMA9oFaI6tBMT08=",
+        "packetHash": "nALA086Tb6EAFoHz4CQdZ9fSQ9SPK8vHKiMDZozLHeU="
+      },
+      "summary": {
+        "status": "proof_complete",
+        "confidence": 0.97,
+        "shortText": "Verifiable AI task vera-ai-task-1777461906244-337cadc6-b closed with accepted verification and simulated settlement."
+      },
+      "refs": {
+        "localRecordId": "proof-run-1777461906244-04e7f691-0",
+        "dashboardPath": "/api/vera/verifiable-ai/runs/proof-run-1777461906244-04e7f691-0",
+        "blockStreamRef": null
+      }
+    },
+    "packetHash": "nALA086Tb6EAFoHz4CQdZ9fSQ9SPK8vHKiMDZozLHeU=",
+    "eventId": "evt-proof-run-1777461906244-04e7f691-0",
+    "eventType": "task.proof_complete",
+    "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+    "agentId": "proof-publisher",
+    "runId": "proof-run-1777461906244-04e7f691-0",
+    "sequenceNumber": 1,
+    "consensusTimestamp": "2026-04-29T11:25:06.252Z",
+    "current": true,
+    "supersededBy": null,
+    "indexedAt": "2026-04-29T11:25:06.252Z"
+  },
+  {
+    "packet": {
+      "_vera": {
+        "schema": "vera.memory.packet.v1",
+        "eventType": "task.proof_complete",
+        "eventId": "evt-proof-run-1777461942336-aca26fb9-5",
+        "network": "testnet",
+        "source": "vera-proof-kernel",
+        "createdAt": "2026-04-29T11:25:42.336Z",
+        "taskId": "vera-ai-task-1777461942336-858f60f6-2",
+        "agentId": "proof-publisher",
+        "runId": "proof-run-1777461942336-aca26fb9-5",
+        "correlationId": "proof-run-1777461942336-aca26fb9-5",
+        "learnable": false,
+        "privacy": "public_summary"
+      },
+      "_hip993": {
+        "type": "VERA_MEMORY_PACKET",
+        "version": "1.0.0",
+        "max_chunk_size": 4096,
+        "features": [
+          "chunking",
+          "sequence_tracking",
+          "integrity_hash",
+          "mirror_replay"
+        ]
+      },
+      "proof": {
+        "payloadHash": "6GEi5KZpy2go6uGxb9bIdta9hxRgc9ASRwQk92vBMu8=",
+        "resultHash": "3JD50Vj+OT/xdSpB2yJaUb4ZJTQzE1/0HY3N3xtCPOM=",
+        "settlementHash": "HpoERnc6gdVzDJcPDhTXio+c6S76WbslpU1A2SQ+VHE=",
+        "reputationHash": "dr3qob+XHR6ScNRNjYbTFXInR/jsjoIKq3sAqOMiHC4=",
+        "eventChainHash": "2pya8wP43/AyQRpmbaGNtI/5Y3VLTClhhjA6vrMbr1M=",
+        "packetHash": "Q239KPRJvJz+B0JCCFf7H2cqZut0DaZQ3PFCUt57emw="
+      },
+      "summary": {
+        "status": "proof_complete",
+        "confidence": 0.97,
+        "shortText": "Verifiable AI task vera-ai-task-1777461942336-858f60f6-2 closed with accepted verification and simulated settlement."
+      },
+      "refs": {
+        "localRecordId": "proof-run-1777461942336-aca26fb9-5",
+        "dashboardPath": "/api/vera/verifiable-ai/runs/proof-run-1777461942336-aca26fb9-5",
+        "blockStreamRef": null
+      }
+    },
+    "packetHash": "Q239KPRJvJz+B0JCCFf7H2cqZut0DaZQ3PFCUt57emw=",
+    "eventId": "evt-proof-run-1777461942336-aca26fb9-5",
+    "eventType": "task.proof_complete",
+    "taskId": "vera-ai-task-1777461942336-858f60f6-2",
+    "agentId": "proof-publisher",
+    "runId": "proof-run-1777461942336-aca26fb9-5",
+    "sequenceNumber": 1,
+    "consensusTimestamp": "2026-04-29T11:25:43.113Z",
+    "current": true,
+    "supersededBy": null,
+    "indexedAt": "2026-04-29T11:25:43.113Z"
+  }
+]

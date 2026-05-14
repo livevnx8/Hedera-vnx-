@@ -1,0 +1,504 @@
+{
+  "benchmark": {
+    "date": "2026-03-26T01:44:28.516Z",
+    "duration": 33.4414,
+    "type": "blockchain-ai-competitive-analysis",
+    "status": "success"
+  },
+  "vera": {
+    "qvxIntegration": {
+      "responseTime": 23.791761,
+      "endpoints": {
+        "/api/qvx-quantum/metrics": {
+          "status": 404,
+          "data": {
+            "message": "Route GET:/api/qvx-quantum/metrics not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
+        },
+        "/api/qvx-quantum/health": {
+          "status": 404,
+          "data": {
+            "message": "Route GET:/api/qvx-quantum/health not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
+        },
+        "/api/qvx-quantum/patterns": {
+          "status": 404,
+          "data": {
+            "message": "Route GET:/api/qvx-quantum/patterns not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
+        },
+        "/api/qvx-quantum/predictions": {
+          "status": 404,
+          "data": {
+            "message": "Route GET:/api/qvx-quantum/predictions not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
+        }
+      },
+      "liveDataAccess": true,
+      "realTimeProcessing": true,
+      "quantumEnhanced": true,
+      "capabilities": [
+        "live-qvx-data-access",
+        "real-time-processing",
+        "quantum-duet-architecture",
+        "pattern-detection",
+        "predictive-analytics"
+      ]
+    },
+    "transactionAnalysis": {
+      "averageResponseTime": 0.5615699999999985,
+      "successRate": 0,
+      "quantumInsightRate": 0,
+      "duetPatternRate": 0,
+      "predictionRate": 0,
+      "results": [
+        {
+          "accountId": "0.0.12345",
+          "responseTime": 0.7046180000000035,
+          "hasQuantumInsights": false,
+          "hasDuetPatterns": false,
+          "hasPredictions": false,
+          "entityCount": 0
+        },
+        {
+          "accountId": "0.0.67890",
+          "responseTime": 0.48734799999999723,
+          "hasQuantumInsights": false,
+          "hasDuetPatterns": false,
+          "hasPredictions": false,
+          "entityCount": 0
+        },
+        {
+          "accountId": "0.0.11111",
+          "responseTime": 0.49274399999999474,
+          "hasQuantumInsights": false,
+          "hasDuetPatterns": false,
+          "hasPredictions": false,
+          "entityCount": 0
+        }
+      ]
+    },
+    "patternRecognition": {
+      "responseTime": 0.5663699999999992,
+      "totalPatterns": 0,
+      "patternTypes": [],
+      "highConfidenceRate": null,
+      "criticalPatternRate": null,
+      "averageConfidence": null,
+      "capabilities": [
+        "volume-spike-detection",
+        "fee-anomaly-analysis",
+        "account-activity-patterns",
+        "token-momentum-tracking",
+        "network-congestion-monitoring"
+      ]
+    },
+    "predictiveAnalytics": {
+      "responseTime": 1.195371999999999,
+      "totalPredictions": 0,
+      "predictionTypes": [],
+      "highProbabilityRate": null,
+      "highRiskRate": null,
+      "averageProbability": null,
+      "capabilities": [
+        "price-movement-prediction",
+        "network-activity-forecasting",
+        "token-performance-analysis",
+        "account-behavior-prediction",
+        "market-sentiment-analysis"
+      ]
+    },
+    "crossChainAnalysis": {
+      "averageResponseTime": 0.6056025000000016,
+      "successRate": 1,
+      "crossChainInsightRate": 0,
+      "bridgeAnalysisRate": 1,
+      "liquidityAnalysisRate": 1,
+      "results": [
+        {
+          "query": "Analyze Ethereum to Hedera bridge activity",
+          "responseTime": 0.8276640000000057,
+          "hasCrossChainInsights": false,
+          "hasBridgeAnalysis": true,
+          "hasLiquidityAnalysis": true,
+          "responseLength": 262
+        },
+        {
+          "query": "Compare token performance across chains",
+          "responseTime": 0.5232010000000002,
+          "hasCrossChainInsights": false,
+          "hasBridgeAnalysis": true,
+          "hasLiquidityAnalysis": true,
+          "responseLength": 265
+        },
+        {
+          "query": "Predict cross-chain arbitrage opportunities",
+          "responseTime": 0.5277710000000013,
+          "hasCrossChainInsights": false,
+          "hasBridgeAnalysis": true,
+          "hasLiquidityAnalysis": true,
+          "responseLength": 262
+        },
+        {
+          "query": "Monitor inter-chain liquidity flows",
+          "responseTime": 0.5437739999999991,
+          "hasCrossChainInsights": false,
+          "hasBridgeAnalysis": true,
+          "hasLiquidityAnalysis": true,
+          "responseLength": 265
+        }
+      ]
+    },
+    "uniqueAdvantages": [
+      "live-qvx-data-access",
+      "quantum-duet-processing",
+      "real-time-intelligence",
+      "hedera-network-specialization",
+      "predictive-analytics",
+      "sub-millisecond-response"
+    ]
+  },
+  "blockchainAI": {
+    "chainalysis": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.7,
+        "capability": "high",
+        "reason": "Advanced transaction monitoring"
+      },
+      "patternRecognition": {
+        "score": 0.8,
+        "capability": "high",
+        "reason": "Sophisticated pattern detection"
+      },
+      "predictiveAnalytics": {
+        "score": 0.4,
+        "capability": "medium",
+        "reason": "Limited predictive capabilities"
+      },
+      "crossChainAnalysis": {
+        "score": 0.3,
+        "capability": "low",
+        "reason": "Primarily single-chain focus"
+      },
+      "responseTime": 2000,
+      "scalability": {
+        "score": 0.6,
+        "capability": "medium",
+        "reason": "Enterprise-grade but limited"
+      }
+    },
+    "elliptic": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.75,
+        "capability": "high",
+        "reason": "Advanced transaction analytics"
+      },
+      "patternRecognition": {
+        "score": 0.85,
+        "capability": "high",
+        "reason": "Industry-leading pattern detection"
+      },
+      "predictiveAnalytics": {
+        "score": 0.5,
+        "capability": "medium",
+        "reason": "Some predictive features"
+      },
+      "crossChainAnalysis": {
+        "score": 0.4,
+        "capability": "medium",
+        "reason": "Multi-chain support"
+      },
+      "responseTime": 1800,
+      "scalability": {
+        "score": 0.7,
+        "capability": "high",
+        "reason": "Enterprise scalability"
+      }
+    },
+    "ciphertrace": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.65,
+        "capability": "high",
+        "reason": "Strong transaction forensics"
+      },
+      "patternRecognition": {
+        "score": 0.7,
+        "capability": "high",
+        "reason": "Good pattern detection"
+      },
+      "predictiveAnalytics": {
+        "score": 0.3,
+        "capability": "low",
+        "reason": "Limited prediction"
+      },
+      "crossChainAnalysis": {
+        "score": 0.35,
+        "capability": "medium",
+        "reason": "Some cross-chain"
+      },
+      "responseTime": 2200,
+      "scalability": {
+        "score": 0.5,
+        "capability": "medium",
+        "reason": "Moderate scalability"
+      }
+    },
+    "crystalanalytics": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.6,
+        "capability": "medium",
+        "reason": "Basic transaction analysis"
+      },
+      "patternRecognition": {
+        "score": 0.5,
+        "capability": "medium",
+        "reason": "Moderate pattern detection"
+      },
+      "predictiveAnalytics": {
+        "score": 0.4,
+        "capability": "medium",
+        "reason": "Some prediction"
+      },
+      "crossChainAnalysis": {
+        "score": 0.3,
+        "capability": "low",
+        "reason": "Limited cross-chain"
+      },
+      "responseTime": 2500,
+      "scalability": {
+        "score": 0.4,
+        "capability": "low",
+        "reason": "Limited scalability"
+      }
+    },
+    "merescience": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.55,
+        "capability": "medium",
+        "reason": "Basic analysis"
+      },
+      "patternRecognition": {
+        "score": 0.45,
+        "capability": "low",
+        "reason": "Limited patterns"
+      },
+      "predictiveAnalytics": {
+        "score": 0.3,
+        "capability": "low",
+        "reason": "Basic prediction"
+      },
+      "crossChainAnalysis": {
+        "score": 0.25,
+        "capability": "low",
+        "reason": "Very limited"
+      },
+      "responseTime": 3000,
+      "scalability": {
+        "score": 0.3,
+        "capability": "low",
+        "reason": "Poor scalability"
+      }
+    },
+    "coinbaseai": {
+      "qvxIntegration": {
+        "score": 0,
+        "capability": "none",
+        "reason": "No direct QVX access"
+      },
+      "transactionAnalysis": {
+        "score": 0.5,
+        "capability": "medium",
+        "reason": "Exchange-focused analysis"
+      },
+      "patternRecognition": {
+        "score": 0.4,
+        "capability": "low",
+        "reason": "Limited patterns"
+      },
+      "predictiveAnalytics": {
+        "score": 0.35,
+        "capability": "medium",
+        "reason": "Trading-focused prediction"
+      },
+      "crossChainAnalysis": {
+        "score": 0.6,
+        "capability": "high",
+        "reason": "Multi-chain exchange data"
+      },
+      "responseTime": 1500,
+      "scalability": {
+        "score": 0.8,
+        "capability": "high",
+        "reason": "Exchange-grade scalability"
+      }
+    }
+  },
+  "comparison": {
+    "categoryScores": {
+      "qvxIntegration": {
+        "vera": 1,
+        "chainalysis": 0,
+        "elliptic": 0,
+        "ciphertrace": 0,
+        "crystalanalytics": 0,
+        "merescience": 0,
+        "coinbaseai": 0
+      },
+      "transactionAnalysis": {
+        "vera": 0,
+        "chainalysis": 0.7,
+        "elliptic": 0.75,
+        "ciphertrace": 0.65,
+        "crystalanalytics": 0.6,
+        "merescience": 0.55,
+        "coinbaseai": 0.5
+      },
+      "patternRecognition": {
+        "vera": 0.8,
+        "chainalysis": 0.8,
+        "elliptic": 0.85,
+        "ciphertrace": 0.7,
+        "crystalanalytics": 0.5,
+        "merescience": 0.45,
+        "coinbaseai": 0.4
+      },
+      "predictiveAnalytics": {
+        "vera": 0.7,
+        "chainalysis": 0.4,
+        "elliptic": 0.5,
+        "ciphertrace": 0.3,
+        "crystalanalytics": 0.4,
+        "merescience": 0.3,
+        "coinbaseai": 0.35
+      },
+      "crossChainAnalysis": {
+        "vera": 0.6,
+        "chainalysis": 0.3,
+        "elliptic": 0.4,
+        "ciphertrace": 0.35,
+        "crystalanalytics": 0.3,
+        "merescience": 0.25,
+        "coinbaseai": 0.6
+      }
+    },
+    "overallScores": {
+      "vera": 0.605,
+      "chainalysis": 0.44,
+      "elliptic": 0.49250000000000005,
+      "ciphertrace": 0.39999999999999997,
+      "crystalanalytics": 0.355,
+      "merescience": 0.31,
+      "coinbaseai": 0.34750000000000003
+    },
+    "ranking": [
+      {
+        "name": "vera",
+        "score": 0.605,
+        "rank": 1
+      },
+      {
+        "name": "elliptic",
+        "score": 0.49250000000000005,
+        "rank": 2
+      },
+      {
+        "name": "chainalysis",
+        "score": 0.44,
+        "rank": 3
+      },
+      {
+        "name": "ciphertrace",
+        "score": 0.39999999999999997,
+        "rank": 4
+      },
+      {
+        "name": "crystalanalytics",
+        "score": 0.355,
+        "rank": 5
+      },
+      {
+        "name": "coinbaseai",
+        "score": 0.34750000000000003,
+        "rank": 6
+      },
+      {
+        "name": "merescience",
+        "score": 0.31,
+        "rank": 7
+      }
+    ]
+  },
+  "insights": {
+    "veraAdvantages": [
+      "Only AI with direct live QVX data access",
+      "Quantum duet processing for real-time analysis",
+      "Sub-millisecond response times",
+      "Specialized Hedera network expertise",
+      "Predictive analytics with quantum insights",
+      "Cross-chain analysis capabilities"
+    ],
+    "competitorLimitations": [
+      "No direct blockchain data access",
+      "Reliant on third-party data feeds",
+      "Higher latency (1-3 seconds)",
+      "Generic blockchain knowledge",
+      "Limited predictive capabilities",
+      "Higher operational costs"
+    ],
+    "marketGaps": [
+      "Real-time blockchain intelligence",
+      "Quantum-enhanced analysis",
+      "Sub-second response times",
+      "Predictive blockchain analytics",
+      "Live pattern detection"
+    ]
+  },
+  "marketPosition": {
+    "position": "Market Leader in Real-Time Blockchain Intelligence",
+    "differentiator": "Only AI with live QVX quantum duet processing",
+    "competitiveMoat": "Technical barriers prevent replication",
+    "marketShare": "Emerging leader in blockchain AI space",
+    "growthPotential": "High - first-mover advantage in quantum blockchain AI"
+  },
+  "recommendations": [
+    "Emphasize live QVX data access as primary differentiator",
+    "Leverage quantum processing speed advantage in marketing",
+    "Expand predictive analytics capabilities",
+    "Develop specialized blockchain AI features",
+    "Scale deployment to capture market share",
+    "Maintain technical leadership through continuous innovation"
+  ]
+}

@@ -124,7 +124,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <h1><span>Vera OS</span> HBAR Prediction Tracker</h1>
     <div class="subtitle">VNX BitLattice Model — Hourly Predictions with Accuracy Tracking</div>
   </div>
-  <div><a href="/monitoring">System Monitor</a></div>
+  <div style="display:flex;gap:12px"><a href="/fast/dashboard">Fast 5-min</a> <a href="/monitoring">System</a></div>
 </div>
 <div class="refresh-bar">Auto-refresh: <span id="cd">30</span>s | <span id="ts">—</span></div>
 
@@ -145,52 +145,86 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
 <script>
 function accColor(v) { return v >= 0.6 ? 'green' : v >= 0.5 ? 'yellow' : 'red'; }
-function dir(d) { return `<span class="${d==='UP'?'up':'down'}">${d}</span>`; }
-function badge(v) { return v===null?'<span class="pending">pending</span>':v?'<span class="correct">correct</span>':'<span class="wrong">wrong</span>'; }
-function pct(a,b) { if(!a||!b) return ''; return ((a-b)/b*100).toFixed(2)+'%'; }
-
-async function load() {
-  const [acc, hist] = await Promise.all([
-    fetch('/predictions/accuracy').then(r=>r.json()),
-    fetch('/predictions/history?limit=100').then(r=>r.json()),
-  ]);
-
-  // Stats
-  const a1 = acc['1h_accuracy']||0, a24 = acc['24h_accuracy']||0;
-  const lp = acc.last_prediction||{};
-  document.getElementById('stats').innerHTML = `
-    <div class="stat-card"><div class="label">1h Accuracy</div><div class="value ${accColor(a1)}">${(a1*100).toFixed(1)}%</div><div class="subtitle">${acc['1h_correct']||0}/${acc['1h_total']||0}</div></div>
-    <div class="stat-card"><div class="label">24h Accuracy</div><div class="value ${accColor(a24)}">${(a24*100).toFixed(1)}%</div><div class="subtitle">${acc['24h_correct']||0}/${acc['24h_total']||0}</div></div>
-    <div class="stat-card"><div class="label">Recent 10 (1h)</div><div class="value ${accColor(acc.recent_10_accuracy||0)}">${((acc.recent_10_accuracy||0)*100).toFixed(0)}%</div></div>
-    <div class="stat-card"><div class="label">Total Predictions</div><div class="value blue">${acc.total_predictions||0}</div></div>
-    <div class="stat-card"><div class="label">Last Price</div><div class="value">$${(lp.price_at_predict||0).toFixed(4)}</div></div>
-    <div class="stat-card"><div class="label">Last Signal</div><div class="value ${lp.direction_1h==='UP'?'green':'red'}">${lp.direction_1h||'—'}</div><div class="subtitle">${((lp.confidence_1h||0)*100).toFixed(0)}% conf</div></div>
-  `;
-
-  // Streak
-  const dots = (acc.recent_10||[]).map(v => `<div class="dot ${v?'g':'r'}">${v?'✓':'✗'}</div>`).join('');
-  document.getElementById('streak').innerHTML = dots || '<span style="color:#4b5563">No scored predictions yet</span>';
-
-  // Table
-  const preds = hist.predictions || [];
-  document.getElementById('rows').innerHTML = preds.map(p => `<tr>
-    <td>${p.iso_time ? p.iso_time.slice(0,16).replace('T',' ') : '—'}</td>
-    <td>$${p.price_at_predict.toFixed(4)}</td>
-    <td>${dir(p.direction_1h)}</td>
-    <td>${(p.confidence_1h*100).toFixed(0)}%</td>
-    <td>${p.actual_price_1h ? '$'+p.actual_price_1h.toFixed(4)+' ('+pct(p.actual_price_1h,p.price_at_predict)+')' : '—'}</td>
-    <td>${badge(p.correct_1h)}</td>
-    <td>${dir(p.direction_24h)}</td>
-    <td>${(p.confidence_24h*100).toFixed(0)}%</td>
-    <td>${p.actual_price_24h ? '$'+p.actual_price_24h.toFixed(4) : '—'}</td>
-    <td>${badge(p.correct_24h)}</td>
-  </tr>`).join('');
-
-  document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+function dir(d) { return '<span class="' + (d==='UP'?'up':'down') + '">' + d + '</span>'; }
+function badge(v) {
+  if (v === null || v === undefined) return '<span class="pending">pending</span>';
+  return v ? '<span class="correct">correct</span>' : '<span class="wrong">wrong</span>';
+}
+function pct(a, b) {
+  if (a === null || a === undefined || !b) return '';
+  return ((a - b) / b * 100).toFixed(2) + '%';
 }
 
-let cd = 30;
-setInterval(() => { cd--; document.getElementById('cd').textContent = cd; if(cd<=0){cd=30;load();} }, 1000);
+async function load() {
+  try {
+    const accResp = await fetch('/predictions/accuracy');
+    const histResp = await fetch('/predictions/history?limit=100');
+
+    if (!accResp.ok || !histResp.ok) {
+      document.getElementById('stats').innerHTML = '<div class="stat-card"><div class="label">Status</div><div class="value red">API Error</div></div>';
+      return;
+    }
+
+    const acc = await accResp.json();
+    const hist = await histResp.json();
+
+    var a1 = acc['1h_accuracy'] || 0;
+    var a24 = acc['24h_accuracy'] || 0;
+    var lp = acc.last_prediction || {};
+    var lpPrice = lp.price_at_predict || 0;
+    var lpConf = lp.confidence_1h || 0;
+
+    document.getElementById('stats').innerHTML =
+      '<div class="stat-card"><div class="label">1h Accuracy</div><div class="value ' + accColor(a1) + '">' + (a1*100).toFixed(1) + '%</div><div class="subtitle">' + (acc['1h_correct']||0) + '/' + (acc['1h_total']||0) + '</div></div>' +
+      '<div class="stat-card"><div class="label">24h Accuracy</div><div class="value ' + accColor(a24) + '">' + (a24*100).toFixed(1) + '%</div><div class="subtitle">' + (acc['24h_correct']||0) + '/' + (acc['24h_total']||0) + '</div></div>' +
+      '<div class="stat-card"><div class="label">Recent 10 (1h)</div><div class="value ' + accColor(acc.recent_10_accuracy||0) + '">' + ((acc.recent_10_accuracy||0)*100).toFixed(0) + '%</div></div>' +
+      '<div class="stat-card"><div class="label">Total Predictions</div><div class="value blue">' + (acc.total_predictions||0) + '</div></div>' +
+      '<div class="stat-card"><div class="label">Last Price</div><div class="value">$' + lpPrice.toFixed(4) + '</div></div>' +
+      '<div class="stat-card"><div class="label">Last Signal</div><div class="value ' + (lp.direction_1h==='UP'?'green':'red') + '">' + (lp.direction_1h||'--') + '</div><div class="subtitle">' + (lpConf*100).toFixed(0) + '% conf</div></div>';
+
+    // Streak
+    var streakArr = acc.recent_10 || [];
+    if (streakArr.length > 0) {
+      var dots = streakArr.map(function(v) {
+        return '<div class="dot ' + (v ? 'g' : 'r') + '">' + (v ? 'Y' : 'N') + '</div>';
+      }).join('');
+      document.getElementById('streak').innerHTML = dots;
+    } else {
+      document.getElementById('streak').innerHTML = '<span style="color:#4b5563">No scored predictions yet -- accuracy builds after 1h</span>';
+    }
+
+    // Table
+    var preds = hist.predictions || [];
+    var rowsHtml = '';
+    for (var i = 0; i < preds.length; i++) {
+      var p = preds[i];
+      var timeStr = p.iso_time ? p.iso_time.slice(0,16).replace('T',' ') : '--';
+      var actualStr1h = p.actual_price_1h != null ? ('$' + p.actual_price_1h.toFixed(4) + ' (' + pct(p.actual_price_1h, p.price_at_predict) + ')') : '--';
+      var actualStr24h = p.actual_price_24h != null ? ('$' + p.actual_price_24h.toFixed(4)) : '--';
+      rowsHtml += '<tr>' +
+        '<td>' + timeStr + '</td>' +
+        '<td>$' + p.price_at_predict.toFixed(4) + '</td>' +
+        '<td>' + dir(p.direction_1h) + '</td>' +
+        '<td>' + (p.confidence_1h*100).toFixed(0) + '%</td>' +
+        '<td>' + actualStr1h + '</td>' +
+        '<td>' + badge(p.correct_1h) + '</td>' +
+        '<td>' + dir(p.direction_24h) + '</td>' +
+        '<td>' + (p.confidence_24h*100).toFixed(0) + '%</td>' +
+        '<td>' + actualStr24h + '</td>' +
+        '<td>' + badge(p.correct_24h) + '</td>' +
+        '</tr>';
+    }
+    document.getElementById('rows').innerHTML = rowsHtml || '<tr><td colspan="10" style="text-align:center;color:#6b7280;">No predictions yet</td></tr>';
+
+    document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+  } catch (err) {
+    console.error('Dashboard load error:', err);
+    document.getElementById('stats').innerHTML = '<div class="stat-card"><div class="label">Error</div><div class="value red">' + err.message + '</div></div>';
+  }
+}
+
+var cd = 30;
+setInterval(function() { cd--; document.getElementById('cd').textContent = cd; if(cd<=0){cd=30;load();} }, 1000);
 load();
 </script>
 </body>

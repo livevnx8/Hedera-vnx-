@@ -1,0 +1,293 @@
+{
+  "standard": "VNX-SWARM-EVAL-1",
+  "createdAt": "2026-05-01T00:01:25.514Z",
+  "caseCount": 9,
+  "passed": 9,
+  "failed": 0,
+  "score": 45,
+  "maxScore": 45,
+  "passRate": 1,
+  "promotionReady": true,
+  "specialistStats": [
+    {
+      "id": "proof-kernel",
+      "selected": 2,
+      "expected": 2,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 2
+    },
+    {
+      "id": "code-forge",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "creative-nexus",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "data-weaver",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "ledger-ops",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "logic-sage",
+      "selected": 3,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "manifesto-spirit",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "memory-weave",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "network-pulse",
+      "selected": 2,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "qvx-telemetry",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "security-warden",
+      "selected": 1,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    },
+    {
+      "id": "vera-dialogue",
+      "selected": 9,
+      "expected": 1,
+      "missed": 0,
+      "forbidden": 0,
+      "contributionScore": 1
+    }
+  ],
+  "recommendedRouteWeights": {
+    "proof-kernel": 0.9,
+    "code-forge": 0.5,
+    "creative-nexus": 0.5,
+    "data-weaver": 0.5,
+    "ledger-ops": 0.5,
+    "logic-sage": 0.7,
+    "manifesto-spirit": 0.5,
+    "memory-weave": 0.5,
+    "network-pulse": 0.6,
+    "qvx-telemetry": 0.5,
+    "security-warden": 0.5,
+    "vera-dialogue": 1.3
+  },
+  "cases": [
+    {
+      "id": "code-typescript-build",
+      "category": "code",
+      "prompt": "Fix the TypeScript API test failure and explain which build command proves the patch.",
+      "selected": [
+        "code-forge",
+        "vera-dialogue",
+        "logic-sage"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 3,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "hedera-proof-receipt",
+      "category": "hedera",
+      "prompt": "Verify the Hedera HCS topic receipt hash and produce a HashScan provenance note.",
+      "selected": [
+        "ledger-ops",
+        "proof-kernel",
+        "logic-sage",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 4,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "qvx-runtime-telemetry",
+      "category": "qvx",
+      "prompt": "Summarize QVX runtime telemetry, GPU status, latency, and operator health signals.",
+      "selected": [
+        "qvx-telemetry",
+        "network-pulse",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 3,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "security-key-boundary",
+      "category": "security",
+      "prompt": "Audit the private key signing flow and identify trust boundaries before mainnet approval.",
+      "selected": [
+        "security-warden",
+        "proof-kernel",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 3,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "memory-session-recall",
+      "category": "memory",
+      "prompt": "Remember the previous session context and separate what is recalled from verified facts.",
+      "selected": [
+        "memory-weave",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 2,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "architecture-lattice-routing",
+      "category": "architecture",
+      "prompt": "Plan the lattice router topology so specialists are selected by route health instead of running every node.",
+      "selected": [
+        "network-pulse",
+        "logic-sage",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 3,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "data-pattern-analysis",
+      "category": "data",
+      "prompt": "Analyze this dataset pattern, produce stats, and describe what chart should compare the measurements.",
+      "selected": [
+        "data-weaver",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 2,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "creative-positioning",
+      "category": "creative",
+      "prompt": "Write product copy for the sovereign VNX artifact without overclaiming production readiness.",
+      "selected": [
+        "creative-nexus",
+        "manifesto-spirit",
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 3,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    },
+    {
+      "id": "plain-help",
+      "category": "dialogue",
+      "prompt": "Help me understand what Vera can do next.",
+      "selected": [
+        "vera-dialogue"
+      ],
+      "expectedAnyHit": true,
+      "expectedAllHit": true,
+      "avoidedForbidden": true,
+      "contextTermsHit": true,
+      "outputCount": 1,
+      "score": 5,
+      "maxScore": 5,
+      "pass": true,
+      "notes": []
+    }
+  ]
+}

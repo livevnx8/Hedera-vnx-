@@ -1,0 +1,54 @@
+═══════════════════════════════════════════════════════════════════════
+  📊 VERA AGENT DASHBOARD - Last Updated: Sun Mar 29 2026
+═══════════════════════════════════════════════════════════════════════
+
+⚡ ENERGY AUDITOR
+   Status: 🟢 RUNNING
+   Cycles: 36
+   ML Predictions: 12
+   Errors: 0
+   Topic: https://hashscan.io/mainnet/topic/0.0.10412579
+
+📈 DEFI ANALYST
+   Status: 🟢 RUNNING
+   Cycles: 27
+   Arbitrage: 23
+   Whale Alerts: 31
+   Errors: 0
+   Topic: https://hashscan.io/mainnet/topic/0.0.10412577
+
+🔒 SECURITY GUARDIAN
+   Status: 🟢 RUNNING
+   Cycles: 55
+   Threats: 272
+   Errors: 0
+   Topic: https://hashscan.io/mainnet/topic/0.0.10409351
+
+🌱 CARBON VALIDATOR
+   Status: 🟢 RUNNING
+   Cycles: 35
+   Credits: 129
+   Errors: 0
+   Topic: https://hashscan.io/mainnet/topic/0.0.10412579
+
+═══════════════════════════════════════════════════════════════════════
+📈 SUMMARY
+═══════════════════════════════════════════════════════════════════════
+
+Total Cycles: 153
+HCS Messages: ~600+ (estimated)
+Active Topics: 4 (CORE, DEFI, ENERGY, BRIDGE)
+Network: MAINNET
+Queue Status: 500ms throttling active
+Rate Limit Errors: 0
+
+═══════════════════════════════════════════════════════════════════════
+🔗 HASHSCAN VERIFICATION LINKS
+═══════════════════════════════════════════════════════════════════════
+
+ENERGY Topic:  https://hashscan.io/mainnet/topic/0.0.10412579
+DEFI Topic:    https://hashscan.io/mainnet/topic/0.0.10412577
+CORE Topic:    https://hashscan.io/mainnet/topic/0.0.10409351
+BRIDGE Topic:  https://hashscan.io/mainnet/topic/0.0.10412578
+
+═══════════════════════════════════════════════════════════════════════

@@ -1,0 +1,490 @@
+[
+  {
+    "id": "workflow-1777221867158-50449b85",
+    "subject": "Marketplace task task-pub-3: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867158,
+    "updatedAt": 1777221867158,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-pub-3."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-1a510abf",
+    "subject": "Marketplace task task-bid-1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-bid-1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-83ad85c2",
+    "subject": "Marketplace task task-bid-2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-bid-2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-fab7c5c0",
+    "subject": "Marketplace task task-bid-3: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-bid-3."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-0bddf593",
+    "subject": "Marketplace task task-bid-4: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-bid-4."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-eada3b01",
+    "subject": "Marketplace task task-win-1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-2510ae7d",
+    "subject": "Marketplace task task-win-2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-ebe682f0",
+    "subject": "Marketplace task task-win-3: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-3."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-b1958b10",
+    "subject": "Marketplace task task-win-4: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-4."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-9f51de1f",
+    "subject": "Marketplace task task-win-5: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-5."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-6f1d3cd4",
+    "subject": "Marketplace task task-win-6: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-win-6."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-32164d16",
+    "subject": "Marketplace task task-adv-1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-adv-1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-0374a553",
+    "subject": "Marketplace task task-adv-2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-adv-2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-234ffcf6",
+    "subject": "Marketplace task t1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task t1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-50910322",
+    "subject": "Marketplace task t2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task t2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-cf09afdb",
+    "subject": "Marketplace task t3: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task t3."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-66b93b40",
+    "subject": "Marketplace task q1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task q1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-4f948556",
+    "subject": "Marketplace task q2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task q2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-1ab50b97",
+    "subject": "Marketplace task s1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task s1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867159-03e235b8",
+    "subject": "Marketplace task s2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867159,
+    "updatedAt": 1777221867159,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task s2."
+    ]
+  },
+  {
+    "id": "workflow-1777221867160-f27f8cc7",
+    "subject": "Marketplace task task-pub-1: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867160,
+    "updatedAt": 1777221867160,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-pub-1."
+    ]
+  },
+  {
+    "id": "workflow-1777221867160-7c68b483",
+    "subject": "Marketplace task task-pub-2: carbon-verification",
+    "currentStage": "task",
+    "status": "open",
+    "openedAt": 1777221867160,
+    "updatedAt": 1777221867160,
+    "evidence": [],
+    "notes": [
+      "Auto-opened from marketplace task task-pub-2."
+    ]
+  },
+  {
+    "id": "workflow-1777416824256-699b5da8",
+    "subject": "Verifiable Hedera AI task vera-ai-task-1777416824248-e003e9a8-e: carbon-verification",
+    "currentStage": "receipt",
+    "status": "closed",
+    "openedAt": 1777416824256,
+    "updatedAt": 1777416824264,
+    "evidence": [
+      {
+        "source": "dashboard_metric",
+        "stage": "task",
+        "summary": "Task created: carbon-verification",
+        "hash": "2MdmiigAasxXvXhteeK3peemOjU7Rr6jb1HPZWSzsho=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6"
+        },
+        "id": "evidence-1777416824258-8c016dd0",
+        "recordedAt": 1777416824259
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "award",
+        "summary": "First-party agent selected: carbon-verifier",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6",
+          "meridian": {
+            "status": "disabled"
+          }
+        },
+        "id": "evidence-1777416824262-a578d9f7",
+        "recordedAt": 1777416824262
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "execution",
+        "summary": "Result submitted by carbon-verifier",
+        "hash": "yIT53eAHCj2RCEDGt/9WvoKg1SR4IjvL7gcNp36+diM=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6"
+        },
+        "id": "evidence-1777416824263-988944f6",
+        "recordedAt": 1777416824263
+      },
+      {
+        "source": "test",
+        "stage": "verification",
+        "summary": "Verification accepted (1)",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6",
+          "details": [
+            "Schema valid",
+            "Confidence 0.950 >= threshold 0.95",
+            "Proof hash present and valid",
+            "Carbon verifier requires emissions, validation, audit, or retirement evidence",
+            "Service verifier passed for carbon-verification"
+          ]
+        },
+        "id": "evidence-1777416824263-641362fa",
+        "recordedAt": 1777416824263
+      },
+      {
+        "source": "settlement",
+        "stage": "settlement",
+        "summary": "Settlement simulated",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6",
+          "state": "simulated",
+          "amountHbar": 0.001,
+          "reason": "First-party dry-run settlement record; no funds moved"
+        },
+        "id": "evidence-1777416824263-562c4228",
+        "recordedAt": 1777416824263
+      },
+      {
+        "source": "reputation",
+        "stage": "reputation",
+        "summary": "Reputation updated for carbon-verifier",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6",
+          "agentId": "carbon-verifier",
+          "delta": 0.01,
+          "scoreAfter": 0.91,
+          "basis": "Verification outcome: accepted"
+        },
+        "id": "evidence-1777416824264-f4755807",
+        "recordedAt": 1777416824264
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "receipt",
+        "summary": "Local HCS-ready receipt emitted",
+        "hash": "oN2K60569TjNordyH9jn+3UzuUWWLaRJvZqm4ebXZnw=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416824248-e003e9a8-e",
+          "runId": "proof-run-1777416824248-7247d003-6",
+          "productionLabel": "prototype"
+        },
+        "id": "evidence-1777416824264-15e70820",
+        "recordedAt": 1777416824264
+      }
+    ],
+    "notes": [
+      "Opened by the verifiable AI proof kernel."
+    ],
+    "closedAt": 1777416824264
+  },
+  {
+    "id": "workflow-1777416978486-4c0a9df6",
+    "subject": "Verifiable Hedera AI task vera-ai-task-1777416978477-bda602ed-f: carbon-verification",
+    "currentStage": "receipt",
+    "status": "closed",
+    "openedAt": 1777416978486,
+    "updatedAt": 1777416978489,
+    "evidence": [
+      {
+        "source": "dashboard_metric",
+        "stage": "task",
+        "summary": "Task created: carbon-verification",
+        "hash": "QKwNDve/FF528FedqbcZlUeX2T/MKARziYF1hSoGFD4=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e"
+        },
+        "id": "evidence-1777416978487-96575db1",
+        "recordedAt": 1777416978487
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "award",
+        "summary": "First-party agent selected: carbon-verifier",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e",
+          "meridian": {
+            "status": "disabled"
+          }
+        },
+        "id": "evidence-1777416978488-a7edfd39",
+        "recordedAt": 1777416978488
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "execution",
+        "summary": "Result submitted by carbon-verifier",
+        "hash": "toQrBwN9VGlpU2A8Kue2dvLTlZJ5BMhe8dn6y1C+Vnk=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e"
+        },
+        "id": "evidence-1777416978488-7a37847a",
+        "recordedAt": 1777416978488
+      },
+      {
+        "source": "test",
+        "stage": "verification",
+        "summary": "Verification accepted (1)",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e",
+          "details": [
+            "Schema valid",
+            "Confidence 0.950 >= threshold 0.95",
+            "Proof hash present and valid",
+            "Carbon verifier requires emissions, validation, audit, or retirement evidence",
+            "Service verifier passed for carbon-verification"
+          ]
+        },
+        "id": "evidence-1777416978489-b2e81866",
+        "recordedAt": 1777416978489
+      },
+      {
+        "source": "settlement",
+        "stage": "settlement",
+        "summary": "Settlement simulated",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e",
+          "state": "simulated",
+          "amountHbar": 0.001,
+          "reason": "First-party dry-run settlement record; no funds moved"
+        },
+        "id": "evidence-1777416978489-083e8256",
+        "recordedAt": 1777416978489
+      },
+      {
+        "source": "reputation",
+        "stage": "reputation",
+        "summary": "Reputation updated for carbon-verifier",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e",
+          "agentId": "carbon-verifier",
+          "delta": 0.01,
+          "scoreAfter": 0.91,
+          "basis": "Verification outcome: accepted"
+        },
+        "id": "evidence-1777416978489-b7f228a9",
+        "recordedAt": 1777416978489
+      },
+      {
+        "source": "dashboard_metric",
+        "stage": "receipt",
+        "summary": "Local HCS-ready receipt emitted",
+        "hash": "dEuXhTEUExRqehekRlQvdueqJ7i51m7ZCxCj/wY0AN0=",
+        "metadata": {
+          "taskId": "vera-ai-task-1777416978477-bda602ed-f",
+          "runId": "proof-run-1777416978477-ac639df0-e",
+          "productionLabel": "prototype"
+        },
+        "id": "evidence-1777416978489-23b3d2bf",
+        "recordedAt": 1777416978489
+      }
+    ],
+    "notes": [
+      "Opened by the verifiable AI proof kernel."
+    ],
+    "closedAt": 1777416978489
+  }
+]

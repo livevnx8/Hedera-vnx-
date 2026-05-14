@@ -1,0 +1,12 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy service file
+COPY mockQvxService.js ./
+
+# No dependencies needed - uses built-in modules
+
+EXPOSE 5101
+
+CMD ["node", "mockQvxService.js"]

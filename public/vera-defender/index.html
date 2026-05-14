@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Defender - Hedera Network Defense</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #game-header {
+            width: 100%;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #001100, #003300, #001100);
+            border-bottom: 2px solid #0f0;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #0f0;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            font-size: 18px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #canvas-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #0f0;
+            box-shadow: 0 0 30px #0f0, inset 0 0 50px rgba(0, 255, 0, 0.1);
+            background: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            pointer-events: auto;
+            z-index: 20;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #0f0;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            background: transparent;
+            color: #0f0;
+            border: 2px solid #0f0;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            margin: 10px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 20px #0f0;
+            transform: scale(1.05);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn.wallet {
+            background: linear-gradient(135deg, #0f0, #00aa00);
+            color: #000;
+            border: 2px solid #0f0;
+        }
+        
+        .hcs-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: rgba(0, 50, 0, 0.8);
+            border: 1px solid #0f0;
+            font-size: 12px;
+        }
+        
+        .powerup-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .powerup {
+            padding: 5px 10px;
+            background: rgba(0, 50, 0, 0.8);
+            border: 1px solid #0f0;
+            font-size: 12px;
+            animation: glow 1s infinite alternate;
+        }
+        
+        #wave-bonus {
+            font-size: 32px;
+            color: #ff0;
+            text-shadow: 0 0 20px #ff0;
+            animation: pulse 1s infinite;
+        }
+        
+        #hcs-log {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 300px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #0f0;
+            padding: 10px;
+            font-size: 11px;
+            z-index: 1000;
+        }
+        
+        .hcs-message {
+            padding: 2px 0;
+            border-bottom: 1px solid #003300;
+        }
+        
+        #wallet-status {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            padding: 8px 15px;
+            background: rgba(0, 50, 0, 0.9);
+            border: 1px solid #0f0;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        #wallet-status.connected {
+            background: rgba(0, 100, 0, 0.9);
+            border-color: #0f0;
+        }
+        
+        #wallet-status.disconnected {
+            background: rgba(50, 0, 0, 0.9);
+            border-color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-header">
+            <div class="logo">🛡️ VERA DEFENDER</div>
+            <div class="stats">
+                <div class="stat">
+                    <span>SCORE:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="stat">
+                    <span>WAVE:</span>
+                    <span id="wave">1</span>
+                </div>
+                <div class="stat">
+                    <span>LIVES:</span>
+                    <span id="lives">3</span>
+                </div>
+                <div class="stat">
+                    <span>HBAR:</span>
+                    <span id="hbar-earned">0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="canvas-wrapper">
+            <canvas id="gameCanvas" tabindex="0"></canvas>
+            
+            <div id="ui-overlay">
+                <!-- Start Screen -->
+                <div id="start-screen" class="screen">
+                    <h1>🛡️ VERA DEFENDER</h1>
+                    <p style="margin-bottom: 30px; font-size: 18px;">Defend the Hedera Network from Carbon Bugs!</p>
+                    <button class="btn wallet" id="connect-wallet-btn">🔗 CONNECT WALLET</button>
+                    <button class="btn" id="select-skins-btn">🎨 CHOOSE SKINS</button>
+                    <button class="btn" id="start-btn">START GAME</button>
+                    <button class="btn" id="marketplace-btn" onclick="window.open('marketplace.html', '_blank')">🛒 SKIN MARKET</button>
+                    <div style="margin-top: 20px; font-size: 14px; opacity: 0.7;">
+                        <p>Controls: ← → to move | SPACE to shoot</p>
+                        <p>Cost: 0.01 HBAR per game | Earn: 0.001 HBAR per 1000 pts</p>
+                    </div>
+                </div>
+                
+                <!-- Game Over Screen -->
+                <div id="game-over-screen" class="screen hidden">
+                    <h1>GAME OVER</h1>
+                    <p style="font-size: 24px; margin-bottom: 20px;">Final Score: <span id="final-score">0</span></p>
+                    <p style="font-size: 18px; margin-bottom: 20px;">Waves Survived: <span id="final-wave">0</span></p>
+                    <p style="font-size: 18px; margin-bottom: 30px;">Net HBAR: <span id="final-hbar">0.00</span></p>
+                    <button class="btn" id="restart-btn">PLAY AGAIN</button>
+                    <button class="btn wallet" id="continue-btn">CONTINUE (0.05 HBAR)</button>
+                </div>
+                
+                <!-- Wave Complete Screen -->
+                <div id="wave-screen" class="screen hidden">
+                    <h1>WAVE COMPLETE!</h1>
+                    <p style="font-size: 20px;">Bonus: <span id="wave-bonus">0</span></p>
+                </div>
+            </div>
+            
+            <div class="hcs-status">
+                🟢 HCS: CONNECTED | Messages: <span id="hcs-count">0</span>
+            </div>
+            
+            <div class="powerup-indicator" id="powerups"></div>
+        </div>
+    </div>
+    
+    <div id="wallet-status" class="disconnected">
+        🔴 Wallet: Not Connected
+    </div>
+    
+    <div id="hcs-log">
+        <div style="font-weight: bold; margin-bottom: 5px;">📡 HCS STREAM</div>
+        <div id="hcs-messages"></div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hashconnect@0.2.4/dist/hashconnect.min.js"></script>
+    <script src="js/walletIntegration.js"></script>
+    <script src="js/skinRenderer.js"></script>
+    <script src="js/skinSelector.js"></script>
+    <script src="game-optimized.js"></script>
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitfrost IDE - Vera's Superior Coding Environment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/solidity.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-hover: #30363d;
+      --border-color: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --accent-primary: #58a6ff;
+      --accent-secondary: #7ee787;
+      --accent-warning: #d29922;
+      --accent-danger: #f85149;
+      --success: #238636;
+      --warning: #9e6a03;
+      --bitfrost-glow: #58a6ff;
+    }
+
+    body {
+      font-family: 'SF Mono', Monaco, Inconsolata, 'Fira Code', monospace;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      height: 48px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px var(--bitfrost-glow); }
+      50% { box-shadow: 0 0 20px var(--bitfrost-glow), 0 0 40px var(--bitfrost-glow); }
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .header-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .header-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+      box-shadow: 0 0 10px var(--accent-secondary);
+    }
+
+    /* Main Layout */
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    /* File Tree */
+    .file-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px 6px 24px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .tree-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .tree-item.active {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    .tree-item::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tree-item.folder::before {
+      content: '▶';
+      font-size: 8px;
+      transition: transform 0.2s;
+    }
+
+    .tree-item.folder.expanded::before {
+      transform: rotate(90deg);
+    }
+
+    .tree-item.file::before {
+      content: '';
+    }
+
+    .tree-item .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .tree-indent {
+      width: 16px;
+    }
+
+    /* Editor Area */
+    .editor-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-color);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      min-width: 120px;
+      max-width: 200px;
+    }
+
+    .tab:hover {
+      background: var(--bg-hover);
+    }
+
+    .tab.active {
+      background: var(--bg-primary);
+      border-top: 2px solid var(--accent-primary);
+    }
+
+    .tab.dirty::after {
+      content: '●';
+      color: var(--accent-primary);
+      font-size: 8px;
+    }
+
+    .tab-close {
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .tab:hover .tab-close {
+      opacity: 1;
+    }
+
+    /* Editor */
+    .editor-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-editor {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: none;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+    }
+
+    /* Right Panel - Bitfrost Tools */
+    .right-panel {
+      width: 320px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .panel-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+
+    .panel-tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .panel-tab.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    /* Bitfrost Tools */
+    .bitfrost-section {
+      margin-bottom: 24px;
+    }
+
+    .bitfrost-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+    }
+
+    .tool-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+
+    .tool-btn i {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tool-btn span {
+      font-size: 11px;
+    }
+
+    /* Chat Panel */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 90%;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-input {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .chat-input textarea {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      resize: none;
+      outline: none;
+    }
+
+    .chat-input textarea:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Terminal */
+    .terminal {
+      height: 200px;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .terminal-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .terminal-tab {
+      padding: 4px 12px;
+      font-size: 11px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .terminal-tab.active {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    .terminal-output {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-y: auto;
+      font-family: 'SF Mono', monospace;
+    }
+
+    .terminal-line {
+      margin-bottom: 4px;
+    }
+
+    .terminal-line.output {
+      color: var(--text-secondary);
+    }
+
+    .terminal-line.error {
+      color: var(--accent-danger);
+    }
+
+    .terminal-line.success {
+      color: var(--accent-secondary);
+    }
+
+    .terminal-input-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .terminal-prompt {
+      color: var(--accent-secondary);
+      font-weight: 600;
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-hover);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .right-panel {
+        width: 280px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 240px;
+      }
+      .right-panel {
+        display: none;
+      }
+    }
+
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-in {
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Bitfrost Glow Effect */
+    .bitfrost-active {
+      animation: bitfrostGlow 1.5s infinite alternate;
+    }
+
+    @keyframes bitfrostGlow {
+      from { box-shadow: 0 0 5px var(--bitfrost-glow); }
+      to { box-shadow: 0 0 20px var(--bitfrost-glow), 0 0 40px var(--bitfrost-glow); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <i data-lucide="zap" style="width: 14px; height: 14px; color: var(--bg-primary);"></i>
+      </div>
+      <span style="color: var(--accent-primary);">Bitfrost</span>
+      <span style="color: var(--text-muted);">|</span>
+      <span style="color: var(--text-secondary);">Superior Coding Environment</span>
+    </div>
+    
+    <div class="header-nav">
+      <button class="header-btn">File</button>
+      <button class="header-btn">Edit</button>
+      <button class="header-btn">View</button>
+      <button class="header-btn">Run</button>
+      <button class="header-btn">Tools</button>
+      <button class="header-btn">Help</button>
+    </div>
+    
+    <div class="status-bar">
+      <div class="status-indicator"></div>
+      <span>Hedera Mainnet</span>
+      <span style="color: var(--text-muted);">|</span>
+      <span id="workspace-path">/workspace</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar - File Explorer -->
+    <aside class="sidebar slide-in">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Explorer</span>
+        <div class="sidebar-actions">
+          <button class="icon-btn" title="New File">
+            <i data-lucide="file-plus" style="width: 14px; height: 14px;"></i>
+          </button>
+          <button class="icon-btn" title="New Folder">
+            <i data-lucide="folder-plus" style="width: 14px; height: 14px;"></i>
+          </button>
+          <button class="icon-btn" title="Refresh">
+            <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="file-tree" id="file-tree">
+        <!-- Dynamic file tree will be populated here -->
+      </div>
+    </aside>
+
+    <!-- Editor Area -->
+    <main class="editor-area">
+      <!-- Tabs -->
+      <div class="tabs" id="tabs">
+        <div class="tab active">
+          <i data-lucide="file-code" style="width: 14px; height: 14px;"></i>
+          <span>welcome.ts</span>
+          <span class="tab-close">×</span>
+        </div>
+      </div>
+
+      <!-- Code Editor -->
+      <div class="editor-container">
+        <textarea class="code-editor" id="editor" spellcheck="false" placeholder="// Welcome to Bitfrost IDE - Vera's Superior Coding Environment
+// Start coding or use Bitfrost tools on the right panel
+
+import { executeTool } from './bitfrost/executor';
+
+async function main() {
+  // Use Bitfrost OS to code
+  const result = await executeTool('code_search', {
+    query: 'TODO',
+    path: 'src'
+  });
+  
+  console.log('Found:', result);
+}
+
+main();">// Welcome to Bitfrost IDE - Vera's Superior Coding Environment
+// Start coding or use Bitfrost tools on the right panel
+
+import { executeTool } from './bitfrost/executor';
+
+async function main() {
+  // Use Bitfrost OS to code
+  const result = await executeTool('code_search', {
+    query: 'TODO',
+    path: 'src'
+  });
+  
+  console.log('Found:', result);
+}
+
+main();</textarea>
+      </div>
+
+      <!-- Terminal -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-tabs">
+            <div class="terminal-tab active">Terminal</div>
+            <div class="terminal-tab">Output</div>
+            <div class="terminal-tab">Problems</div>
+            <div class="terminal-tab">Debug Console</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="icon-btn" title="Clear">
+              <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            </button>
+            <button class="icon-btn" title="Maximize">
+              <i data-lucide="maximize-2" style="width: 14px; height: 14px;"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="terminal-output" id="terminal-output">
+          <div class="terminal-line output">Bitfrost IDE v1.0.0 initialized</div>
+          <div class="terminal-line success">✓ Connected to Hedera Mainnet</div>
+          <div class="terminal-line output">✓ Bitfrost OS tools loaded (10 available)</div>
+          <div class="terminal-line output">✓ Workspace: /home/vera-live-0-1/hedera-llm-api</div>
+          <div class="terminal-line output">Ready for superior coding...</div>
+        </div>
+        
+        <div class="terminal-input-line">
+          <span class="terminal-prompt">vera@bitfrost:~$</span>
+          <input type="text" class="terminal-input" id="terminal-input" placeholder="Enter command..." autocomplete="off">
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Panel - Bitfrost Tools & Vera AI -->
+    <aside class="right-panel slide-in">
+      <div class="panel-tabs">
+        <div class="panel-tab active" data-panel="tools">Tools</div>
+        <div class="panel-tab" data-panel="vera">Vera AI</div>
+        <div class="panel-tab" data-panel="search">Search</div>
+      </div>
+
+      <div class="panel-content" id="panel-content">
+        <!-- Bitfrost Tools Panel -->
+        <div id="tools-panel" class="panel-section">
+          <div class="bitfrost-section">
+            <div class="bitfrost-title">File Operations</div>
+            <div class="tool-grid">
+              <button class="tool-btn" onclick="useTool('file_read')">
+                <i data-lucide="file-text"></i>
+                <span>Read File</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('file_write')">
+                <i data-lucide="file-plus"></i>
+                <span>Write File</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('file_edit')">
+                <i data-lucide="edit-3"></i>
+                <span>Edit File</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('directory_list')">
+                <i data-lucide="folder-tree"></i>
+                <span>List Dir</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bitfrost-section">
+            <div class="bitfrost-title">Code Intelligence</div>
+            <div class="tool-grid">
+              <button class="tool-btn" onclick="useTool('code_search')">
+                <i data-lucide="search"></i>
+                <span>Search</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('analyze_code')">
+                <i data-lucide="activity"></i>
+                <span>Analyze</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('run_tests')">
+                <i data-lucide="play-circle"></i>
+                <span>Run Tests</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('execute_command')">
+                <i data-lucide="terminal"></i>
+                <span>Command</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bitfrost-section">
+            <div class="bitfrost-title">Version Control</div>
+            <div class="tool-grid">
+              <button class="tool-btn" onclick="useTool('git_commit')">
+                <i data-lucide="git-commit"></i>
+                <span>Commit</span>
+              </button>
+              <button class="tool-btn" onclick="useTool('git_push')">
+                <i data-lucide="git-pull-request"></i>
+                <span>Push</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vera AI Panel -->
+        <div id="vera-panel" class="panel-section" style="display: none;">
+          <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+              <div class="message assistant">
+                <strong>🤖 Vera AI</strong><br>
+                I'm ready to help you code with Bitfrost OS. I can:
+                <ul style="margin-top: 8px; margin-left: 16px;">
+                  <li>Search and analyze code</li>
+                  <li>Edit files precisely</li>
+                  <li>Run tests and commands</li>
+                  <li>Commit changes to git</li>
+                </ul>
+              </div>
+            </div>
+            <div class="chat-input">
+              <textarea id="chat-input" rows="3" placeholder="Ask Vera to help you code..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Panel -->
+        <div id="search-panel" class="panel-section" style="display: none;">
+          <div class="bitfrost-section">
+            <div class="bitfrost-title">Find in Files</div>
+            <input type="text" id="search-input" placeholder="Search pattern..." style="width: 100%; padding: 8px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); margin-bottom: 12px;">
+            <input type="text" id="search-path" placeholder="Path (default: .)" style="width: 100%; padding: 8px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); margin-bottom: 12px;">
+            <button class="tool-btn" style="width: 100%;" onclick="performSearch()">
+              <i data-lucide="search"></i>
+              <span>Search Codebase</span>
+            </button>
+          </div>
+          <div id="search-results"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Sample file tree data
+    const fileTreeData = [
+      { name: 'src', type: 'folder', expanded: true, children: [
+        { name: 'agent', type: 'folder', children: [
+          { name: 'executor.ts', type: 'file' },
+          { name: 'definitions.ts', type: 'file' },
+          { name: 'runner.ts', type: 'file' },
+        ]},
+        { name: 'hedera', type: 'folder', children: [
+          { name: 'agentKitWrapper.ts', type: 'file' },
+          { name: 'hcs10Agent.ts', type: 'file' },
+        ]},
+        { name: 'config.ts', type: 'file' },
+      ]},
+      { name: 'public', type: 'folder', children: [
+        { name: 'bitfrost-ide.html', type: 'file', active: true },
+      ]},
+      { name: 'package.json', type: 'file' },
+      { name: 'tsconfig.json', type: 'file' },
+    ];
+
+    // Render file tree
+    function renderFileTree(items, level = 0) {
+      const tree = document.getElementById('file-tree');
+      tree.innerHTML = '';
+      
+      function renderItems(items, level) {
+        items.forEach(item => {
+          const div = document.createElement('div');
+          div.className = `tree-item ${item.type} ${item.expanded ? 'expanded' : ''} ${item.active ? 'active' : ''}`;
+          div.style.paddingLeft = `${16 + level * 16}px`;
+          div.innerHTML = `
+            <i data-lucide="${item.type === 'folder' ? (item.expanded ? 'folder-open' : 'folder') : 'file-code'}" class="icon"></i>
+            <span>${item.name}</span>
+          `;
+          tree.appendChild(div);
+          
+          if (item.children && item.expanded) {
+            renderItems(item.children, level + 1);
+          }
+        });
+      }
+      
+      renderItems(items, level);
+      lucide.createIcons();
+    }
+
+    renderFileTree(fileTreeData);
+
+    // Panel tabs
+    document.querySelectorAll('.panel-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const panel = tab.dataset.panel;
+        document.querySelectorAll('.panel-section').forEach(s => s.style.display = 'none');
+        document.getElementById(`${panel}-panel`).style.display = 'block';
+      });
+    });
+
+    // Tool functions
+    function useTool(toolName) {
+      logToTerminal(`Using Bitfrost tool: ${toolName}...`, 'output');
+      
+      // Simulate tool execution
+      setTimeout(() => {
+        logToTerminal(`✓ ${toolName} completed successfully`, 'success');
+      }, 500);
+    }
+
+    function performSearch() {
+      const query = document.getElementById('search-input').value;
+      const path = document.getElementById('search-path').value || '.';
+      
+      if (!query) {
+        logToTerminal('Please enter a search query', 'error');
+        return;
+      }
+      
+      logToTerminal(`Searching for "${query}" in ${path}...`, 'output');
+      
+      setTimeout(() => {
+        logToTerminal(`Found 3 matches for "${query}"`, 'success');
+      }, 800);
+    }
+
+    // Terminal functionality
+    function logToTerminal(message, type = 'output') {
+      const output = document.getElementById('terminal-output');
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.textContent = message;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    document.getElementById('terminal-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const input = e.target.value;
+        logToTerminal(`vera@bitfrost:~$ ${input}`, 'output');
+        
+        // Simulate command execution
+        setTimeout(() => {
+          if (input.startsWith('bitfrost ')) {
+            const tool = input.split(' ')[1];
+            useTool(tool);
+          } else if (input === 'help') {
+            logToTerminal('Available commands: help, bitfrost <tool>, clear', 'output');
+          } else if (input === 'clear') {
+            document.getElementById('terminal-output').innerHTML = '';
+          } else {
+            logToTerminal(`Command not found: ${input}`, 'error');
+          }
+        }, 100);
+        
+        e.target.value = '';
+      }
+    });
+
+    // Chat functionality
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const message = e.target.value.trim();
+        if (!message) return;
+        
+        // Add user message
+        const messages = document.getElementById('chat-messages');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user';
+        userMsg.textContent = message;
+        messages.appendChild(userMsg);
+        
+        e.target.value = '';
+        messages.scrollTop = messages.scrollHeight;
+        
+        // Simulate Vera response
+        setTimeout(() => {
+          const veraMsg = document.createElement('div');
+          veraMsg.className = 'message assistant';
+          veraMsg.innerHTML = `<strong>🤖 Vera AI</strong><br>I'll help you with that using Bitfrost OS tools. Let me analyze the codebase...`;
+          messages.appendChild(veraMsg);
+          messages.scrollTop = messages.scrollHeight;
+        }, 500);
+      }
+    });
+
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    // Initialize with welcome message
+    logToTerminal('Bitfrost IDE loaded. Type "help" for commands.', 'output');
+  </script>
+</body>
+</html>

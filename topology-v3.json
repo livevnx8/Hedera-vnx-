@@ -1,0 +1,79 @@
+{
+  "deploymentId": "v3-1774712201328",
+  "timestamp": "2026-03-28T15:36:41.328Z",
+  "account": "0.0.10294360",
+  "total": 10,
+  "tps": 100,
+  "topics": [
+    {
+      "name": "Vera_DeFi_Data",
+      "emoji": "🔷",
+      "layer": "data",
+      "topicId": "0.0.10410428",
+      "index": 0
+    },
+    {
+      "name": "Vera_Carbon_Credits",
+      "emoji": "🔶",
+      "layer": "data",
+      "topicId": "0.0.10410430",
+      "index": 1
+    },
+    {
+      "name": "Vera_AI_Agents",
+      "emoji": "🤖",
+      "layer": "data",
+      "topicId": "0.0.10410432",
+      "index": 2
+    },
+    {
+      "name": "Vera_Cross_Reference",
+      "emoji": "💎",
+      "layer": "memory",
+      "topicId": "0.0.10410433",
+      "index": 3
+    },
+    {
+      "name": "Vera_Audit_Trail",
+      "emoji": "🔍",
+      "layer": "memory",
+      "topicId": "0.0.10410434",
+      "index": 4
+    },
+    {
+      "name": "Vera_Knowledge_Graph",
+      "emoji": "📚",
+      "layer": "memory",
+      "topicId": "0.0.10410435",
+      "index": 5
+    },
+    {
+      "name": "Vera_Metrics",
+      "emoji": "📊",
+      "layer": "system",
+      "topicId": "0.0.10410436",
+      "index": 6
+    },
+    {
+      "name": "Vera_Security",
+      "emoji": "🔒",
+      "layer": "system",
+      "topicId": "0.0.10410437",
+      "index": 7
+    },
+    {
+      "name": "Vera_System_Health",
+      "emoji": "❤️",
+      "layer": "system",
+      "topicId": "0.0.10410438",
+      "index": 8
+    },
+    {
+      "name": "Vera_Coordination",
+      "emoji": "🌐",
+      "layer": "coordination",
+      "topicId": "0.0.10410440",
+      "index": 9
+    }
+  ]
+}

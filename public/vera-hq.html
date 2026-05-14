@@ -1,0 +1,2990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vera Headquarters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-0: #050607;
+      --bg-1: #0b0d10;
+      --panel: rgba(8, 11, 13, 0.88);
+      --panel-strong: rgba(12, 15, 18, 0.96);
+      --line: rgba(242, 169, 0, 0.16);
+      --line-strong: rgba(242, 169, 0, 0.28);
+      --text: #f7f5ec;
+      --muted: #9a9a92;
+      --accent: #f7931a;
+      --accent-soft: rgba(247, 147, 26, 0.18);
+      --btc: #f2a900;
+      --hedera: #8259ef;
+      --jarvis: #00d5ff;
+      --signal: #00d5ff;
+      --signal-soft: rgba(0, 213, 255, 0.14);
+      --warn: #f2a900;
+      --danger: #ef4444;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --mono: "IBM Plex Mono", monospace;
+      --display: "Space Grotesk", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(130, 89, 239, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(247, 147, 26, 0.16), transparent 24%),
+        radial-gradient(circle at 50% 0%, rgba(0, 213, 255, 0.08), transparent 32%),
+        linear-gradient(180deg, #050607 0%, #080b0e 48%, #030506 100%);
+      color: var(--text);
+      font-family: var(--display);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 34px;
+      mask-image: linear-gradient(180deg, rgba(255,255,255,0.35), transparent 70%);
+      opacity: 0.2;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1500px, calc(100vw - 32px));
+      margin: 18px auto 32px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hero,
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      padding: 26px 28px;
+      min-height: 196px;
+    }
+
+    .hero::after,
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: auto auto 0 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
+      opacity: 0.35;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .eyebrow,
+    .micro-label,
+    .pill,
+    .metric-value,
+    .tiny {
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+    }
+
+    .eyebrow {
+      color: var(--warn);
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      line-height: 0.95;
+      max-width: 11ch;
+    }
+
+    .hero-copy {
+      max-width: 60ch;
+      color: #d7e1db;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .button {
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(249, 115, 22, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.28), rgba(20, 184, 166, 0.2));
+      border-color: rgba(249, 115, 22, 0.42);
+    }
+
+    .button.small {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .hero-status {
+      display: grid;
+      gap: 10px;
+      justify-items: end;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--signal);
+      box-shadow: 0 0 18px rgba(0, 213, 255, 0.48);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    .status-dot.warn {
+      background: var(--warn);
+      box-shadow: 0 0 18px rgba(242, 169, 0, 0.42);
+    }
+
+    .status-dot.danger {
+      background: var(--danger);
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.42);
+    }
+
+    .signal-radar {
+      width: 170px;
+      aspect-ratio: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(244, 213, 141, 0.16);
+      background:
+        radial-gradient(circle at center, rgba(0, 213, 255, 0.24), transparent 24%),
+        radial-gradient(circle at center, transparent 0 35%, rgba(242, 169, 0, 0.18) 36%, transparent 37%),
+        radial-gradient(circle at center, transparent 0 57%, rgba(130, 89, 239, 0.16) 58%, transparent 59%),
+        radial-gradient(circle at center, transparent 0 79%, rgba(242, 169, 0, 0.08) 80%, transparent 81%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signal-radar::before {
+      content: "";
+      position: absolute;
+      inset: 10%;
+      border: 1px dashed rgba(244, 213, 141, 0.22);
+      border-radius: 999px;
+    }
+
+    .signal-radar::after {
+      content: "";
+      position: absolute;
+      inset: -5%;
+      background: conic-gradient(from 220deg, transparent 0deg, rgba(0, 213, 255, 0.55) 25deg, rgba(242, 169, 0, 0.22) 44deg, transparent 70deg);
+      animation: sweep 4s linear infinite;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .metric {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      min-height: 94px;
+    }
+
+    .metric.harmony-aligned,
+    .metric.harmony-warm,
+    .metric.harmony-strained,
+    .metric.harmony-critical {
+      border-color: rgba(20, 184, 166, 0.28);
+      background: rgba(20, 184, 166, 0.075);
+    }
+
+    .metric.harmony-warm {
+      border-color: rgba(244, 213, 141, 0.28);
+      background: rgba(244, 213, 141, 0.075);
+    }
+
+    .metric.harmony-strained {
+      border-color: rgba(249, 115, 22, 0.34);
+      background: rgba(249, 115, 22, 0.09);
+    }
+
+    .metric.harmony-critical {
+      border-color: rgba(239, 68, 68, 0.34);
+      background: rgba(239, 68, 68, 0.09);
+    }
+
+    .micro-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .metric-value {
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .metric-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .conversation-card,
+    .sidebar {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .message-feed {
+      min-height: 530px;
+      max-height: 66vh;
+      overflow: auto;
+      display: grid;
+      gap: 14px;
+      padding-right: 4px;
+    }
+
+    .message {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      animation: fadeUp 240ms ease;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 0.9rem;
+      color: #081014;
+    }
+
+    .avatar.vera {
+      background: linear-gradient(135deg, var(--accent), #f4d58d);
+    }
+
+    .avatar.user {
+      background: linear-gradient(135deg, var(--signal), #7dd3c7);
+    }
+
+    .message-body {
+      border-radius: 18px;
+      padding: 15px 16px 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .message.user .message-body {
+      background: rgba(20, 184, 166, 0.08);
+      border-color: rgba(20, 184, 166, 0.2);
+    }
+
+    .message.vera .message-body {
+      background: rgba(249, 115, 22, 0.08);
+      border-color: rgba(249, 115, 22, 0.18);
+    }
+
+    .message-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: #dce6e0;
+    }
+
+    .tag.signal {
+      border-color: rgba(20, 184, 166, 0.24);
+      background: var(--signal-soft);
+    }
+
+    .tag.standby {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .tag.accent {
+      border-color: rgba(249, 115, 22, 0.24);
+      background: var(--accent-soft);
+    }
+
+    .tag.danger {
+      border-color: rgba(239, 68, 68, 0.32);
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecdd3;
+    }
+
+    .message-text {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.62;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .prompt-chip {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: #dce6e0;
+      border-radius: 999px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .prompt-chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin-top: 16px;
+      align-items: end;
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 118px;
+      resize: vertical;
+      border-radius: 22px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 18px 18px 20px;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .composer textarea:focus {
+      border-color: rgba(249, 115, 22, 0.4);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.08);
+    }
+
+    .studio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+      font: inherit;
+      font-size: 0.92rem;
+    }
+
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(20, 184, 166, 0.38);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.08);
+    }
+
+    .studio-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .payload-box {
+      margin-top: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.16);
+      padding: 12px;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .payload-box pre {
+      margin: 0;
+      color: #dce6e0;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .payment-checkout {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.025);
+      padding: 12px;
+      margin: 10px 0 14px;
+    }
+
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .payment-cell {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      min-width: 0;
+    }
+
+    .payment-value {
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .payment-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .wallet-auth {
+      border: 1px solid rgba(20, 184, 166, 0.22);
+      border-radius: 14px;
+      background: rgba(20, 184, 166, 0.055);
+      padding: 12px;
+    }
+
+    .wallet-auth.connected {
+      border-color: rgba(20, 184, 166, 0.36);
+      background: rgba(20, 184, 166, 0.09);
+    }
+
+    .wallet-auth.blocked {
+      border-color: rgba(239, 68, 68, 0.32);
+      background: rgba(239, 68, 68, 0.07);
+    }
+
+    .wallet-auth-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .wallet-auth-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .wallet-auth-account {
+      font-family: var(--mono);
+      color: var(--text);
+      font-size: 0.86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .wallet-auth-note {
+      margin-top: 4px;
+    }
+
+    .launch-path {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .launch-step {
+      min-height: 76px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .launch-step.ready {
+      border-color: rgba(20, 184, 166, 0.28);
+      background: rgba(20, 184, 166, 0.08);
+    }
+
+    .launch-step.active {
+      border-color: rgba(249, 115, 22, 0.32);
+      background: rgba(249, 115, 22, 0.08);
+    }
+
+    .launch-step.blocked {
+      border-color: rgba(239, 68, 68, 0.26);
+      background: rgba(239, 68, 68, 0.07);
+    }
+
+    .step-title {
+      color: var(--text);
+      font-size: 0.82rem;
+    }
+
+    .step-state {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .composer-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .send-button {
+      min-width: 154px;
+      min-height: 54px;
+      border: none;
+      border-radius: 18px;
+      padding: 0 18px;
+      cursor: pointer;
+      color: #091014;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f4d58d 0%, var(--accent) 46%, var(--signal) 100%);
+      box-shadow: 0 14px 40px rgba(20, 184, 166, 0.18);
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .send-button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .send-button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #dce6e0;
+      font-size: 0.88rem;
+    }
+
+    .bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--signal), var(--accent));
+      transition: width 220ms ease;
+    }
+
+    .service-list,
+    .events-list,
+    .issue-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .service-item,
+    .event-item,
+    .issue-item {
+      border-radius: 15px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--line);
+    }
+
+    .service-row,
+    .event-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .service-name,
+    .event-type {
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .service-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .service-note,
+    .event-summary,
+    .issue-item,
+    .trace-text {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .service-note {
+      margin-top: 8px;
+    }
+
+    .compact-list {
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .model-route {
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 0;
+    }
+
+    .model-route.active {
+      border-color: rgba(20, 184, 166, 0.26);
+      background: rgba(20, 184, 166, 0.06);
+    }
+
+    .model-route .service-row strong {
+      font-size: 0.86rem;
+    }
+
+    .model-route .service-note {
+      margin-top: 6px;
+      font-size: 0.8rem;
+    }
+
+    .guidance-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .guidance-list li {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.42;
+    }
+
+    .guidance-list li::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 8px;
+      border-radius: 999px;
+      background: var(--signal);
+      vertical-align: 1px;
+    }
+
+    .response-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .trace-box {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.18);
+      padding: 12px;
+      max-height: 190px;
+      overflow: auto;
+    }
+
+    .trace-text {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 20px 12px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .tiny {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .success {
+      color: #95f0b1;
+    }
+
+    .warning {
+      color: var(--warn);
+    }
+
+    .danger {
+      color: #fda4af;
+    }
+
+    .session-label {
+      overflow-wrap: anywhere;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.96); opacity: 0.8; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes sweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeUp {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 1120px) {
+      .topbar,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-status {
+        justify-items: start;
+      }
+
+      .hero-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .launch-path {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100vw - 20px, 100%);
+        margin: 10px auto 22px;
+      }
+
+      .hero,
+      .card {
+        border-radius: 20px;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      .hero-metrics,
+      .split-grid,
+      .response-grid,
+      .payment-grid,
+      .launch-path {
+        grid-template-columns: 1fr;
+      }
+
+      .composer {
+        grid-template-columns: 1fr;
+      }
+
+      .send-button {
+        width: 100%;
+      }
+
+      .message-feed {
+        min-height: 420px;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="topbar">
+      <article class="hero">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Rig Command Surface</div>
+            <h1>Vera Headquarters</h1>
+            <p class="hero-copy">
+              This is the shared room: conversation, live rig telemetry, service posture,
+              and Vera's self-portrait in one place. Talk to her here, watch the lattice
+              breathe, and steer the sandbox without leaving the page.
+            </p>
+            <div class="hero-actions">
+              <button class="button primary" id="new-session-button" type="button">New Session</button>
+              <button class="button" id="toggle-trace-button" type="button">Show Trace</button>
+              <button class="button" id="refresh-all-button" type="button">Refresh Intel</button>
+            </div>
+          </div>
+          <div class="hero-status">
+            <div class="status-chip">
+              <span class="status-dot" id="connection-dot"></span>
+              <span id="connection-label">Connecting to headquarters</span>
+            </div>
+            <div class="status-chip">
+              <span class="tiny">Session</span>
+              <span id="session-label" class="session-label">booting</span>
+            </div>
+            <div class="signal-radar" aria-hidden="true"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="hero">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Operational Snapshot</div>
+            <h2 class="card-title">Current posture</h2>
+          </div>
+          <span class="tiny" id="snapshot-updated">polling</span>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric" id="metric-harmony-card">
+            <div class="micro-label">Harmony</div>
+            <div class="metric-value" id="metric-harmony-status">--</div>
+            <div class="metric-sub" id="metric-harmony-sub">Awaiting combined state</div>
+          </div>
+          <div class="metric">
+            <div class="micro-label">Rig Health</div>
+            <div class="metric-value" id="metric-rig-health">--</div>
+            <div class="metric-sub" id="metric-rig-sub">Awaiting state sample</div>
+          </div>
+          <div class="metric">
+            <div class="micro-label">Scheduler Load</div>
+            <div class="metric-value" id="metric-scheduler-load">--</div>
+            <div class="metric-sub" id="metric-scheduler-sub">Cadence unknown</div>
+          </div>
+          <div class="metric">
+            <div class="micro-label">Services</div>
+            <div class="metric-value" id="metric-services">--</div>
+            <div class="metric-sub" id="metric-services-sub">Supervisor offline</div>
+          </div>
+          <div class="metric">
+            <div class="micro-label">Capabilities</div>
+            <div class="metric-value" id="metric-capabilities">--</div>
+            <div class="metric-sub" id="metric-capabilities-sub">Self portrait pending</div>
+          </div>
+          <div class="metric">
+            <div class="micro-label">Last Response</div>
+            <div class="metric-value" id="metric-response">--</div>
+            <div class="metric-sub" id="metric-response-sub">No replies yet</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <div class="conversation-card">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Conversation Deck</h2>
+              <div class="subtle">A persistent command conversation for planning, coding, checking the rig, and steering Vera.</div>
+            </div>
+            <div class="tiny" id="chat-status">ready</div>
+          </div>
+
+          <div class="message-feed" id="message-feed"></div>
+
+          <div class="quick-prompts" id="quick-prompts">
+            <button class="prompt-chip" type="button" data-prompt="Give me a concise status read on the rig and call out anything degraded.">Rig status read</button>
+            <button class="prompt-chip" type="button" data-prompt="What does Vera know about herself right now, and what parts of the lattice look strongest?">Vera self portrait</button>
+            <button class="prompt-chip" type="button" data-prompt="Check the service layer and tell me what should be stabilized next.">Service stabilization</button>
+            <button class="prompt-chip" type="button" data-prompt="We are in headquarters. Help me choose the highest-leverage next move for the rig.">Next move</button>
+          </div>
+
+          <div class="composer">
+            <div>
+              <label class="tiny" for="message-input">Message Vera</label>
+              <textarea id="message-input" placeholder="Talk to Vera here. Ask for code, analysis, status reads, or strategy."></textarea>
+              <div class="helper-row">
+                <span>Enter sends. Shift+Enter adds a new line.</span>
+                <span id="trace-hint">Trace hidden</span>
+              </div>
+            </div>
+            <div class="composer-actions">
+              <button id="send-button" class="send-button" type="button">Transmit</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Agent Launch Studio</h2>
+              <div class="subtle">Draft and register a Hedera marketplace agent from a simple operating brief.</div>
+            </div>
+            <span class="tag" id="agent-studio-status">Drafting</span>
+          </div>
+
+          <div class="launch-path" id="agent-launch-path">
+            <div class="launch-step active" data-step="draft">
+              <div class="step-title">Draft</div>
+              <div class="step-state">Active</div>
+            </div>
+            <div class="launch-step" data-step="register">
+              <div class="step-title">Register</div>
+              <div class="step-state">Pending</div>
+            </div>
+            <div class="launch-step" data-step="fund">
+              <div class="step-title">Fee</div>
+              <div class="step-state">Pending</div>
+            </div>
+            <div class="launch-step" data-step="runtime">
+              <div class="step-title">Runtime</div>
+              <div class="step-state">Pending</div>
+            </div>
+            <div class="launch-step" data-step="firstTask">
+              <div class="step-title">First Task</div>
+              <div class="step-state">Pending</div>
+            </div>
+            <div class="launch-step" data-step="receipt">
+              <div class="step-title">Receipt</div>
+              <div class="step-state">Pending</div>
+            </div>
+            <div class="launch-step" data-step="reputation">
+              <div class="step-title">Reputation</div>
+              <div class="step-state">Pending</div>
+            </div>
+          </div>
+
+          <div class="studio-grid">
+            <div class="field">
+              <label class="tiny" for="agent-name">Agent Name</label>
+              <input id="agent-name" value="Carbon Audit Agent" autocomplete="off">
+            </div>
+            <div class="field">
+              <label class="tiny" for="agent-service">Service Type</label>
+              <select id="agent-service">
+                <option value="carbon-audit">Carbon audit</option>
+                <option value="defi-analysis">DeFi analysis</option>
+                <option value="compliance-review">Compliance review</option>
+                <option value="logistics-verification">Logistics verification</option>
+                <option value="hedera-tooling">Hedera tooling</option>
+                <option value="custom-agent">Custom agent</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="tiny" for="agent-fee">Fee Per Task (HBAR)</label>
+              <input id="agent-fee" type="number" min="0" step="0.01" value="0.5">
+            </div>
+            <div class="field">
+              <label class="tiny" for="agent-account">Hedera Account</label>
+              <input id="agent-account" placeholder="0.0.xxxxx" autocomplete="off">
+            </div>
+            <div class="field full">
+              <div class="wallet-auth" id="wallet-auth-panel">
+                <div class="wallet-auth-head">
+                  <div class="tiny">Wallet Authorization</div>
+                  <span class="tag" id="wallet-auth-chip">Required</span>
+                </div>
+                <div class="wallet-auth-row">
+                  <div>
+                    <div class="wallet-auth-account" id="wallet-auth-account">No wallet connected</div>
+                    <div class="service-note wallet-auth-note" id="wallet-auth-note">Connect HashPack before registration so the launch account matches the payment payer.</div>
+                  </div>
+                  <button class="button" id="connect-wallet-button" type="button">Connect HashPack</button>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="tiny" for="agent-creation-fee-method">Creation Fee</label>
+              <select id="agent-creation-fee-method">
+                <option value="hbar">HBAR quote</option>
+                <option value="hts">hbar.h quote</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="tiny" for="agent-creation-fee-tx">Payment Transaction ID</label>
+              <input id="agent-creation-fee-tx" placeholder="0.0.payer@seconds.nanos" autocomplete="off">
+            </div>
+            <div class="field full">
+              <div class="service-note" id="agent-creation-fee-details">
+                Loading value-based creation fee quote for HBAR and hbar.h.
+              </div>
+            </div>
+            <div class="field full">
+              <div class="payment-checkout">
+                <div class="tiny">Payment Instructions</div>
+                <div class="payment-grid">
+                  <div class="payment-cell">
+                    <div class="tiny">Amount</div>
+                    <div class="payment-value" id="payment-amount">--</div>
+                  </div>
+                  <div class="payment-cell">
+                    <div class="tiny">Treasury</div>
+                    <div class="payment-value" id="payment-treasury">0.0.10294360</div>
+                  </div>
+                  <div class="payment-cell">
+                    <div class="tiny">Memo</div>
+                    <div class="payment-value" id="payment-memo">vera-agent</div>
+                  </div>
+                  <div class="payment-cell">
+                    <div class="tiny">Authorized Payer</div>
+                    <div class="payment-value" id="payment-payer">Connect wallet</div>
+                  </div>
+                </div>
+                <div class="payment-actions">
+                  <button class="button" id="copy-payment-button" type="button">Copy Payment</button>
+                  <button class="button" id="copy-memo-button" type="button">Copy Memo</button>
+                  <button class="button" id="verify-payment-button" type="button">Verify Payment</button>
+                  <a class="button" id="treasury-link" href="https://hashscan.io/mainnet/account/0.0.10294360" target="_blank" rel="noopener">Open Treasury</a>
+                  <span class="tiny" id="payment-verify-status">Pay in HashPack, paste the transaction id, then verify.</span>
+                </div>
+              </div>
+            </div>
+            <div class="field full">
+              <label class="tiny" for="agent-capabilities">Capabilities</label>
+              <input id="agent-capabilities" value="carbon, validation, hcs-logging, reporting" autocomplete="off">
+            </div>
+            <div class="field full">
+              <label class="tiny" for="agent-brief">Operating Brief</label>
+              <textarea id="agent-brief">Validate project evidence, produce a concise audit summary, and publish receipts to Hedera HCS.</textarea>
+            </div>
+          </div>
+
+          <div class="studio-actions">
+            <button class="button primary" id="draft-agent-button" type="button">Draft Agent</button>
+            <button class="button" id="register-agent-button" type="button">Register Agent</button>
+            <button class="button" id="first-task-button" type="button">Plan First Task</button>
+            <button class="button" id="agent-chat-button" type="button">Ask Vera To Refine</button>
+            <span class="tiny" id="agent-studio-note">Marketplace payload ready locally.</span>
+          </div>
+
+          <div class="payload-box">
+            <pre id="agent-payload">Draft an agent to preview the marketplace registration payload.</pre>
+          </div>
+        </article>
+      </div>
+
+      <aside class="sidebar">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Harmonic Status</h2>
+              <div class="subtle">Rig, scheduler, lattice health, enterprise priority, and Vera orchestration.</div>
+            </div>
+            <span class="tag" id="harmonic-status-chip">Loading</span>
+          </div>
+          <div class="split-grid">
+            <div class="service-item">
+              <div class="tiny">Rig Health</div>
+              <div class="metric-value" id="harmonic-rig-health">--</div>
+              <div class="service-note" id="harmonic-orchestrator">Orchestrator status pending</div>
+            </div>
+            <div class="service-item">
+              <div class="tiny">Scheduler Load</div>
+              <div class="metric-value" id="harmonic-scheduler-load">--</div>
+              <div class="service-note" id="harmonic-queue-depth">Queue depth --</div>
+            </div>
+          </div>
+          <div class="split-grid" style="margin-top: 12px;">
+            <div class="service-item">
+              <div class="tiny">Lattice Degraded</div>
+              <div class="metric-value" id="harmonic-lattice-degraded">--</div>
+              <div class="service-note">Components needing attention</div>
+            </div>
+            <div class="service-item">
+              <div class="tiny">Lattice Critical</div>
+              <div class="metric-value" id="harmonic-lattice-critical">--</div>
+              <div class="service-note">Components blocking production posture</div>
+            </div>
+          </div>
+          <ul class="guidance-list" id="harmonic-guidance">
+            <li>Waiting for harmonic telemetry.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Rig Pulse</h2>
+              <div class="subtle">Live machine pressure and scheduler posture.</div>
+            </div>
+            <span class="tag" id="rig-health-chip">Sampling</span>
+          </div>
+          <div class="stack">
+            <div class="bar-wrap">
+              <div class="bar-label"><span>CPU</span><span id="cpu-label">--</span></div>
+              <div class="bar"><span id="cpu-bar" style="width: 0%"></span></div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label"><span>Memory</span><span id="memory-label">--</span></div>
+              <div class="bar"><span id="memory-bar" style="width: 0%"></span></div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label"><span>Disk</span><span id="disk-label">--</span></div>
+              <div class="bar"><span id="disk-bar" style="width: 0%"></span></div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label"><span>GPU</span><span id="gpu-label">--</span></div>
+              <div class="bar"><span id="gpu-bar" style="width: 0%"></span></div>
+            </div>
+            <div class="split-grid">
+              <div class="service-item">
+                <div class="tiny">Queue Depth</div>
+                <div class="metric-value" id="queue-depth">--</div>
+                <div class="service-note" id="enterprise-note">Enterprise telemetry pending</div>
+              </div>
+              <div class="service-item">
+                <div class="tiny">Placement Advice</div>
+                <div class="metric-value" id="placement-lane">--</div>
+                <div class="service-note" id="placement-note">No scheduler recommendation yet</div>
+              </div>
+            </div>
+            <div class="split-grid">
+              <div class="service-item">
+                <div class="tiny">NVIDIA Stack</div>
+                <div class="metric-value" id="nvidia-device">Detecting</div>
+                <div class="service-note" id="nvidia-runtime">Checking CUDA runtime and sovereign acceleration path</div>
+                <div class="service-note" id="nvidia-memory">VRAM --</div>
+              </div>
+              <div class="service-item">
+                <div class="tiny">Acceleration Path</div>
+                <div class="service-note" id="nvidia-graph">Graph analytics: --</div>
+                <div class="service-note" id="nvidia-embedding">Embeddings: --</div>
+                <div class="service-note" id="nvidia-inference">Inference: --</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Model Posture</h2>
+              <div class="subtle">Local control for developer learning and proof-backed consumer launches.</div>
+            </div>
+            <span class="tag" id="model-posture-chip">Loading</span>
+          </div>
+          <div class="split-grid">
+            <div class="service-item">
+              <div class="tiny">Developer Lane</div>
+              <div class="metric-value" id="model-dev-lane">Private</div>
+              <div class="service-note" id="model-dev-note">Git lattice, receipts, tests, model routing</div>
+            </div>
+            <div class="service-item">
+              <div class="tiny">Consumer Lane</div>
+              <div class="metric-value" id="model-consumer-lane">Launch</div>
+              <div class="service-note" id="model-consumer-note">Wallet, fee, brief, readiness, proofs</div>
+            </div>
+          </div>
+          <div class="service-list compact-list" id="model-routing-list">
+            <div class="empty">Waiting for model routing posture.</div>
+          </div>
+          <ul class="guidance-list" id="model-guidance">
+            <li>Waiting for learning posture.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Supervisor Surface</h2>
+              <div class="subtle">Managed services and one-click checks.</div>
+            </div>
+            <span class="tiny" id="service-counts">0 services</span>
+          </div>
+          <div class="service-list" id="service-list">
+            <div class="empty">Service inventory will appear here once the supervisor responds.</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Vera Self</h2>
+              <div class="subtle">Identity, adaptation health, and verification footprint.</div>
+            </div>
+            <span class="tiny" id="self-network">network --</span>
+          </div>
+          <div class="response-grid">
+            <div class="service-item">
+              <div class="tiny">Tools Tracked</div>
+              <div class="metric-value" id="self-tools">--</div>
+              <div class="service-note" id="self-tools-note">Learning not sampled yet</div>
+            </div>
+            <div class="service-item">
+              <div class="tiny">Skill Nodes</div>
+              <div class="metric-value" id="self-nodes">--</div>
+              <div class="service-note" id="self-proof-note">Verification pending</div>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="service-item">
+              <div class="tiny">Identity</div>
+              <div class="service-note" id="self-identity">Waiting for self portrait.</div>
+            </div>
+            <div>
+              <div class="tiny" style="margin-bottom: 8px;">Problem Tools</div>
+              <div class="issue-list" id="problem-tools">
+                <div class="empty">No adaptation warnings loaded yet.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Response Intel</h2>
+              <div class="subtle">Last reply metadata and optional thinking trace.</div>
+            </div>
+            <span class="tiny" id="intel-provider">provider --</span>
+          </div>
+          <div class="response-grid">
+            <div class="service-item">
+              <div class="tiny">Intent</div>
+              <div class="metric-value" id="intel-intent">--</div>
+              <div class="service-note" id="intel-tools">No tools called yet</div>
+            </div>
+            <div class="service-item">
+              <div class="tiny">Confidence</div>
+              <div class="metric-value" id="intel-confidence">--</div>
+              <div class="service-note" id="intel-duration">No response timing yet</div>
+            </div>
+          </div>
+          <div class="trace-box">
+            <pre class="trace-text" id="trace-output">Trace is hidden. Toggle it on when you want to inspect Vera's reasoning path.</pre>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Live Traffic</h2>
+              <div class="subtle">Recent orchestrator and lattice events from the live stream.</div>
+            </div>
+            <span class="tiny" id="events-status">socket standby</span>
+          </div>
+          <div class="events-list" id="events-list">
+            <div class="empty">Waiting for the event stream.</div>
+          </div>
+        </article>
+      </aside>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hashconnect@0.2.4/dist/hashconnect.min.js"></script>
+  <script>
+    const state = {
+      sessionId: localStorage.getItem('vera.hq.sessionId') || createId('session'),
+      userId: localStorage.getItem('vera.hq.userId') || createId('operator'),
+      transcript: [],
+      traceVisible: false,
+      sending: false,
+      ws: null,
+      wsReconnectTimer: null,
+      events: [],
+      lastRigState: null,
+      lastSelf: null,
+      lastServices: null,
+      lastResponse: null,
+      lastNvidia: null,
+      lastModelPosture: null,
+      lastHarmony: null,
+      lastAgentDraft: null,
+      creationFee: {
+        hbar: { amount: 10, priceUsd: 0.05, treasuryAccount: '0.0.10294360' },
+        hts: { amount: 100, priceUsd: 0.005, tokenId: '0.0.9356476', symbol: 'hbar.h', treasuryAccount: '0.0.10294360' },
+        targetUsd: 7.5,
+        source: 'static',
+        tolerance: 0.03,
+        quotedAt: Date.now(),
+        memoPrefix: 'vera-agent',
+      },
+      paymentVerified: false,
+      wallet: {
+        connected: false,
+        accountId: null,
+        provider: null,
+        topic: '',
+        pairingString: '',
+        pairedWalletData: null,
+        hashconnect: null,
+      },
+    };
+
+    const feed = document.getElementById('message-feed');
+    const input = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const agentFields = {
+      name: document.getElementById('agent-name'),
+      service: document.getElementById('agent-service'),
+      fee: document.getElementById('agent-fee'),
+      account: document.getElementById('agent-account'),
+      creationFeeMethod: document.getElementById('agent-creation-fee-method'),
+      creationFeeTx: document.getElementById('agent-creation-fee-tx'),
+      creationFeeDetails: document.getElementById('agent-creation-fee-details'),
+      walletPanel: document.getElementById('wallet-auth-panel'),
+      walletChip: document.getElementById('wallet-auth-chip'),
+      walletAccount: document.getElementById('wallet-auth-account'),
+      walletNote: document.getElementById('wallet-auth-note'),
+      connectWalletButton: document.getElementById('connect-wallet-button'),
+      paymentAmount: document.getElementById('payment-amount'),
+      paymentTreasury: document.getElementById('payment-treasury'),
+      paymentMemo: document.getElementById('payment-memo'),
+      paymentPayer: document.getElementById('payment-payer'),
+      paymentStatus: document.getElementById('payment-verify-status'),
+      copyPaymentButton: document.getElementById('copy-payment-button'),
+      copyMemoButton: document.getElementById('copy-memo-button'),
+      verifyPaymentButton: document.getElementById('verify-payment-button'),
+      treasuryLink: document.getElementById('treasury-link'),
+      capabilities: document.getElementById('agent-capabilities'),
+      brief: document.getElementById('agent-brief'),
+      payload: document.getElementById('agent-payload'),
+      status: document.getElementById('agent-studio-status'),
+      note: document.getElementById('agent-studio-note'),
+      draftButton: document.getElementById('draft-agent-button'),
+      registerButton: document.getElementById('register-agent-button'),
+      firstTaskButton: document.getElementById('first-task-button'),
+      chatButton: document.getElementById('agent-chat-button'),
+    };
+
+    const launchSteps = {
+      draft: document.querySelector('[data-step="draft"]'),
+      register: document.querySelector('[data-step="register"]'),
+      fund: document.querySelector('[data-step="fund"]'),
+      runtime: document.querySelector('[data-step="runtime"]'),
+      firstTask: document.querySelector('[data-step="firstTask"]'),
+      receipt: document.querySelector('[data-step="receipt"]'),
+      reputation: document.querySelector('[data-step="reputation"]'),
+    };
+
+    localStorage.setItem('vera.hq.sessionId', state.sessionId);
+    localStorage.setItem('vera.hq.userId', state.userId);
+
+    function createId(prefix) {
+      return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function slugify(value) {
+      return (value || 'agent')
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 42) || 'agent';
+    }
+
+    function shortId(value) {
+      if (!value) return '--';
+      return value.length > 18 ? `${value.slice(0, 10)}...${value.slice(-4)}` : value;
+    }
+
+    function formatPercent(value) {
+      if (typeof value !== 'number' || Number.isNaN(value)) return '--';
+      return `${(value * 100).toFixed(1)}%`;
+    }
+
+    function formatWholePercent(value) {
+      if (typeof value !== 'number' || Number.isNaN(value)) return '--';
+      return `${Math.round(value * 100)}%`;
+    }
+
+    function formatAgo(timestamp) {
+      if (!timestamp) return '--';
+      const delta = Math.max(0, Date.now() - timestamp);
+      if (delta < 1000) return 'just now';
+      if (delta < 60000) return `${Math.round(delta / 1000)}s ago`;
+      if (delta < 3600000) return `${Math.round(delta / 60000)}m ago`;
+      return `${Math.round(delta / 3600000)}h ago`;
+    }
+
+    function setConnectionState(label, tone) {
+      const dot = document.getElementById('connection-dot');
+      const chipLabel = document.getElementById('connection-label');
+      chipLabel.textContent = label;
+      dot.className = 'status-dot';
+      if (tone === 'warn') dot.classList.add('warn');
+      if (tone === 'danger') dot.classList.add('danger');
+    }
+
+    function setRigHealth(health, issues) {
+      const chip = document.getElementById('rig-health-chip');
+      chip.textContent = health || 'unknown';
+      chip.className = 'tag';
+      if (health === 'healthy') chip.classList.add('signal');
+      if (health === 'pressured') chip.classList.add('accent');
+      if (health === 'critical') {
+        chip.classList.add('danger');
+      }
+
+      document.getElementById('metric-rig-health').textContent = (health || 'unknown').toUpperCase();
+      document.getElementById('metric-rig-sub').textContent = issues && issues.length
+        ? issues.slice(0, 2).join(' | ')
+        : 'No active rig issues reported';
+    }
+
+    function setTagTone(element, tone) {
+      element.className = 'tag';
+      if (tone === 'signal') element.classList.add('signal');
+      if (tone === 'success') element.classList.add('signal');
+      if (tone === 'accent') element.classList.add('accent');
+      if (tone === 'warn') element.classList.add('accent');
+      if (tone === 'danger') element.classList.add('danger');
+    }
+
+    function harmonyTone(status) {
+      if (status === 'aligned') return 'signal';
+      if (status === 'warm' || status === 'strained') return 'accent';
+      if (status === 'critical') return 'danger';
+      return null;
+    }
+
+    function displayStatus(value) {
+      return (value || 'unknown').toString().replace(/_/g, ' ');
+    }
+
+    function setAgentStudioState(label, tone, note) {
+      agentFields.status.textContent = label;
+      setTagTone(agentFields.status, tone);
+      if (note) agentFields.note.textContent = note;
+    }
+
+    function setPaymentStatus(text, tone) {
+      agentFields.paymentStatus.textContent = text;
+      agentFields.paymentStatus.style.color = tone === 'ok'
+        ? 'var(--success)'
+        : tone === 'danger'
+          ? 'var(--danger)'
+          : tone === 'warn'
+            ? 'var(--warning)'
+            : '';
+    }
+
+    function currentAgentId() {
+      const name = agentFields.name.value.trim() || 'Vera Agent';
+      const service = agentFields.service.value || 'custom-agent';
+      return `${slugify(service)}-${slugify(name)}-${state.userId.slice(-4)}`;
+    }
+
+    function getPaymentMemo() {
+      return `${state.creationFee.memoPrefix}:${currentAgentId()}`;
+    }
+
+    function saveWalletState() {
+      localStorage.setItem('vera.hq.wallet', JSON.stringify({
+        connected: state.wallet.connected,
+        accountId: state.wallet.accountId,
+        provider: state.wallet.provider,
+        topic: state.wallet.topic,
+        pairingString: state.wallet.pairingString,
+        pairedWalletData: state.wallet.pairedWalletData,
+      }));
+    }
+
+    function loadWalletState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('vera.hq.wallet') || '{}');
+        if (!saved.accountId) return;
+        state.wallet.connected = Boolean(saved.connected);
+        state.wallet.accountId = saved.accountId;
+        state.wallet.provider = saved.provider || 'hashpack';
+        state.wallet.topic = saved.topic || '';
+        state.wallet.pairingString = saved.pairingString || '';
+        state.wallet.pairedWalletData = saved.pairedWalletData || null;
+      } catch {
+        localStorage.removeItem('vera.hq.wallet');
+      }
+    }
+
+    function renderWalletAuth() {
+      const connected = state.wallet.connected && state.wallet.accountId;
+      const accountValue = agentFields.account.value.trim();
+      const mismatch = connected && accountValue && accountValue !== state.wallet.accountId;
+
+      agentFields.walletPanel.classList.toggle('connected', Boolean(connected) && !mismatch);
+      agentFields.walletPanel.classList.toggle('blocked', Boolean(mismatch));
+      agentFields.walletChip.textContent = mismatch ? 'Mismatch' : connected ? 'Authorized' : 'Required';
+      setTagTone(agentFields.walletChip, mismatch ? 'danger' : connected ? 'signal' : 'accent');
+      agentFields.walletAccount.textContent = connected
+        ? state.wallet.accountId
+        : 'No wallet connected';
+      agentFields.walletNote.textContent = mismatch
+        ? 'The launch account changed. Use the connected wallet account before registration.'
+        : connected
+        ? 'Registration will require the creation fee transaction payer to match this wallet.'
+        : 'Connect HashPack before registration so the launch account matches the payment payer.';
+      agentFields.connectWalletButton.textContent = connected ? 'Disconnect Wallet' : 'Connect HashPack';
+      agentFields.account.readOnly = Boolean(connected);
+      agentFields.verifyPaymentButton.disabled = !connected;
+      if (connected && !agentFields.account.value.trim()) {
+        agentFields.account.value = state.wallet.accountId;
+      }
+      if (!connected && agentFields.account.value.trim() && agentFields.account.value.trim() === state.wallet.accountId) {
+        agentFields.account.value = '';
+      }
+    }
+
+    function handleWalletPairing(pairingData) {
+      const accountId = pairingData?.accountIds?.[0] || pairingData?.accountId;
+      if (!accountId) {
+        setAgentStudioState('Wallet Pending', 'accent', 'Approve the HashPack pairing request to continue.');
+        return;
+      }
+
+      state.wallet.connected = true;
+      state.wallet.accountId = accountId;
+      state.wallet.provider = pairingData?.metadata?.name || 'hashpack';
+      state.wallet.pairedWalletData = pairingData;
+      agentFields.account.value = accountId;
+      state.paymentVerified = false;
+      saveWalletState();
+      renderWalletAuth();
+      draftAgent();
+      setAgentStudioState('Wallet Authorized', 'signal', `HashPack wallet ${accountId} connected for launch authorization.`);
+    }
+
+    async function initializeWalletAuth() {
+      loadWalletState();
+      renderWalletAuth();
+
+      if (typeof HashConnect === 'undefined') {
+        agentFields.walletNote.textContent = 'HashConnect SDK unavailable. Refresh with network access or enter account manually.';
+        return;
+      }
+
+      try {
+        const hashconnect = new HashConnect();
+        state.wallet.hashconnect = hashconnect;
+        hashconnect.pairingEvent?.on?.(handleWalletPairing);
+
+        const initData = await hashconnect.init({
+          name: 'Vera Headquarters',
+          description: 'VeraLattice agent launch and creation fee authorization',
+          icon: `${window.location.origin}/vera-logo-102x102.svg`,
+          url: window.location.origin,
+        }, 'mainnet', false);
+
+        state.wallet.topic = initData?.topic || state.wallet.topic;
+        state.wallet.pairingString = initData?.pairingString || state.wallet.pairingString;
+        saveWalletState();
+      } catch (error) {
+        agentFields.walletNote.textContent = `Wallet setup failed: ${error instanceof Error ? error.message : 'unknown error'}`;
+      }
+    }
+
+    async function connectWallet() {
+      if (state.wallet.connected) {
+        try {
+          if (state.wallet.hashconnect && state.wallet.topic) {
+            await state.wallet.hashconnect.disconnect(state.wallet.topic);
+          }
+        } catch {}
+        state.wallet.connected = false;
+        state.wallet.accountId = null;
+        state.wallet.provider = null;
+        state.wallet.pairedWalletData = null;
+        state.paymentVerified = false;
+        agentFields.account.value = '';
+        saveWalletState();
+        renderWalletAuth();
+        draftAgent();
+        setAgentStudioState('Wallet Disconnected', 'accent', 'Connect HashPack before registering a paid agent.');
+        return;
+      }
+
+      if (!state.wallet.hashconnect) {
+        setAgentStudioState('Wallet Unavailable', 'danger', 'HashConnect is not loaded yet.');
+        return;
+      }
+
+      setAgentStudioState('Wallet Pairing', 'accent', 'Approve the HashPack pairing request.');
+      state.wallet.hashconnect.connectToLocalWallet();
+    }
+
+    function getSelectedCreationFee() {
+      const method = agentFields.creationFeeMethod.value === 'hts' ? 'hts' : 'hbar';
+      const fee = method === 'hts' ? state.creationFee.hts : state.creationFee.hbar;
+      return {
+        method,
+        amount: fee.amount,
+        symbol: method === 'hts' ? fee.symbol : 'HBAR',
+        token_id: method === 'hts' ? fee.tokenId : undefined,
+        treasury_account: fee.treasuryAccount,
+        transaction_id: agentFields.creationFeeTx.value.trim(),
+        payer_account: state.wallet.connected ? state.wallet.accountId : undefined,
+      };
+    }
+
+    function renderCreationFeeDetails() {
+      const fee = getSelectedCreationFee();
+      const memo = getPaymentMemo();
+      const asset = fee.method === 'hts'
+        ? `${fee.amount} ${fee.symbol || 'hbar.h'} token ${fee.token_id}`
+        : `${fee.amount} HBAR`;
+      const hbarOption = agentFields.creationFeeMethod.querySelector('option[value="hbar"]');
+      const htsOption = agentFields.creationFeeMethod.querySelector('option[value="hts"]');
+      if (hbarOption) hbarOption.textContent = `${state.creationFee.hbar.amount} HBAR`;
+      if (htsOption) htsOption.textContent = `${state.creationFee.hts.amount} ${state.creationFee.hts.symbol || 'hbar.h'}`;
+      const target = typeof state.creationFee.targetUsd === 'number'
+        ? `$${state.creationFee.targetUsd.toFixed(2)} target`
+        : 'value target';
+      const hbarUsd = typeof state.creationFee.hbar.priceUsd === 'number'
+        ? `HBAR $${state.creationFee.hbar.priceUsd.toFixed(6)}`
+        : 'HBAR price pending';
+      const tokenUsd = typeof state.creationFee.hts.priceUsd === 'number'
+        ? `${state.creationFee.hts.symbol || 'hbar.h'} $${state.creationFee.hts.priceUsd.toFixed(6)}`
+        : `${state.creationFee.hts.symbol || 'hbar.h'} price pending`;
+      const tolerance = typeof state.creationFee.tolerance === 'number'
+        ? ` ${Math.round(state.creationFee.tolerance * 100)}% drift allowed.`
+        : '';
+      agentFields.creationFeeDetails.textContent = `Pay ${asset} to treasury ${fee.treasury_account}. ${target}; ${hbarUsd}; ${tokenUsd}. Source: ${state.creationFee.source || 'quote'}.${tolerance} Suggested memo: ${memo}.`;
+      agentFields.paymentAmount.textContent = fee.method === 'hts'
+        ? `${fee.amount} ${fee.symbol || 'hbar.h'} (${fee.token_id})`
+        : `${fee.amount} HBAR`;
+      agentFields.paymentTreasury.textContent = fee.treasury_account;
+      agentFields.paymentMemo.textContent = memo;
+      agentFields.paymentPayer.textContent = fee.payer_account || 'Connect wallet';
+      agentFields.treasuryLink.href = `https://hashscan.io/mainnet/account/${fee.treasury_account}`;
+    }
+
+    async function copyText(text, label) {
+      await navigator.clipboard.writeText(text);
+      setPaymentStatus(`${label} copied`, 'ok');
+    }
+
+    function copyPaymentDetails() {
+      const fee = getSelectedCreationFee();
+      const asset = fee.method === 'hts' ? (fee.symbol || 'hbar.h') : 'HBAR';
+      const lines = [
+        `Amount: ${fee.amount} ${asset}`,
+        `Treasury: ${fee.treasury_account}`,
+        `Authorized payer: ${fee.payer_account || 'connect wallet first'}`,
+        `Memo: ${getPaymentMemo()}`,
+      ];
+      if (fee.method === 'hts') lines.splice(1, 0, `Token: ${fee.token_id}`);
+      copyText(lines.join('\n'), 'Payment details').catch(() => {
+        setPaymentStatus('Copy failed', 'danger');
+      });
+    }
+
+    function copyPaymentMemo() {
+      copyText(getPaymentMemo(), 'Memo').catch(() => {
+        setPaymentStatus('Copy failed', 'danger');
+      });
+    }
+
+    async function verifyCreationFeePayment() {
+      const draft = state.lastAgentDraft || buildAgentDraft();
+      renderAgentDraft(draft);
+
+      if (!state.wallet.connected || !state.wallet.accountId) {
+        setPaymentStatus('Connect HashPack before verification', 'warn');
+        setAgentStudioState('Needs Wallet', 'accent', 'Connect HashPack so the payment payer can authorize this launch.');
+        return false;
+      }
+
+      if (!draft.creation_fee.transaction_id) {
+        setPaymentStatus('Paste the payment transaction id first', 'warn');
+        agentFields.creationFeeTx.focus();
+        setLaunchStep('fund', 'active', 'Tx required');
+        return false;
+      }
+
+      setPaymentStatus('Checking Mirror Node', 'warn');
+      agentFields.verifyPaymentButton.disabled = true;
+      try {
+        const response = await fetch('/api/vera/agents/creation-fee/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ creation_fee: draft.creation_fee }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.verified) {
+          throw new Error(payload.error || 'Payment not verified yet');
+        }
+        state.paymentVerified = true;
+        setPaymentStatus('Payment verified', 'ok');
+        setLaunchStep('fund', 'ready', 'Verified');
+        setLaunchStep('register', 'active', 'Next');
+        pushEvent({
+          type: 'agent.launch.payment_verified',
+          summary: `Creation fee verified: ${payload.transactionId}`,
+          timestamp: Date.now(),
+        });
+        return true;
+      } catch (error) {
+        state.paymentVerified = false;
+        const message = error instanceof Error ? error.message : String(error);
+        setPaymentStatus(message, 'danger');
+        setLaunchStep('fund', 'blocked', 'Check tx');
+        pushEvent({
+          type: 'agent.launch.payment_failed',
+          summary: message,
+          timestamp: Date.now(),
+        });
+        return false;
+      } finally {
+        agentFields.verifyPaymentButton.disabled = !(state.wallet.connected && state.wallet.accountId);
+      }
+    }
+
+    function setLaunchStep(step, status, label) {
+      const item = launchSteps[step];
+      if (!item) return;
+      item.className = 'launch-step';
+      if (status === 'ready') item.classList.add('ready');
+      if (status === 'active') item.classList.add('active');
+      if (status === 'blocked') item.classList.add('blocked');
+      const stateEl = item.querySelector('.step-state');
+      if (stateEl) stateEl.textContent = label || status || 'pending';
+    }
+
+    function resetLaunchPath() {
+      setLaunchStep('draft', 'active', 'Active');
+      setLaunchStep('register', null, 'Pending');
+      setLaunchStep('fund', null, 'Pending');
+      setLaunchStep('runtime', null, 'Pending');
+      setLaunchStep('firstTask', null, 'Pending');
+      setLaunchStep('receipt', null, 'Pending');
+      setLaunchStep('reputation', null, 'Pending');
+    }
+
+    function readCapabilities() {
+      return agentFields.capabilities.value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function buildAgentDraft() {
+      const name = agentFields.name.value.trim() || 'Vera Agent';
+      const service = agentFields.service.value || 'custom-agent';
+      const capabilities = readCapabilities();
+      const fee = Number(agentFields.fee.value || 0);
+      const account = agentFields.account.value.trim();
+      const brief = agentFields.brief.value.trim();
+      const agentId = currentAgentId();
+      const creationFee = getSelectedCreationFee();
+
+      return {
+        agent_id: agentId,
+        service,
+        fee_per_task: Number.isFinite(fee) && fee >= 0 ? fee : 0,
+        availability: true,
+        account_id: account || undefined,
+        creation_fee: {
+          ...creationFee,
+          memo: `${state.creationFee.memoPrefix}:${agentId}`,
+        },
+        proof_hash: undefined,
+        metadata: {
+          name,
+          capabilities,
+          brief,
+          launchStudio: true,
+          createdBy: state.userId,
+          authorizedWallet: state.wallet.accountId,
+          walletProvider: state.wallet.provider,
+          createdAt: new Date().toISOString(),
+          suggestedFirstTask: `Run a sample ${service.replace(/-/g, ' ')} job and publish a receipt.`,
+        },
+      };
+    }
+
+    function renderAgentDraft(draft) {
+      state.lastAgentDraft = draft;
+      agentFields.payload.textContent = JSON.stringify(draft, null, 2);
+      setAgentStudioState('Ready', 'signal', 'Draft ready for marketplace registration.');
+      renderCreationFeeDetails();
+      setLaunchStep('draft', 'ready', 'Ready');
+      setLaunchStep('fund', state.paymentVerified ? 'ready' : 'active', state.paymentVerified ? 'Verified' : 'Pay fee');
+      setLaunchStep('register', state.paymentVerified ? 'active' : null, state.paymentVerified ? 'Next' : 'Pending');
+    }
+
+    function draftAgent() {
+      renderAgentDraft(buildAgentDraft());
+    }
+
+    async function registerAgentDraft() {
+      const draft = state.lastAgentDraft || buildAgentDraft();
+      renderAgentDraft(draft);
+      if (!state.wallet.connected || !state.wallet.accountId) {
+        setAgentStudioState('Needs Wallet', 'accent', 'Connect HashPack before registering this agent.');
+        setLaunchStep('register', null, 'Wallet');
+        return;
+      }
+      if (draft.account_id !== state.wallet.accountId) {
+        setAgentStudioState('Account Mismatch', 'danger', 'The agent account must match the connected HashPack wallet.');
+        setLaunchStep('register', 'blocked', 'Wallet');
+        return;
+      }
+      if (!draft.creation_fee.transaction_id) {
+        setAgentStudioState('Needs Payment', 'accent', 'Paste the creation fee transaction id before registration.');
+        setLaunchStep('fund', 'active', 'Tx required');
+        setLaunchStep('register', null, 'Pending');
+        return;
+      }
+      if (!state.paymentVerified) {
+        const verified = await verifyCreationFeePayment();
+        if (!verified) {
+          setAgentStudioState('Needs Payment', 'danger', 'Creation fee payment could not be verified yet.');
+          return;
+        }
+      }
+      setAgentStudioState('Registering', 'accent', 'Submitting agent registration to the VeraLattice marketplace.');
+      setLaunchStep('fund', 'ready', 'Verified');
+      setLaunchStep('register', 'active', 'Sending');
+      agentFields.registerButton.disabled = true;
+
+      try {
+        const response = await fetch('/api/vera/agents/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(draft),
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error || 'Agent registration failed');
+        }
+
+        setAgentStudioState('Registered', 'signal', `Registered ${payload.agentId} at sequence ${payload.sequenceNumber || '--'}.`);
+        setLaunchStep('register', 'ready', 'Registered');
+        setLaunchStep('fund', 'ready', 'Verified');
+        setLaunchStep('runtime', 'active', 'Next');
+        setLaunchStep('firstTask', null, 'Pending');
+        setLaunchStep('receipt', null, 'Pending');
+        setLaunchStep('reputation', null, 'Pending');
+        pushEvent({
+          type: 'agent.launch.registered',
+          summary: `${payload.agentId} registered for ${payload.service}`,
+          timestamp: Date.now(),
+        });
+        refreshServices().catch(() => {});
+        refreshHarmony().catch(() => {});
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        setAgentStudioState('Needs Setup', 'danger', message);
+        setLaunchStep('register', 'blocked', 'Blocked');
+        pushEvent({
+          type: 'agent.launch.failed',
+          summary: message,
+          timestamp: Date.now(),
+        });
+      } finally {
+        agentFields.registerButton.disabled = false;
+      }
+    }
+
+    function planFirstTask() {
+      const draft = state.lastAgentDraft || buildAgentDraft();
+      renderAgentDraft(draft);
+      setLaunchStep('firstTask', 'active', 'Planning');
+      input.value = [
+        `Create the first safe marketplace task for ${draft.metadata.name}.`,
+        '',
+        `Service: ${draft.service}`,
+        `Capabilities: ${draft.metadata.capabilities.join(', ') || 'none listed'}`,
+        `Brief: ${draft.metadata.brief}`,
+        '',
+        'Keep it dry-run friendly unless funding/runtime are confirmed. Include success criteria, expected receipt, and how reputation should be updated.',
+      ].join('\n');
+      input.focus();
+      setChatStatus('first task loaded');
+    }
+
+    function askVeraToRefineAgent() {
+      const draft = state.lastAgentDraft || buildAgentDraft();
+      renderAgentDraft(draft);
+      input.value = [
+        'Help me refine this Hedera marketplace agent into a client-ready launch plan.',
+        '',
+        JSON.stringify(draft, null, 2),
+      ].join('\n');
+      input.focus();
+      setChatStatus('agent draft loaded');
+    }
+
+    function setHarmonyStatus(status) {
+      const normalized = status || 'unknown';
+      const card = document.getElementById('metric-harmony-card');
+      const statusEl = document.getElementById('metric-harmony-status');
+      const chip = document.getElementById('harmonic-status-chip');
+      card.className = 'metric';
+      if (['aligned', 'warm', 'strained', 'critical'].includes(normalized)) {
+        card.classList.add(`harmony-${normalized}`);
+      }
+      statusEl.textContent = displayStatus(normalized).toUpperCase();
+
+      if (chip) {
+        chip.textContent = displayStatus(normalized);
+        setTagTone(chip, harmonyTone(normalized));
+      }
+    }
+
+    function updateBar(prefix, value, fallbackText) {
+      const label = document.getElementById(`${prefix}-label`);
+      const bar = document.getElementById(`${prefix}-bar`);
+      if (typeof value === 'number') {
+        label.textContent = formatWholePercent(value);
+        bar.style.width = `${Math.max(0, Math.min(100, value * 100))}%`;
+      } else {
+        label.textContent = fallbackText || '--';
+        bar.style.width = '0%';
+      }
+    }
+
+    function renderMessage(role, text, meta = {}) {
+      const item = document.createElement('article');
+      item.className = `message ${role}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = `avatar ${role === 'vera' ? 'vera' : 'user'}`;
+      avatar.textContent = role === 'vera' ? 'V' : 'U';
+
+      const body = document.createElement('div');
+      body.className = 'message-body';
+
+      const metaRow = document.createElement('div');
+      metaRow.className = 'message-meta';
+
+      const who = document.createElement('span');
+      who.className = 'tag';
+      who.textContent = role === 'vera' ? 'Vera' : 'You';
+      metaRow.appendChild(who);
+
+      if (meta.provider) {
+        const provider = document.createElement('span');
+        provider.className = 'tag signal';
+        provider.textContent = `${meta.provider}${meta.model ? ` / ${meta.model}` : ''}`;
+        metaRow.appendChild(provider);
+      }
+
+      if (typeof meta.confidence === 'number') {
+        const confidence = document.createElement('span');
+        confidence.className = 'tag accent';
+        confidence.textContent = `${Math.round(meta.confidence * 100)}% confidence`;
+        metaRow.appendChild(confidence);
+      }
+
+      if (typeof meta.durationMs === 'number') {
+        const duration = document.createElement('span');
+        duration.className = 'tag';
+        duration.textContent = `${meta.durationMs} ms`;
+        metaRow.appendChild(duration);
+      }
+
+      const content = document.createElement('p');
+      content.className = 'message-text';
+      content.textContent = text;
+
+      body.appendChild(metaRow);
+      body.appendChild(content);
+      item.appendChild(avatar);
+      item.appendChild(body);
+      feed.appendChild(item);
+      feed.scrollTop = feed.scrollHeight;
+
+      return { item, content };
+    }
+
+    function saveTranscript() {
+      localStorage.setItem('vera.hq.transcript', JSON.stringify(state.transcript.slice(-24)));
+    }
+
+    function pushTranscript(role, text, meta = {}) {
+      state.transcript.push({ role, text, meta, timestamp: Date.now() });
+      saveTranscript();
+    }
+
+    function hydrateTranscript() {
+      const raw = localStorage.getItem('vera.hq.transcript');
+      if (!raw) {
+        const welcome = `Headquarters is online. Ask me about the rig, the lattice, code changes, or what we should do next. I can reason in context with the live state around us.`;
+        renderMessage('vera', welcome, { provider: 'oasis' });
+        pushTranscript('vera', welcome, { provider: 'oasis' });
+        return;
+      }
+
+      try {
+        const items = JSON.parse(raw);
+        if (!Array.isArray(items) || items.length === 0) throw new Error('empty transcript');
+        state.transcript = items;
+        for (const entry of items) {
+          renderMessage(entry.role === 'vera' ? 'vera' : 'user', entry.text, entry.meta || {});
+        }
+      } catch {
+        localStorage.removeItem('vera.hq.transcript');
+        hydrateTranscript();
+      }
+    }
+
+    function clearTranscript() {
+      state.transcript = [];
+      localStorage.removeItem('vera.hq.transcript');
+      feed.innerHTML = '';
+      const welcome = `New headquarters session opened. We have a fresh room, but the rig and Vera state are still live.`;
+      renderMessage('vera', welcome, { provider: 'oasis' });
+      pushTranscript('vera', welcome, { provider: 'oasis' });
+    }
+
+    function setSessionLabel() {
+      document.getElementById('session-label').textContent = `${shortId(state.sessionId)} / ${shortId(state.userId)}`;
+    }
+
+    function setChatStatus(text) {
+      document.getElementById('chat-status').textContent = text;
+    }
+
+    function setSnapshotTime() {
+      document.getElementById('snapshot-updated').textContent = `updated ${new Date().toLocaleTimeString()}`;
+    }
+
+    function renderProblemTools(items) {
+      const target = document.getElementById('problem-tools');
+      target.innerHTML = '';
+      if (!items || items.length === 0) {
+        target.innerHTML = '<div class="empty">No problem tools reported. Adaptation looks stable.</div>';
+        return;
+      }
+
+      items.slice(0, 5).forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'issue-item';
+        const tool = document.createElement('div');
+        tool.className = 'service-name';
+        tool.textContent = item.tool || 'unknown tool';
+        const note = document.createElement('div');
+        note.className = 'service-note';
+        note.textContent = `${item.reason || 'weight reduced'}${typeof item.weight === 'number' ? ` | weight ${item.weight.toFixed(2)}` : ''}`;
+        row.appendChild(tool);
+        row.appendChild(note);
+        target.appendChild(row);
+      });
+    }
+
+    function applyRigState(payload) {
+      if (!payload || !payload.snapshot) return;
+      state.lastRigState = payload;
+      const snapshot = payload.snapshot;
+      const pressure = payload.pressure || {};
+
+      setRigHealth(snapshot.health, snapshot.issues);
+      updateBar('cpu', pressure.cpuUtilization ?? snapshot.cpu?.normalizedLoad1m, 'not sampled');
+      updateBar('memory', pressure.memoryUtilization ?? snapshot.memory?.utilization, 'not sampled');
+      updateBar('disk', pressure.diskUtilization, snapshot.disks && snapshot.disks.length ? 'see disks' : 'not sampled');
+      const gpuLabel = document.getElementById('gpu-label');
+      const gpuBar = document.getElementById('gpu-bar');
+      if (typeof pressure.gpuUtilization === 'number') {
+        gpuLabel.textContent = pressure.gpuUtilization > 0
+          ? `${Math.round(pressure.gpuUtilization * 100)}% live`
+          : snapshot.gpu?.available ? 'idle / ready' : 'offline';
+        gpuBar.style.width = `${Math.max(0, Math.min(100, pressure.gpuUtilization * 100))}%`;
+      } else {
+        gpuLabel.textContent = snapshot.gpu?.available ? 'ready' : 'offline';
+        gpuBar.style.width = '0%';
+      }
+
+      document.getElementById('queue-depth').textContent = String(payload.enterprise?.queue?.currentDepth ?? 0);
+      document.getElementById('enterprise-note').textContent = payload.enterprise?.sla
+        ? `SLA tiers active | total queued ${payload.enterprise.queue.totalQueued ?? 0}`
+        : 'Enterprise layer status unavailable';
+
+      const placement = payload.scheduler?.lastPlacement;
+      document.getElementById('placement-lane').textContent = placement?.lane || 'balanced';
+      document.getElementById('placement-note').textContent = placement?.reason || 'No recent placement recommendation yet';
+
+      setSnapshotTime();
+    }
+
+    function renderGuidance(targetId, items) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      target.innerHTML = '';
+      const guidance = Array.isArray(items) ? items : [];
+
+      if (!guidance.length) {
+        const item = document.createElement('li');
+        item.textContent = 'No guidance returned yet.';
+        target.appendChild(item);
+        return;
+      }
+
+      guidance.slice(0, 3).forEach((text) => {
+        const item = document.createElement('li');
+        item.textContent = text;
+        target.appendChild(item);
+      });
+    }
+
+    function applyHarmonicState(payload) {
+      if (!payload) return;
+      state.lastHarmony = payload;
+
+      const rigPayload = {
+        snapshot: payload.rig?.snapshot,
+        pressure: payload.rig?.pressure,
+        scheduler: payload.scheduler,
+        enterprise: payload.enterprise,
+        latticeHealth: payload.latticeHealth,
+      };
+      if (rigPayload.snapshot) applyRigState(rigPayload);
+
+      const signals = payload.signals || {};
+      const schedulerLoad = typeof signals.schedulerLoad === 'number'
+        ? signals.schedulerLoad
+        : payload.scheduler?.loadFactor;
+      const queueDepth = typeof signals.queueDepth === 'number'
+        ? signals.queueDepth
+        : payload.enterprise?.queue?.currentDepth;
+      const latticeDegraded = Number(signals.latticeDegraded ?? 0);
+      const latticeCritical = Number(signals.latticeCritical ?? 0);
+      const statusSub = [
+        `rig ${signals.rigHealth || 'unknown'}`,
+        `queue ${typeof queueDepth === 'number' ? queueDepth : '--'}`,
+        `${latticeDegraded + latticeCritical} lattice alerts`,
+      ].join(' | ');
+
+      setHarmonyStatus(payload.status);
+      document.getElementById('metric-harmony-sub').textContent = statusSub;
+      document.getElementById('metric-scheduler-load').textContent = formatWholePercent(schedulerLoad);
+      document.getElementById('metric-scheduler-sub').textContent = payload.scheduler?.intervalMs
+        ? `interval ${Math.round(payload.scheduler.intervalMs / 1000)}s | ${payload.scheduler.lastPlacement?.lane || 'balanced'} lane`
+        : 'Scheduler cadence unavailable';
+      document.getElementById('harmonic-rig-health').textContent = displayStatus(signals.rigHealth).toUpperCase();
+      document.getElementById('harmonic-orchestrator').textContent = signals.orchestratorRunning
+        ? 'Orchestrator running'
+        : signals.orchestratorSkipped
+          ? 'Orchestrator parked for operator mode'
+          : 'Orchestrator not running';
+      document.getElementById('harmonic-scheduler-load').textContent = formatWholePercent(schedulerLoad);
+      document.getElementById('harmonic-queue-depth').textContent = `Queue depth ${typeof queueDepth === 'number' ? queueDepth : '--'}`;
+      document.getElementById('harmonic-lattice-degraded').textContent = String(latticeDegraded);
+      document.getElementById('harmonic-lattice-critical').textContent = String(latticeCritical);
+      document.getElementById('queue-depth').textContent = typeof queueDepth === 'number' ? String(queueDepth) : '--';
+      renderGuidance('harmonic-guidance', payload.guidance);
+
+      setSnapshotTime();
+    }
+
+    function applyNvidiaState(configPayload, statsPayload) {
+      state.lastNvidia = { configPayload, statsPayload };
+
+      const device = configPayload?.gpu || statsPayload?.deviceName || (state.lastRigState?.snapshot?.gpu?.available ? 'NVIDIA GPU' : 'CPU Only');
+      const config = configPayload?.config || {};
+      const vram = configPayload?.vram || {};
+      const liveGpu = state.lastRigState?.snapshot?.gpu;
+      const liveUtil = state.lastRigState?.pressure?.gpuUtilization;
+
+      document.getElementById('nvidia-device').textContent = device || 'Unknown GPU';
+      document.getElementById('nvidia-runtime').textContent = configPayload?.isGPU
+        ? `CUDA ready | ${config.cudaVersion || statsPayload?.cudaVersion || 'runtime unknown'} | ${typeof liveUtil === 'number' ? `${Math.round(liveUtil * 100)}% live` : 'live load unavailable'}`
+        : 'GPU path not active';
+      document.getElementById('nvidia-memory').textContent = typeof vram.used === 'number' && typeof vram.total === 'number'
+        ? `VRAM ${vram.used} / ${vram.total} MiB`
+        : typeof liveGpu?.memoryUsedMiB === 'number' && typeof liveGpu?.memoryTotalMiB === 'number'
+          ? `VRAM ${liveGpu.memoryUsedMiB} / ${liveGpu.memoryTotalMiB} MiB`
+          : 'VRAM not sampled';
+
+      document.getElementById('nvidia-graph').textContent = `Graph analytics: ${config.graphAlgorithm || 'auto'}${statsPayload?.rapidsAvailable ? ' runtime ready' : ' configured / optional runtime'}`;
+      document.getElementById('nvidia-embedding').textContent = `Embeddings: ${config.embeddingModel || 'default'} | batch ${config.embeddingBatchSize || '--'}`;
+      document.getElementById('nvidia-inference').textContent = `Inference: ${config.llmModel || 'default'} | ${config.llmQuantization || 'default'}${statsPayload?.tritonAvailable ? ' | TensorRT ready' : ' | TensorRT optional'}`;
+    }
+
+    function applyModelPosture(payload) {
+      state.lastModelPosture = payload;
+
+      const chip = document.getElementById('model-posture-chip');
+      const learningEnabled = Boolean(payload?.controls?.learningEnabled);
+      const privateGit = payload?.controls?.privateGitLattice;
+      const enabledRoutes = Array.isArray(payload?.routing)
+        ? payload.routing.filter((route) => route.enabled)
+        : [];
+      const primary = enabledRoutes[0] || payload?.routing?.[0];
+
+      chip.textContent = learningEnabled ? 'Learning gated' : 'Sovereign core';
+      setTagTone(chip, learningEnabled ? 'accent' : 'signal');
+      document.getElementById('model-dev-lane').textContent = privateGit?.mode === 'public' ? 'Public' : 'Private';
+      document.getElementById('model-dev-note').textContent = privateGit?.enabled
+        ? `Git lattice enabled | ${privateGit.nodeCount || 0} nodes | receipts ${payload?.controls?.receiptsRequired ? 'required' : 'optional'}`
+        : `Git lattice disabled | receipts ${payload?.controls?.receiptsRequired ? 'required' : 'optional'}`;
+      document.getElementById('model-consumer-lane').textContent = primary?.lane ? primary.lane.replace(/^nvidia-/, '') : 'Local';
+      document.getElementById('model-consumer-note').textContent = learningEnabled
+        ? `${payload?.controls?.learningProvider || 'learning'} lane available behind operator control`
+        : 'Consumer launch stays local/proof-backed unless learning is enabled';
+
+      const list = document.getElementById('model-routing-list');
+      const routes = Array.isArray(payload?.routing) ? payload.routing : [];
+      if (!routes.length) {
+        list.innerHTML = '<div class="empty">Model routing posture unavailable.</div>';
+      } else {
+        list.innerHTML = routes.map((route) => `
+          <div class="service-item model-route ${route.enabled ? 'active' : ''}">
+            <div class="service-row">
+              <strong>${escapeHtml(route.lane)}</strong>
+              <span class="tag ${route.enabled ? 'signal' : 'standby'}">${route.enabled ? 'ready' : 'standby'}</span>
+            </div>
+            <div class="service-note">${escapeHtml(route.role || '')}</div>
+            <div class="service-note">${escapeHtml(route.model || 'model unset')} | priority ${route.priority || '--'}</div>
+          </div>
+        `).join('');
+      }
+
+      renderGuidance('model-guidance', payload?.guidance || []);
+    }
+
+    function serviceTone(service) {
+      if (service.health === 'degraded' || service.state === 'error') return 'danger';
+      if (service.state === 'starting' || service.state === 'stopping') return 'warning';
+      return 'success';
+    }
+
+    function renderServices(summary) {
+      state.lastServices = summary;
+      const target = document.getElementById('service-list');
+      target.innerHTML = '';
+
+      const services = summary?.services || [];
+      document.getElementById('metric-services').textContent = `${summary?.counts?.running ?? 0}/${summary?.counts?.total ?? 0}`;
+      document.getElementById('metric-services-sub').textContent = `${summary?.counts?.degraded ?? 0} degraded | ${summary?.counts?.stopped ?? 0} stopped`;
+      document.getElementById('service-counts').textContent = `${services.length} services`;
+
+      if (!services.length) {
+        target.innerHTML = '<div class="empty">No supervisor inventory returned.</div>';
+        return;
+      }
+
+      services.forEach((service) => {
+        const item = document.createElement('div');
+        item.className = 'service-item';
+
+        const row = document.createElement('div');
+        row.className = 'service-row';
+
+        const name = document.createElement('div');
+        name.className = 'service-name';
+        name.textContent = service.name;
+
+        const badge = document.createElement('span');
+        badge.className = 'tag';
+        badge.textContent = `${service.state} / ${service.health}`;
+        if (serviceTone(service) === 'success') badge.classList.add('signal');
+        if (serviceTone(service) === 'warning') badge.classList.add('accent');
+        if (serviceTone(service) === 'danger') {
+          badge.style.background = 'rgba(239, 68, 68, 0.12)';
+          badge.style.borderColor = 'rgba(239, 68, 68, 0.28)';
+        }
+
+        row.appendChild(name);
+        row.appendChild(badge);
+
+        const description = document.createElement('div');
+        description.className = 'service-note';
+        description.textContent = service.description || 'Managed service';
+
+        const details = document.createElement('div');
+        details.className = 'service-note';
+        details.textContent = service.issues && service.issues.length
+          ? service.issues.slice(0, 2).join(' | ')
+          : `Last action ${service.lastActionAt ? formatAgo(service.lastActionAt) : 'never'}`;
+
+        const actions = document.createElement('div');
+        actions.className = 'service-actions';
+
+        const actionNames = service.state === 'running'
+          ? ['check', 'restart']
+          : ['start', 'check'];
+
+        actionNames.forEach((action) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'button small';
+          button.textContent = action;
+          button.addEventListener('click', () => runServiceAction(service.name, action));
+          actions.appendChild(button);
+        });
+
+        item.appendChild(row);
+        item.appendChild(description);
+        item.appendChild(details);
+        item.appendChild(actions);
+        target.appendChild(item);
+      });
+    }
+
+    function applySelfPortrait(payload) {
+      state.lastSelf = payload;
+      document.getElementById('metric-capabilities').textContent = String(payload?.identity?.capabilityCount ?? '--');
+      document.getElementById('metric-capabilities-sub').textContent = `${payload?.learning?.agentCount ?? 0} agents | ${payload?.lattice?.skillNodes ?? 0} nodes`;
+      document.getElementById('self-network').textContent = `network ${payload?.identity?.network || '--'}`;
+      document.getElementById('self-tools').textContent = String(payload?.adaptation?.toolsTracked ?? '--');
+      document.getElementById('self-tools-note').textContent = `${payload?.adaptation?.healthy ?? 0} healthy | ${payload?.adaptation?.penalized ?? 0} penalized`;
+      document.getElementById('self-nodes').textContent = String(payload?.lattice?.skillNodes ?? '--');
+      document.getElementById('self-proof-note').textContent = `self verify publishes ${payload?.verification?.selfVerifyPublishes ?? 0}`;
+
+      const balance = payload?.identity?.balance;
+      document.getElementById('self-identity').textContent = balance
+        ? `${payload.identity.name} on ${payload.identity.network} | operator ${payload.identity.operator} | ${balance.hbar.toFixed(4)} HBAR`
+        : `${payload?.identity?.name || 'Vera'} on ${payload?.identity?.network || '--'} | operator ${payload?.identity?.operator || '--'}`;
+
+      renderProblemTools(payload?.adaptation?.problemTools || []);
+    }
+
+    function applyResponseIntel(payload) {
+      state.lastResponse = payload;
+      document.getElementById('metric-response').textContent = payload?.provider || 'oasis';
+      document.getElementById('metric-response-sub').textContent = payload?.model || 'model unspecified';
+
+      document.getElementById('intel-provider').textContent = `provider ${payload?.provider || '--'}`;
+      document.getElementById('intel-intent').textContent = payload?.intent || 'chat';
+      document.getElementById('intel-tools').textContent = payload?.toolsCalled?.length
+        ? payload.toolsCalled.join(', ')
+        : 'No tools called';
+      document.getElementById('intel-confidence').textContent = typeof payload?.confidence === 'number'
+        ? `${Math.round(payload.confidence * 100)}%`
+        : '--';
+      document.getElementById('intel-duration').textContent = typeof payload?.durationMs === 'number'
+        ? `${payload.durationMs} ms total`
+        : 'No timing available';
+
+      const trace = payload?.thinkingTrace;
+      document.getElementById('trace-output').textContent = state.traceVisible
+        ? (trace || 'Trace enabled, but no detailed reasoning was returned for the last response.')
+        : 'Trace is hidden. Toggle it on when you want to inspect Vera\'s reasoning path.';
+      document.getElementById('trace-hint').textContent = state.traceVisible ? 'Trace visible' : 'Trace hidden';
+    }
+
+    function summarizeEvent(event) {
+      if (!event) return 'No details';
+      if (typeof event.summary === 'string') return event.summary;
+      if (event.data && typeof event.data === 'object') {
+        const keys = Object.keys(event.data).slice(0, 3);
+        if (keys.length) {
+          return keys.map((key) => `${key}: ${String(event.data[key])}`).join(' | ');
+        }
+      }
+      if (event.message) return String(event.message);
+      return 'Live event received';
+    }
+
+    function renderEvents() {
+      const target = document.getElementById('events-list');
+      target.innerHTML = '';
+
+      if (!state.events.length) {
+        target.innerHTML = '<div class="empty">No recent events yet.</div>';
+        return;
+      }
+
+      state.events.slice(0, 12).forEach((event) => {
+        const item = document.createElement('div');
+        item.className = 'event-item';
+
+        const row = document.createElement('div');
+        row.className = 'event-row';
+
+        const type = document.createElement('div');
+        type.className = 'event-type';
+        type.textContent = event.type || 'event';
+
+        const time = document.createElement('div');
+        time.className = 'tiny';
+        time.textContent = formatAgo(event.timestamp || Date.now());
+
+        row.appendChild(type);
+        row.appendChild(time);
+
+        const summary = document.createElement('div');
+        summary.className = 'event-summary';
+        summary.textContent = summarizeEvent(event);
+
+        item.appendChild(row);
+        item.appendChild(summary);
+        target.appendChild(item);
+      });
+    }
+
+    function pushEvent(event) {
+      state.events.unshift({
+        ...event,
+        timestamp: event.timestamp || Date.now(),
+      });
+      state.events = state.events.slice(0, 30);
+      renderEvents();
+    }
+
+    async function runServiceAction(name, action) {
+      setConnectionState(`Running ${action} on ${name}`, 'warn');
+      try {
+        const response = await fetch(`/api/vera/rig/services/${encodeURIComponent(name)}/${encodeURIComponent(action)}`, {
+          method: 'POST',
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'service action failed');
+        }
+        pushEvent({
+          type: `service.${action}`,
+          summary: `${name} ${action} completed`,
+          timestamp: Date.now(),
+        });
+        await refreshServices();
+        await refreshHarmony();
+        setConnectionState('Headquarters synchronized', null);
+      } catch (error) {
+        pushEvent({
+          type: `service.${action}.failed`,
+          summary: error instanceof Error ? error.message : String(error),
+          timestamp: Date.now(),
+        });
+        setConnectionState('Service action failed', 'danger');
+      }
+    }
+
+    async function refreshRig() {
+      const response = await fetch('/api/vera/rig/state');
+      if (!response.ok) throw new Error('rig state unavailable');
+      const payload = await response.json();
+      applyRigState(payload);
+    }
+
+    async function refreshHarmony() {
+      const response = await fetch('/api/vera/harmony');
+      if (!response.ok) throw new Error('harmonic state unavailable');
+      const payload = await response.json();
+      applyHarmonicState(payload);
+    }
+
+    async function refreshCreationFee() {
+      const response = await fetch('/api/vera/agents/creation-fee');
+      if (!response.ok) throw new Error('creation fee unavailable');
+      state.creationFee = await response.json();
+      renderCreationFeeDetails();
+    }
+
+    async function refreshServices() {
+      const response = await fetch('/api/vera/rig/services');
+      if (!response.ok) throw new Error('services unavailable');
+      const payload = await response.json();
+      renderServices(payload);
+    }
+
+    async function refreshSelf() {
+      const response = await fetch('/api/vera/self');
+      if (!response.ok) throw new Error('self portrait unavailable');
+      const payload = await response.json();
+      applySelfPortrait(payload);
+    }
+
+    async function refreshNvidia() {
+      const [configResponse, statsResponse] = await Promise.all([
+        fetch('/api/vera/nvidia/config'),
+        fetch('/api/vera/nvidia/gpu-stats'),
+      ]);
+
+      if (!configResponse.ok) {
+        throw new Error('nvidia config unavailable');
+      }
+
+      const configPayload = await configResponse.json();
+      const statsPayload = statsResponse.ok ? await statsResponse.json() : null;
+      applyNvidiaState(configPayload, statsPayload);
+    }
+
+    async function refreshModelPosture() {
+      const response = await fetch('/api/vera/learning/posture');
+      if (!response.ok) throw new Error('model posture unavailable');
+      const payload = await response.json();
+      applyModelPosture(payload);
+    }
+
+    async function loadRecentEvents() {
+      const response = await fetch('/api/vera/events/recent?limit=10');
+      if (!response.ok) throw new Error('recent events unavailable');
+      const payload = await response.json();
+      state.events = Array.isArray(payload.events) ? payload.events.reverse() : [];
+      renderEvents();
+    }
+
+    async function refreshAll() {
+      try {
+        setConnectionState('Refreshing headquarters', 'warn');
+        await Promise.all([refreshHarmony(), refreshServices(), refreshSelf(), refreshNvidia(), refreshModelPosture(), loadRecentEvents()]);
+        setConnectionState('Headquarters synchronized', null);
+      } catch (error) {
+        setConnectionState(error instanceof Error ? error.message : 'Refresh failed', 'danger');
+      }
+    }
+
+    function connectSocket() {
+      if (state.ws) state.ws.close();
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const url = `${protocol}//${window.location.host}/ws/vera/events`;
+      const ws = new WebSocket(url);
+      state.ws = ws;
+      document.getElementById('events-status').textContent = 'connecting';
+
+      ws.addEventListener('open', () => {
+        document.getElementById('events-status').textContent = 'live socket';
+        setConnectionState('Headquarters live', null);
+      });
+
+      ws.addEventListener('message', (message) => {
+        try {
+          const payload = JSON.parse(message.data);
+          if (payload.type === 'connected') {
+            document.getElementById('events-status').textContent = `socket ${shortId(payload.clientId)}`;
+            return;
+          }
+          pushEvent(payload);
+        } catch {
+          pushEvent({ type: 'socket.message', summary: String(message.data), timestamp: Date.now() });
+        }
+      });
+
+      ws.addEventListener('close', () => {
+        document.getElementById('events-status').textContent = 'reconnecting';
+        setConnectionState('Event stream reconnecting', 'warn');
+        clearTimeout(state.wsReconnectTimer);
+        state.wsReconnectTimer = setTimeout(connectSocket, 2500);
+      });
+
+      ws.addEventListener('error', () => {
+        document.getElementById('events-status').textContent = 'socket error';
+      });
+    }
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message || state.sending) return;
+
+      state.sending = true;
+      sendButton.disabled = true;
+      setChatStatus('transmitting');
+
+      renderMessage('user', message);
+      pushTranscript('user', message);
+      input.value = '';
+
+      const streamed = renderMessage('vera', '', { provider: 'oasis' });
+      let accumulated = '';
+      let buffer = '';
+      let finalPayload = null;
+
+      try {
+        const response = await fetch('/api/vera/oasis/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            sessionId: state.sessionId,
+            userId: state.userId,
+            showTrace: state.traceVisible,
+            stream: true,
+          }),
+        });
+
+        if (!response.ok || !response.body) {
+          const text = await response.text();
+          throw new Error(text || 'chat request failed');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const payload = JSON.parse(line);
+            if (payload.chunk) {
+              accumulated += payload.chunk;
+              streamed.content.textContent = accumulated;
+              feed.scrollTop = feed.scrollHeight;
+            } else if (payload.done) {
+              finalPayload = payload;
+            } else if (payload.error) {
+              throw new Error(payload.error);
+            }
+          }
+        }
+
+        if (!accumulated && finalPayload?.response) {
+          accumulated = finalPayload.response;
+          streamed.content.textContent = accumulated;
+        }
+
+        pushTranscript('vera', accumulated || 'No response returned.', {
+          provider: finalPayload?.provider,
+          model: finalPayload?.model,
+          confidence: finalPayload?.confidence,
+          durationMs: finalPayload?.durationMs,
+        });
+
+        if (finalPayload) {
+          applyResponseIntel(finalPayload);
+          pushEvent({
+            type: 'chat.response',
+            summary: `${finalPayload.intent || 'chat'} | ${finalPayload.provider || 'oasis'} | ${finalPayload.durationMs || 0} ms`,
+            timestamp: Date.now(),
+          });
+          const metaRow = streamed.item.querySelector('.message-meta');
+          metaRow.innerHTML = '';
+          const roleTag = document.createElement('span');
+          roleTag.className = 'tag';
+          roleTag.textContent = 'Vera';
+          metaRow.appendChild(roleTag);
+          if (finalPayload.provider) {
+            const providerTag = document.createElement('span');
+            providerTag.className = 'tag signal';
+            providerTag.textContent = `${finalPayload.provider}${finalPayload.model ? ` / ${finalPayload.model}` : ''}`;
+            metaRow.appendChild(providerTag);
+          }
+          if (typeof finalPayload.confidence === 'number') {
+            const confidenceTag = document.createElement('span');
+            confidenceTag.className = 'tag accent';
+            confidenceTag.textContent = `${Math.round(finalPayload.confidence * 100)}% confidence`;
+            metaRow.appendChild(confidenceTag);
+          }
+          if (typeof finalPayload.durationMs === 'number') {
+            const durationTag = document.createElement('span');
+            durationTag.className = 'tag';
+            durationTag.textContent = `${finalPayload.durationMs} ms`;
+            metaRow.appendChild(durationTag);
+          }
+        }
+
+        setChatStatus('response complete');
+      } catch (error) {
+        streamed.content.textContent = `I hit an issue while processing that request: ${error instanceof Error ? error.message : String(error)}`;
+        setChatStatus('response failed');
+        pushEvent({
+          type: 'chat.error',
+          summary: error instanceof Error ? error.message : String(error),
+          timestamp: Date.now(),
+        });
+      } finally {
+        state.sending = false;
+        sendButton.disabled = false;
+        Promise.allSettled([refreshHarmony(), refreshServices(), refreshSelf(), refreshNvidia()])
+          .catch(() => {});
+      }
+    }
+
+    function toggleTrace() {
+      state.traceVisible = !state.traceVisible;
+      document.getElementById('toggle-trace-button').textContent = state.traceVisible ? 'Hide Trace' : 'Show Trace';
+      document.getElementById('trace-hint').textContent = state.traceVisible ? 'Trace visible' : 'Trace hidden';
+      applyResponseIntel(state.lastResponse || {});
+    }
+
+    function startNewSession() {
+      state.sessionId = createId('session');
+      localStorage.setItem('vera.hq.sessionId', state.sessionId);
+      setSessionLabel();
+      clearTranscript();
+      pushEvent({
+        type: 'session.new',
+        summary: `Opened ${shortId(state.sessionId)}`,
+        timestamp: Date.now(),
+      });
+    }
+
+    function bindEvents() {
+      sendButton.addEventListener('click', sendMessage);
+      document.getElementById('toggle-trace-button').addEventListener('click', toggleTrace);
+      document.getElementById('new-session-button').addEventListener('click', startNewSession);
+      document.getElementById('refresh-all-button').addEventListener('click', refreshAll);
+      agentFields.draftButton.addEventListener('click', draftAgent);
+      agentFields.registerButton.addEventListener('click', registerAgentDraft);
+      agentFields.firstTaskButton.addEventListener('click', planFirstTask);
+      agentFields.chatButton.addEventListener('click', askVeraToRefineAgent);
+      agentFields.copyPaymentButton.addEventListener('click', copyPaymentDetails);
+      agentFields.copyMemoButton.addEventListener('click', copyPaymentMemo);
+      agentFields.verifyPaymentButton.addEventListener('click', verifyCreationFeePayment);
+      agentFields.connectWalletButton.addEventListener('click', connectWallet);
+      [
+        agentFields.name,
+        agentFields.service,
+        agentFields.fee,
+        agentFields.account,
+        agentFields.creationFeeMethod,
+        agentFields.creationFeeTx,
+        agentFields.capabilities,
+        agentFields.brief,
+      ].forEach((field) => field.addEventListener('input', () => {
+        state.lastAgentDraft = null;
+        state.paymentVerified = false;
+        renderWalletAuth();
+        renderCreationFeeDetails();
+        setAgentStudioState('Drafting', null, 'Update the draft before registration.');
+        setPaymentStatus(
+          state.wallet.connected ? 'Pay in HashPack, paste the transaction id, then verify.' : 'Connect HashPack before payment verification.',
+          null
+        );
+        resetLaunchPath();
+      }));
+      document.getElementById('quick-prompts').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-prompt]');
+        if (!button) return;
+        input.value = button.dataset.prompt;
+        input.focus();
+      });
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
+      });
+    }
+
+    async function initialize() {
+      setSessionLabel();
+      hydrateTranscript();
+      bindEvents();
+      await initializeWalletAuth();
+      connectSocket();
+      applyResponseIntel({});
+      await refreshCreationFee().catch(() => renderCreationFeeDetails());
+      draftAgent();
+
+      await refreshAll();
+
+      window.setInterval(() => {
+        refreshHarmony().catch(() => {});
+      }, 15000);
+
+      window.setInterval(() => {
+        refreshServices().catch(() => {});
+      }, 20000);
+
+      window.setInterval(() => {
+        refreshSelf().catch(() => {});
+      }, 30000);
+
+      window.setInterval(() => {
+        refreshNvidia().catch(() => {});
+      }, 20000);
+
+      window.setInterval(() => {
+        refreshModelPosture().catch(() => {});
+      }, 30000);
+    }
+
+    initialize().catch((error) => {
+      setConnectionState(error instanceof Error ? error.message : 'Initialization failed', 'danger');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vera-lattice
+  namespace: vera
+  labels:
+    app: vera-lattice
+    tier: backend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: vera-lattice
+  template:
+    metadata:
+      labels:
+        app: vera-lattice
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - vera-lattice
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: vera
+          image: ghcr.io/vera/hedera-llm-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "8080"
+            - name: INSTANCE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: vera-config
+                  key: redis.url
+            - name: MODEL_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: vera-config
+                  key: model.provider
+            - name: QVX_INFER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: vera-config
+                  key: qvx.infer.url
+            - name: HEDERA_NETWORK
+              valueFrom:
+                configMapKeyRef:
+                  name: vera-config
+                  key: hedera.network
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=40960"
+            - name: UV_THREADPOOL_SIZE
+              value: "64"
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2000m"
+            limits:
+              memory: "8Gi"
+              cpu: "4000m"
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+            - name: logs-volume
+              mountPath: /app/logs
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: vera-data-pvc
+        - name: logs-volume
+          emptyDir: {}
+      terminationGracePeriodSeconds: 60
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vera-lattice
+  namespace: vera
+  labels:
+    app: vera-lattice
+spec:
+  type: ClusterIP
+  selector:
+    app: vera-lattice
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vera-data-pvc
+  namespace: vera
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Vera Headquarters">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d171c"/>
+      <stop offset="100%" stop-color="#111d23"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4d58d"/>
+      <stop offset="50%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <rect x="14" y="14" width="228" height="228" rx="56" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="84" fill="none" stroke="url(#ring)" stroke-width="10" opacity="0.95"/>
+  <circle cx="128" cy="128" r="56" fill="none" stroke="#f4d58d" stroke-width="3.5" opacity="0.35"/>
+  <circle cx="128" cy="128" r="18" fill="#14b8a6" opacity="0.22"/>
+  <path d="M82 74h26l20 39 20-39h26l-33 61 37 47h-28l-22-29-22 29H78l37-47z" fill="url(#mark)"/>
+  <circle cx="77" cy="128" r="5.5" fill="#14b8a6"/>
+  <circle cx="179" cy="128" r="5.5" fill="#f97316"/>
+  <circle cx="128" cy="77" r="5.5" fill="#f4d58d"/>
+  <circle cx="128" cy="179" r="5.5" fill="#f4d58d" opacity="0.8"/>
+</svg>

@@ -1,0 +1,36 @@
+{
+  "run_id": "2026-05-10_no-quantization",
+  "timestamp": "2026-05-10T12:38:08.115770",
+  "configuration": {
+    "run_name": "no-quantization",
+    "model": {
+      "architecture": "SimpleMLP",
+      "hidden_size": 120,
+      "num_features": 20,
+      "num_classes": 10
+    },
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "batch_size": 32,
+      "epochs": 10,
+      "use_quantization": false
+    },
+    "dataset": {
+      "type": "synthetic",
+      "samples": 10000,
+      "domain": "staking_rewards"
+    }
+  },
+  "results": {
+    "final_loss": 1.1,
+    "final_accuracy": 0.34,
+    "initial_loss": 2.3,
+    "initial_accuracy": 0.1
+  },
+  "findings": [
+    "Disabling ternary quantization enabled learning (loss: 2.30\u21921.10)",
+    "Accuracy improved from 10% to 34% without quantization",
+    "Root cause: TernaryAdam + ternary quantization blocking learning"
+  ]
+}

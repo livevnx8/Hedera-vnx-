@@ -1,0 +1,71 @@
+{
+  "network": "mainnet",
+  "operatorId": "0.0.10294360",
+  "createdAt": "2026-03-30T21:35:08.401Z",
+  "topics": {
+    "fedex_route": {
+      "id": "0.0.10414355",
+      "memo": "Vera FedEx: Primary Routing Coordination",
+      "description": "Primary routing coordination and event management",
+      "priority": "critical",
+      "retention": "90d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414355"
+    },
+    "fedex_pkg": {
+      "id": "0.0.10414356",
+      "memo": "Vera FedEx: Package Tracking Events",
+      "description": "Real-time package tracking and verification",
+      "priority": "critical",
+      "retention": "180d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414356"
+    },
+    "fedex_chain": {
+      "id": "0.0.10414357",
+      "memo": "Vera FedEx: Supply Chain Verification",
+      "description": "End-to-end supply chain verification",
+      "priority": "high",
+      "retention": "7y",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414357"
+    },
+    "fedex_air": {
+      "id": "0.0.10414358",
+      "memo": "Vera FedEx: Air Transportation",
+      "description": "Air freight routing and tracking",
+      "priority": "high",
+      "retention": "90d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414358"
+    },
+    "fedex_ground": {
+      "id": "0.0.10414359",
+      "memo": "Vera FedEx: Ground Transportation",
+      "description": "Ground shipping routing and tracking",
+      "priority": "high",
+      "retention": "90d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414359"
+    },
+    "fedex_intl": {
+      "id": "0.0.10414360",
+      "memo": "Vera FedEx: International Shipping",
+      "description": "International shipping and customs events",
+      "priority": "high",
+      "retention": "180d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414360"
+    },
+    "fedex_opt": {
+      "id": "0.0.10414361",
+      "memo": "Vera FedEx: Route Optimization",
+      "description": "AI-driven route optimization recommendations",
+      "priority": "medium",
+      "retention": "30d",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414361"
+    },
+    "fedex_audit": {
+      "id": "0.0.10414362",
+      "memo": "Vera FedEx: Compliance & Audit",
+      "description": "Compliance and audit trail logging",
+      "priority": "critical",
+      "retention": "7y",
+      "hashscan": "https://hashscan.io/mainnet/topic/0.0.10414362"
+    }
+  }
+}

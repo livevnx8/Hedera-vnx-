@@ -1,0 +1,128 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/veralattice/vera-lattice
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: api.veralattice.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: vera-lattice-tls
+      hosts:
+        - api.veralattice.com
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - vera-lattice
+          topologyKey: kubernetes.io/hostname
+
+env:
+  PORT: "8080"
+  HEDERA_NETWORK: "mainnet"
+  MODEL_PROVIDER: "openai"
+  DATABASE_PATH: "/data/data.sqlite"
+
+envSecrets:
+  HEDERA_OPERATOR_ACCOUNT_ID: "hedera-operator-account-id"
+  HEDERA_OPERATOR_PRIVATE_KEY: "hedera-operator-private-key"
+  OPENAI_API_KEY: "openai-api-key"
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /data
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+# GPU node pool for QVX inference (optional)
+gpu:
+  enabled: false
+  nodeSelector:
+    node-type: gpu
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+
+# Required secrets (override at install time)
+hederaOperatorAccountId: ""
+hederaOperatorPrivateKey: ""
+openaiApiKey: ""
+
+# Lattice topology configuration
+lattice:
+  layers: 4
+  autoPulseInterval: 30000
+  enableLivingGeometry: true

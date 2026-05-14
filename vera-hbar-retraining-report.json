@@ -1,0 +1,64 @@
+{
+  "retrainingId": "hbar-retrain-1743169200000",
+  "timestamp": "2026-03-28T13:00:00.000Z",
+  "type": "hbar_agent_system",
+  "duration": 12500,
+  "stats": {
+    "toolsTested": 22,
+    "agentsTested": 6,
+    "workflowsTested": 3,
+    "successes": 31,
+    "failures": 0
+  },
+  "results": {
+    "tools": {
+      "staking": 8,
+      "fileService": 6,
+      "advancedToken": 8
+    },
+    "agents": [
+      { "id": "agent-defi", "name": "DeFi Strategist", "toolCount": 19, "status": "active" },
+      { "id": "agent-nft", "name": "NFT Curator", "toolCount": 14, "status": "active" },
+      { "id": "agent-governance", "name": "Governance Architect", "toolCount": 16, "status": "active" },
+      { "id": "agent-treasury", "name": "Treasury Manager", "toolCount": 17, "status": "active" },
+      { "id": "agent-security", "name": "Security Guardian", "toolCount": 15, "status": "active" },
+      { "id": "agent-enterprise", "name": "Enterprise Integration", "toolCount": 15, "status": "active" }
+    ],
+    "workflows": [
+      { "id": "defi-token-launch", "name": "DeFi Token Launch", "steps": 4, "status": "available" },
+      { "id": "nft-drop", "name": "NFT Collection Drop", "steps": 3, "status": "available" },
+      { "id": "treasury-rebalance", "name": "Treasury Rebalancing", "steps": 2, "status": "available" }
+    ],
+    "learning": {
+      "enabled": true,
+      "toolsAvailable": 109,
+      "agentsAvailable": 6,
+      "workflowsAvailable": 3
+    }
+  },
+  "gains": {
+    "toolsAdded": 22,
+    "totalTools": 109,
+    "previousTools": 87,
+    "agentsCreated": 6,
+    "workflowsCreated": 3,
+    "toolLibraryExpansion": "+25%",
+    "newCapabilities": [
+      "Staking operations (stake_to_node, claim_rewards, etc.)",
+      "File Service (file_create, file_append, etc.)",
+      "Advanced token ops (freeze, pause, kyc, etc.)",
+      "Domain agents for DeFi, NFT, Governance, Treasury, Security, Enterprise",
+      "Workflow engine with 3 built-in workflows",
+      "Learning infrastructure with analytics"
+    ]
+  },
+  "status": "complete",
+  "hashscanUrl": "https://hashscan.io/mainnet/topic/0.0.10409351",
+  "hcsSequences": [
+    { "phase": "tools_validation", "sequence": "pending", "timestamp": 1743169200000 },
+    { "phase": "agents_validation", "sequence": "pending", "timestamp": 1743169210000 },
+    { "phase": "workflows_validation", "sequence": "pending", "timestamp": 1743169220000 },
+    { "phase": "system_validation", "sequence": "pending", "timestamp": 1743169230000 },
+    { "phase": "retraining_complete", "sequence": "pending", "timestamp": 1743169240000 }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "enhancement": {
+    "date": "2026-03-26T01:53:12.631Z",
+    "duration": 27.334702,
+    "type": "reasoning-enhancement",
+    "status": "completed"
+  },
+  "progress": {
+    "currentLevel": "Template-Dependent",
+    "targetLevel": "Independent Reasoner",
+    "exercises": 29,
+    "improvements": 27
+  },
+  "framework": {
+    "logicalReasoning": [
+      {
+        "name": "Syllogism Training",
+        "exercises": [
+          {
+            "premise": "All A are B. All B are C. Therefore, all A are C.",
+            "explanation": "Valid transitive syllogism"
+          },
+          {
+            "premise": "Some A are B. All B are C. Therefore, some A are C.",
+            "explanation": "Valid particular syllogism"
+          },
+          {
+            "premise": "All A are B. Some C are A. Therefore, some C are B.",
+            "explanation": "Valid conversion syllogism"
+          },
+          {
+            "premise": "All A are B. All C are B. Therefore, all A are C.",
+            "explanation": "Invalid - middle term not distributed"
+          }
+        ]
+      },
+      {
+        "name": "Conditional Logic",
+        "exercises": [
+          {
+            "premise": "If P then Q. P is true. Therefore, Q is true.",
+            "explanation": "Valid modus ponens"
+          },
+          {
+            "premise": "If P then Q. Q is false. Therefore, P is false.",
+            "explanation": "Valid modus tollens"
+          },
+          {
+            "premise": "If P then Q. Q is true. Therefore, P is true.",
+            "explanation": "Invalid - affirming consequent"
+          },
+          {
+            "premise": "If P then Q. P is false. Therefore, Q is false.",
+            "explanation": "Invalid - denying antecedent"
+          }
+        ]
+      },
+      {
+        "name": "Quantifier Logic",
+        "exercises": [
+          {
+            "premise": "All humans are mortal. Socrates is human. Therefore, Socrates is mortal.",
+            "explanation": "Valid universal instantiation"
+          },
+          {
+            "premise": "Some birds can fly. Penguins are birds. Therefore, some penguins can fly.",
+            "explanation": "Invalid - particular premise doesn't guarantee"
+          },
+          {
+            "premise": "No reptiles are mammals. All snakes are reptiles. Therefore, no snakes are mammals.",
+            "explanation": "Valid universal negative"
+          }
+        ]
+      }
+    ],
+    "problemSolving": [
+      {
+        "name": "Step-by-Step Problem Solving",
+        "problems": [
+          {
+            "problem": "How many ways can you arrange the letters in 'CAT'?",
+            "steps": [
+              "Count total letters: 3",
+              "Calculate permutations: 3! = 3×2×1 = 6",
+              "List arrangements: CAT, CTA, ACT, ATC, TCA, TAC"
+            ],
+            "solution": "6 ways"
+          },
+          {
+            "problem": "If a shirt costs $20 and is 25% off, what's the final price?",
+            "steps": [
+              "Calculate discount: 20 × 0.25 = $5",
+              "Subtract discount: 20 - 5 = $15",
+              "Final price: $15"
+            ],
+            "solution": "$15"
+          },
+          {
+            "problem": "A train leaves at 2 PM going 60 mph. Another leaves at 3 PM going 80 mph. When do they meet if they're 300 miles apart?",
+            "steps": [
+              "Set up equation: 60t + 80(t-1) = 300",
+              "Solve: 140t - 80 = 300",
+              "140t = 380",
+              "t = 2.71 hours",
+              "Meeting time: 2:00 PM + 2.71 hours = 4:43 PM"
+            ],
+            "solution": "4:43 PM"
+          }
+        ]
+      },
+      {
+        "name": "Pattern Recognition Problems",
+        "problems": [
+          {
+            "problem": "Find the next number: 2, 6, 12, 20, 30, ?",
+            "pattern": "Differences: +4, +6, +8, +10, +12",
+            "solution": "42"
+          },
+          {
+            "problem": "Complete: 1, 1, 2, 3, 5, 8, ?",
+            "pattern": "Fibonacci sequence: sum of previous two numbers",
+            "solution": "13"
+          }
+        ]
+      }
+    ],
+    "criticalThinking": [
+      {
+        "name": "Logical Fallacies",
+        "fallacies": [
+          {
+            "name": "Ad Hominem",
+            "example": "You can't trust John's argument about climate change because he drives a big car.",
+            "explanation": "Attacking the person instead of the argument",
+            "correction": "Focus on the argument's merits, not the person's character"
+          },
+          {
+            "name": "Straw Man",
+            "example": "Environmentalists want to ban all cars and destroy the economy.",
+            "explanation": "Misrepresenting someone's argument to make it easier to attack",
+            "correction": "Address the actual argument being made"
+          },
+          {
+            "name": "False Dichotomy",
+            "example": "Either you support this policy completely or you hate our country.",
+            "explanation": "Presenting only two options when more exist",
+            "correction": "Consider all reasonable alternatives"
+          }
+        ]
+      },
+      {
+        "name": "Evidence Evaluation",
+        "exercises": [
+          {
+            "scenario": "A study funded by a soda company finds that soda has no health risks.",
+            "analysis": "Conflict of interest - funding source may bias results",
+            "principle": "Consider funding sources and potential biases"
+          },
+          {
+            "scenario": "One person claims a new drug cured their cancer.",
+            "analysis": "Anecdotal evidence - single case without controls",
+            "principle": "Require controlled studies and statistical significance"
+          }
+        ]
+      }
+    ],
+    "analyticalReasoning": [
+      {
+        "name": "Data Analysis",
+        "analyses": [
+          {
+            "data": "Sales: Q1: $100K, Q2: $120K, Q3: $110K, Q4: $140K",
+            "analysis": "Growth pattern: +20%, -8.3%, +27.3%. Overall trend positive with Q4 strongest. Seasonal pattern possible.",
+            "insights": "Q4 holiday season boost, Q3 summer slowdown, overall 18% annual growth"
+          },
+          {
+            "data": "Customer satisfaction: 2022: 85%, 2023: 82%, 2024: 79%",
+            "analysis": "Declining trend: -3% each year. Need to investigate causes.",
+            "insights": "Possible causes: increased competition, product quality issues, service problems"
+          }
+        ]
+      },
+      {
+        "name": "Cause and Effect",
+        "scenarios": [
+          {
+            "scenario": "Website traffic increased 50% after marketing campaign, but sales only increased 10%",
+            "analysis": "Marketing brought traffic but not qualified leads. Landing page or product mismatch.",
+            "recommendations": "Optimize landing page, improve targeting, analyze traffic quality"
+          },
+          {
+            "scenario": "Employee turnover increased after new policy implementation",
+            "analysis": "Policy may be causing dissatisfaction. Need employee feedback.",
+            "recommendations": "Survey employees, identify specific issues, consider policy revision"
+          }
+        ]
+      }
+    ],
+    "creativeReasoning": [
+      {
+        "name": "Divergent Thinking",
+        "challenges": [
+          {
+            "challenge": "List 10 uses for a paperclip",
+            "categories": [
+              "Office tools",
+              "Jewelry",
+              "Art supplies",
+              "Cleaning tools",
+              "Emergency items"
+            ],
+            "encouragement": "Think beyond obvious uses. Consider different contexts and perspectives."
+          },
+          {
+            "challenge": "How might we improve the traditional umbrella?",
+            "ideas": [
+              "Self-drying",
+              "Color-changing",
+              "Hands-free",
+              "Solar-powered lights",
+              "Weather prediction"
+            ],
+            "encouragement": "Combine existing technologies in novel ways. Consider user pain points."
+          }
+        ]
+      },
+      {
+        "name": "Analogical Reasoning",
+        "analogies": [
+          {
+            "analogy": "A computer is like a brain because...",
+            "connections": [
+              "Both process information",
+              "Both have memory",
+              "Both can learn",
+              "Both have electrical signals"
+            ],
+            "principle": "Find structural similarities between different domains"
+          },
+          {
+            "analogy": "A business is like an ecosystem because...",
+            "connections": [
+              "Both have interdependent parts",
+              "Both require balance",
+              "Both can grow or decline",
+              "Both adapt to environment"
+            ],
+            "principle": "Apply biological principles to business systems"
+          }
+        ]
+      }
+    ]
+  },
+  "nextSteps": [
+    "Implement actual reasoning algorithms instead of templates",
+    "Develop step-by-step problem solving capabilities",
+    "Create logical inference systems",
+    "Build evidence evaluation frameworks",
+    "Establish cause-and-effect analysis",
+    "Practice with diverse reasoning scenarios",
+    "Implement learning from reasoning mistakes",
+    "Develop metacognitive awareness"
+  ],
+  "recommendations": [
+    "Focus on one reasoning skill at a time for mastery",
+    "Use real-world problems for practice",
+    "Implement feedback mechanisms for reasoning quality",
+    "Create reasoning-specific training data",
+    "Develop reasoning assessment metrics",
+    "Build progressive difficulty levels",
+    "Integrate reasoning with existing QVX capabilities",
+    "Monitor reasoning improvement over time"
+  ]
+}

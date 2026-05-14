@@ -1,0 +1,43 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Vera Sandbox API
+  - job_name: 'vera-sandbox'
+    static_configs:
+      - targets: ['vera-sandbox:8080']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # QVX Mock Service
+  - job_name: 'qvx-mock'
+    static_configs:
+      - targets: ['qvx-mock:5101']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-dev:6379']
+    scrape_interval: 15s
+
+  # PostgreSQL (via postgres_exporter if available)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-dev:5432']
+    scrape_interval: 15s

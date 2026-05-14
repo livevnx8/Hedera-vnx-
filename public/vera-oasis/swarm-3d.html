@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERA // Swarm Intelligence // Flower of Life</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #00d4ff; --primary-dim: rgba(0, 212, 255, 0.3); --primary-glow: rgba(0, 212, 255, 0.6);
+    --accent: #c77dff; --accent-glow: rgba(199, 125, 255, 0.5); --success: #00f5d4;
+    --warning: #ffd700; --error: #ff4757;
+    --micro: #00f5d4; --normal: #00d4ff; --macro: #c77dff;
+    --bg: #0a0e17; --bg-panel: rgba(10, 14, 23, 0.9);
+    --text-primary: rgba(255, 255, 255, 0.95); --text-secondary: rgba(255, 255, 255, 0.5);
+    --text-muted: rgba(255, 255, 255, 0.3); --border: rgba(0, 212, 255, 0.15);
+  }
+  body { background: var(--bg); color: var(--text-primary); font-family: 'Inter', sans-serif; font-weight: 300; overflow: hidden; height: 100vh; width: 100vw; }
+  #canvas-container { position: fixed; inset: 0; z-index: 1; }
+  
+  /* Top Bar */
+  #topBar { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: linear-gradient(180deg, rgba(10,14,23,0.95) 0%, transparent 100%); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; z-index: 100; pointer-events: none; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand-icon { width: 40px; height: 40px; border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--primary); box-shadow: 0 0 25px var(--primary-glow), inset 0 0 25px var(--primary-glow); animation: pulse-glow 3s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow); } 50% { box-shadow: 0 0 35px var(--primary-glow), inset 0 0 35px var(--primary-glow); } }
+  .brand-text { font-size: 22px; font-weight: 400; letter-spacing: 6px; color: var(--text-primary); }
+  .brand-text span { color: var(--primary); font-weight: 600; }
+  
+  /* Side Panels */
+  .panel { position: fixed; top: 90px; width: 340px; z-index: 100; pointer-events: none; max-height: calc(100vh - 110px); overflow-y: auto; }
+  .panel-left { left: 30px; } .panel-right { right: 30px; }
+  .panel-section { background: var(--bg-panel); backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; pointer-events: auto; }
+  .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .panel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 12px var(--primary); animation: dot-pulse 2s infinite; }
+  @keyframes dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: var(--text-secondary); font-weight: 500; }
+  
+  /* Metrics */
+  .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-info { display: flex; flex-direction: column; }
+  .metric-name { font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+  .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 400; color: var(--text-primary); }
+  .metric-value.micro { color: var(--micro); } .metric-value.normal { color: var(--normal); } .metric-value.macro { color: var(--macro); }
+  .metric-value.success { color: var(--success); } .metric-value.warning { color: var(--warning); } .metric-value.error { color: var(--error); }
+  
+  /* Health Bars */
+  .health-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .health-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .health-fill.excellent { background: var(--success); width: 90%; }
+  .health-fill.good { background: var(--primary); width: 75%; }
+  .health-fill.fair { background: var(--warning); width: 60%; }
+  .health-fill.poor { background: var(--error); width: 35%; }
+  
+  /* Swarm Legend */
+  .legend-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .legend-dot.micro { background: var(--micro); box-shadow: 0 0 10px var(--micro); }
+  .legend-dot.normal { background: var(--normal); box-shadow: 0 0 10px var(--normal); }
+  .legend-dot.macro { background: var(--macro); box-shadow: 0 0 10px var(--macro); }
+  .legend-dot.center { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
+  .legend-text { font-size: 12px; color: var(--text-secondary); }
+  
+  /* Center Status */
+  #centerOverlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none; text-align: center; opacity: 0; transition: opacity 1s ease; }
+  #centerOverlay.visible { opacity: 1; }
+  .core-status { display: inline-flex; align-items: center; gap: 12px; padding: 14px 28px; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--primary-dim); border-radius: 100px; backdrop-filter: blur(10px); }
+  .core-indicator { width: 12px; height: 12px; border-radius: 50%; background: var(--success); box-shadow: 0 0 25px var(--success); animation: breathe 2s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.8); opacity: 0.6; } }
+  .core-text { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-primary); }
+  
+  /* Sacred Constants */
+  #bottomBar { position: fixed; bottom: 0; left: 0; right: 0; height: 55px; background: linear-gradient(0deg, rgba(10,14,23,0.95) 0%, rgba(10,14,23,0) 100%); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 80px; z-index: 100; pointer-events: none; }
+  .constant-item { display: flex; align-items: center; gap: 12px; }
+  .constant-icon { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-muted); }
+  .constant-info { display: flex; flex-direction: column; }
+  .constant-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); }
+  .constant-value { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); }
+  
+  /* Loading */
+  #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; background: var(--bg); transition: opacity 0.8s ease; }
+  #loading.hidden { opacity: 0; pointer-events: none; }
+  .loading-flower { width: 100px; height: 100px; position: relative; animation: spin-flower 8s linear infinite; }
+  @keyframes spin-flower { to { transform: rotate(360deg); } }
+  .loading-ring { position: absolute; inset: 0; border: 2px solid transparent; border-top-color: var(--primary); border-radius: 50%; }
+  .loading-text { margin-top: 32px; font-size: 12px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-muted); }
+  
+  /* Controls hint */
+  #controls-hint { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); z-index: 10; pointer-events: none; }
+  
+  /* Activity Log */
+  .activity-log { max-height: 120px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .activity-item { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-time { color: var(--text-secondary); margin-right: 8px; }
+</style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-flower">
+      <div class="loading-ring" style="animation-delay: 0s;"></div>
+      <div class="loading-ring" style="animation-delay: -2s; transform: rotate(60deg);"></div>
+      <div class="loading-ring" style="animation-delay: -4s; transform: rotate(120deg);"></div>
+    </div>
+    <div class="loading-text">Initializing Sacred Geometry Swarm</div>
+  </div>
+  
+  <div id="canvas-container"></div>
+  
+  <div id="topBar">
+    <div class="brand">
+      <div class="brand-icon">◈</div>
+      <div class="brand-text">VERA <span>SWARM</span></div>
+    </div>
+    <div class="top-stats">
+      <div class="top-stat">
+        <div class="top-stat-label">Swarm Status</div>
+        <div class="top-stat-value" id="swarm-status">OPTIMIZING</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-label">Active Agents</div>
+        <div class="top-stat-value" id="agent-count">0</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-label">Health Score</div>
+        <div class="top-stat-value" id="health-score">100%</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Left Panel: Lattice & Swarm Stats -->
+  <div class="panel panel-left">
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Sacred Geometry Lattice</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Center Consciousness</div>
+          <div class="metric-value normal" id="center-pulses">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Sacred Nodes (φ)</div>
+          <div class="metric-value accent" id="total-nodes">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Harmonic Edges</div>
+          <div class="metric-value" id="total-edges">--</div>
+        </div>
+      </div>
+      <div class="health-bar">
+        <div class="health-fill excellent" id="lattice-health"></div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Swarm Intelligence</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Tasks Deduplicated</div>
+          <div class="metric-value success" id="dedup-count">0</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Load Variance</div>
+          <div class="metric-value warning" id="load-variance">0.20</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Cache Hit Rate</div>
+          <div class="metric-value success" id="cache-hit">0%</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Computation Saved</div>
+          <div class="metric-value success" id="comp-saved">0s</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Panel: Agent Variants & Lifecycle -->
+  <div class="panel panel-right">
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Hedera Transaction Flow</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #00f5d4; box-shadow: 0 0 10px #00f5d4;"></div>
+        <div class="legend-text">HTS (Token Service)</div>
+        <div class="metric-value" style="color: #00f5d4" id="hts-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #ffd700; box-shadow: 0 0 10px #ffd700;"></div>
+        <div class="legend-text">HCS (Consensus)</div>
+        <div class="metric-value" style="color: #ffd700" id="hcs-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #c77dff; box-shadow: 0 0 10px #c77dff;"></div>
+        <div class="legend-text">EVM (Smart Contracts)</div>
+        <div class="metric-value" style="color: #c77dff" id="evm-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #ff6b6b; box-shadow: 0 0 10px #ff6b6b;"></div>
+        <div class="legend-text">Account Ops</div>
+        <div class="metric-value" style="color: #ff6b6b" id="account-count">0</div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Agent Variants</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot micro"></div>
+        <div class="legend-text">Micro Agents (light tasks)</div>
+        <div class="metric-value micro" id="micro-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot normal"></div>
+        <div class="legend-text">Normal Agents (balanced)</div>
+        <div class="metric-value normal" id="normal-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot macro"></div>
+        <div class="legend-text">Macro Agents (heavy tasks)</div>
+        <div class="metric-value macro" id="macro-count">0</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot center"></div>
+        <div class="legend-text">Center-0 (consciousness)</div>
+        <div class="metric-value">1</div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Agent Lifecycle</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Spawned</div>
+          <div class="metric-value" id="lifecycle-spawned">0</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Active</div>
+          <div class="metric-value success" id="lifecycle-active">0</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Degraded</div>
+          <div class="metric-value warning" id="lifecycle-degraded">0</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Recovered</div>
+          <div class="metric-value success" id="lifecycle-recovered">0</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Recent Activity</div>
+      </div>
+      <div class="activity-log" id="activity-log">
+        <div class="activity-item"><span class="activity-time">--:--:--</span>Swarm initialized</div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="centerOverlay">
+    <div class="core-status">
+      <div class="core-indicator"></div>
+      <div class="core-text">Consciousness Active // φ = 1.618</div>
+    </div>
+  </div>
+  
+  <div id="bottomBar">
+    <div class="constant-item">
+      <div class="constant-icon">◉</div>
+      <div class="constant-info">
+        <div class="constant-label">Golden Ratio</div>
+        <div class="constant-value">φ = 1.618033988...</div>
+      </div>
+    </div>
+    <div class="constant-item">
+      <div class="constant-icon">◎</div>
+      <div class="constant-info">
+        <div class="constant-label">Geometry</div>
+        <div class="constant-value">Flower of Life</div>
+      </div>
+    </div>
+    <div class="constant-item">
+      <div class="constant-icon">◈</div>
+      <div class="constant-info">
+        <div class="constant-label">Protocol</div>
+        <div class="constant-value">Center-First Routing</div>
+      </div>
+    </div>
+    <div class="constant-item">
+      <div class="constant-icon">⬡</div>
+      <div class="constant-info">
+        <div class="constant-label">Layers</div>
+        <div class="constant-value">4 (6-12-18 nodes)</div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="controls-hint">Drag to Rotate • Scroll to Zoom • Right Click to Pan</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Sacred constants
+const PHI = (1 + Math.sqrt(5)) / 2;
+const DEG60 = Math.PI / 3;
+
+// Scene setup
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0e17, 0.012);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 40, 80);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x0a0e17, 1);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// Controls state
+let targetRotationX = 0, targetRotationY = 0, isDragging = false, isPanning = false;
+let previousMouseX = 0, previousMouseY = 0;
+let cameraRadius = 80, cameraTheta = 0, cameraPhi = Math.PI / 3;
+
+// Mouse controls
+renderer.domElement.addEventListener('mousedown', (e) => {
+  if (e.button === 2) { isPanning = true; } else { isDragging = true; }
+  previousMouseX = e.clientX;
+  previousMouseY = e.clientY;
+});
+renderer.domElement.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    cameraTheta -= (e.clientX - previousMouseX) * 0.01;
+    cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraPhi + (e.clientY - previousMouseY) * 0.01));
+    previousMouseX = e.clientX;
+    previousMouseY = e.clientY;
+    updateCameraPosition();
+  }
+});
+renderer.domElement.addEventListener('mouseup', () => { isDragging = false; isPanning = false; });
+renderer.domElement.addEventListener('wheel', (e) => {
+  cameraRadius = Math.max(30, Math.min(150, cameraRadius + e.deltaY * 0.1));
+  updateCameraPosition();
+});
+renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+
+function updateCameraPosition() {
+  camera.position.x = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+  camera.position.y = cameraRadius * Math.cos(cameraPhi);
+  camera.position.z = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+  camera.lookAt(0, 0, 0);
+}
+updateCameraPosition();
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+scene.add(ambientLight);
+
+const centerLight = new THREE.PointLight(0x00d4ff, 2, 150);
+centerLight.position.set(0, 0, 0);
+scene.add(centerLight);
+
+const purpleLight = new THREE.PointLight(0xc77dff, 1, 100);
+purpleLight.position.set(30, 20, 30);
+scene.add(purpleLight);
+
+// Groups
+const latticeGroup = new THREE.Group();
+scene.add(latticeGroup);
+
+const agentGroup = new THREE.Group();
+scene.add(agentGroup);
+
+const particleGroup = new THREE.Group();
+scene.add(particleGroup);
+
+// Materials
+const nodeMaterials = {
+  center: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 }),
+  layer1: new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.9 }),
+  layer2: new THREE.MeshBasicMaterial({ color: 0x4dabf7, transparent: true, opacity: 0.8 }),
+  layer3: new THREE.MeshBasicMaterial({ color: 0xc77dff, transparent: true, opacity: 0.7 }),
+  intersection: new THREE.MeshBasicMaterial({ color: 0x748ffc, transparent: true, opacity: 0.6 })
+};
+
+const agentMaterials = {
+  micro: new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.9 }),
+  normal: new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.9 }),
+  macro: new THREE.MeshBasicMaterial({ color: 0xc77dff, transparent: true, opacity: 0.9 }),
+  degraded: new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.7 }),
+  critical: new THREE.MeshBasicMaterial({ color: 0xff4757, transparent: true, opacity: 0.7 })
+};
+
+const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.12 });
+
+// Create circular glow texture
+function createGlowTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64; canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255,255,255,1)');
+  gradient.addColorStop(0.4, 'rgba(255,255,255,0.5)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(canvas);
+}
+
+const glowTexture = createGlowTexture();
+const glowMaterial = new THREE.SpriteMaterial({
+  map: glowTexture,
+  color: 0x00d4ff,
+  transparent: true,
+  opacity: 0.6,
+  blending: THREE.AdditiveBlending
+});
+
+// Generate Flower of Life
+const nodes = [];
+const edges = [];
+const nodeMap = new Map();
+
+// Center node
+const centerNode = { id: 'center-0', x: 0, y: 0, layer: 0, type: 'center' };
+nodes.push(centerNode);
+nodeMap.set('center-0', centerNode);
+
+// Layer 1: 6 nodes at 60° intervals (radius = PHI)
+const layer1Radius = 10 * PHI;
+for (let i = 0; i < 6; i++) {
+  const angle = i * DEG60;
+  const node = {
+    id: `layer1-${i}`,
+    x: Math.cos(angle) * layer1Radius,
+    y: Math.sin(angle) * layer1Radius,
+    z: 0,
+    layer: 1,
+    type: 'task',
+    angle: angle
+  };
+  nodes.push(node);
+  nodeMap.set(node.id, node);
+  edges.push({ from: 'center-0', to: node.id, strength: 1.0 });
+}
+
+// Layer 2: 12 nodes at radius = 2*PHI
+const layer2Radius = 10 * 2 * PHI;
+for (let i = 0; i < 12; i++) {
+  const angle = i * (Math.PI / 6);
+  const node = {
+    id: `layer2-${i}`,
+    x: Math.cos(angle) * layer2Radius,
+    y: Math.sin(angle) * layer2Radius,
+    z: 0,
+    layer: 2,
+    type: i % 2 === 0 ? 'carbon' : 'defi',
+    angle: angle
+  };
+  nodes.push(node);
+  nodeMap.set(node.id, node);
+  // Connect to nearest layer 1 nodes
+  const nearestLayer1 = Math.floor(i / 2);
+  edges.push({ from: `layer1-${nearestLayer1}`, to: node.id, strength: 0.8 });
+}
+
+// Layer 3: 18 nodes at radius = 3*PHI
+const layer3Radius = 10 * 3 * PHI;
+for (let i = 0; i < 18; i++) {
+  const angle = i * (Math.PI / 9);
+  const node = {
+    id: `layer3-${i}`,
+    x: Math.cos(angle) * layer3Radius,
+    y: Math.sin(angle) * layer3Radius,
+    z: 0,
+    layer: 3,
+    type: 'agent-comms',
+    angle: angle
+  };
+  nodes.push(node);
+  nodeMap.set(node.id, node);
+  // Connect to nearest layer 2 nodes
+  const nearestLayer2 = Math.floor((i * 2) / 3);
+  edges.push({ from: `layer2-${nearestLayer2}`, to: node.id, strength: 0.6 });
+}
+
+// Intersection nodes (vesica piscis centers)
+for (let i = 0; i < 6; i++) {
+  const angle1 = i * DEG60;
+  const angle2 = ((i + 1) % 6) * DEG60;
+  const intersection = {
+    id: `intersection-${i}`,
+    x: (Math.cos(angle1) + Math.cos(angle2)) * layer1Radius / 2,
+    y: (Math.sin(angle1) + Math.sin(angle2)) * layer1Radius / 2,
+    z: 2,
+    layer: 1,
+    type: 'intersection'
+  };
+  nodes.push(intersection);
+  nodeMap.set(intersection.id, intersection);
+  edges.push({ from: `layer1-${i}`, to: intersection.id, strength: 0.9 });
+  edges.push({ from: `layer1-${(i+1)%6}`, to: intersection.id, strength: 0.9 });
+}
+
+// Build 3D lattice
+const nodeMeshes = [];
+const edgeLines = [];
+
+function buildLattice() {
+  // Create nodes
+  nodes.forEach(node => {
+    let material, size;
+    if (node.type === 'center') {
+      material = nodeMaterials.center;
+      size = 3;
+    } else if (node.type === 'intersection') {
+      material = nodeMaterials.intersection;
+      size = 0.8;
+    } else {
+      material = nodeMaterials[`layer${node.layer}`];
+      size = node.layer === 1 ? 1.5 : node.layer === 2 ? 1.2 : 1.0;
+    }
+    
+    // Main node sphere
+    const geometry = new THREE.SphereGeometry(size, 32, 32);
+    const mesh = new THREE.Mesh(geometry, material.clone());
+    mesh.position.set(node.x, node.y, node.z);
+    mesh.userData = { nodeId: node.id, node: node };
+    latticeGroup.add(mesh);
+    nodeMeshes.push(mesh);
+    
+    // Glow sprite
+    const glow = new THREE.Sprite(glowMaterial.clone());
+    glow.scale.set(size * 8, size * 8, 1);
+    glow.position.set(node.x, node.y, node.z);
+    glow.material.color.copy(material.color);
+    latticeGroup.add(glow);
+    
+    // Center node gets extra glow
+    if (node.type === 'center') {
+      const innerGlow = new THREE.Sprite(glowMaterial.clone());
+      innerGlow.scale.set(size * 15, size * 15, 1);
+      innerGlow.position.set(node.x, node.y, node.z);
+      innerGlow.material.color.setHex(0xffffff);
+      innerGlow.material.opacity = 0.4;
+      latticeGroup.add(innerGlow);
+    }
+  });
+  
+  // Create edges
+  edges.forEach(edge => {
+    const fromNode = nodeMap.get(edge.from);
+    const toNode = nodeMap.get(edge.to);
+    if (!fromNode || !toNode) return;
+    
+    const geometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(fromNode.x, fromNode.y, fromNode.z),
+      new THREE.Vector3(toNode.x, toNode.y, toNode.z)
+    ]);
+    
+    const material = edgeMaterial.clone();
+    material.opacity = 0.08 + edge.strength * 0.15;
+    const line = new THREE.Line(geometry, material);
+    latticeGroup.add(line);
+    edgeLines.push(line);
+  });
+}
+
+buildLattice();
+
+// Swarm Agents
+const agents = [];
+const maxAgents = 24;
+
+function spawnAgent(variant = 'normal', health = 1.0) {
+  if (agents.length >= maxAgents) return;
+  
+  const nodeIndex = Math.floor(Math.random() * nodes.filter(n => n.layer > 0).length);
+  const node = nodes.filter(n => n.layer > 0)[nodeIndex];
+  
+  const material = agentMaterials[variant];
+  const size = variant === 'micro' ? 0.4 : variant === 'macro' ? 0.8 : 0.6;
+  
+  const geometry = new THREE.SphereGeometry(size, 16, 16);
+  const mesh = new THREE.Mesh(geometry, material.clone());
+  
+  // Position near the node with slight offset
+  const offset = 2 + Math.random() * 2;
+  const angle = Math.random() * Math.PI * 2;
+  mesh.position.set(
+    node.x + Math.cos(angle) * offset,
+    node.y + Math.sin(angle) * offset,
+    node.z + 3 + Math.random() * 2
+  );
+  
+  mesh.userData = {
+    agentId: `agent-${agents.length}`,
+    variant: variant,
+    health: health,
+    nodeId: node.id,
+    velocity: new THREE.Vector3((Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1, 0),
+    taskCount: 0
+  };
+  
+  agentGroup.add(mesh);
+  agents.push(mesh);
+  
+  // Glow for agent
+  const glow = new THREE.Sprite(glowMaterial.clone());
+  glow.scale.set(size * 6, size * 6, 1);
+  glow.material.color.copy(material.color);
+  glow.material.opacity = 0.5;
+  mesh.add(glow);
+  
+  return mesh;
+}
+
+// Initialize agents
+for (let i = 0; i < 8; i++) spawnAgent('micro');
+for (let i = 0; i < 12; i++) spawnAgent('normal');
+for (let i = 0; i < 4; i++) spawnAgent('macro');
+
+// Energy particles (task flow visualization)
+const taskParticles = [];
+const maxTaskParticles = 50;
+
+// Hedera transaction particles (visualization)
+const hederaParticles = [];
+const maxHederaParticles = 30;
+const hederaStats = {
+  hts: 0,
+  hcs: 0,
+  evm: 0,
+  account: 0
+};
+
+function spawnTaskParticle() {
+  if (taskParticles.length >= maxTaskParticles) return;
+  
+  const geometry = new THREE.SphereGeometry(0.2, 8, 8);
+  const material = new THREE.MeshBasicMaterial({
+    color: 0x00f5d4,
+    transparent: true,
+    opacity: 0.9
+  });
+  const particle = new THREE.Mesh(geometry, material);
+  
+  // Start from center
+  particle.position.set(0, 0, 0);
+  
+  // Target a random agent
+  const targetAgent = agents[Math.floor(Math.random() * agents.length)];
+  if (!targetAgent) return;
+  
+  particle.userData = {
+    target: targetAgent,
+    progress: 0,
+    speed: 0.02 + Math.random() * 0.02,
+    path: generatePathToAgent(targetAgent)
+  };
+  
+  particleGroup.add(particle);
+  taskParticles.push(particle);
+}
+
+// Spawn Hedera transaction particle
+function spawnHederaParticle() {
+  if (hederaParticles.length >= maxHederaParticles) return;
+  
+  // Determine transaction type
+  const types = ['hts', 'hcs', 'evm', 'account'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  
+  const colors = {
+    hts: 0x00f5d4,     // Teal - tokens
+    hcs: 0xffd700,     // Gold - consensus
+    evm: 0xc77dff,     // Purple - EVM
+    account: 0xff6b6b  // Red - account ops
+  };
+  
+  const geometry = new THREE.SphereGeometry(0.25, 12, 12);
+  const material = new THREE.MeshBasicMaterial({
+    color: colors[type],
+    transparent: true,
+    opacity: 0.95
+  });
+  const particle = new THREE.Mesh(geometry, material);
+  
+  // Start from center
+  particle.position.set(0, 0, 0);
+  
+  // Target node based on type
+  let targetLayer = 0;
+  if (type === 'hts') targetLayer = 1;
+  else if (type === 'hcs') targetLayer = 2;
+  else if (type === 'evm') targetLayer = 3;
+  
+  const nodeCount = targetLayer === 0 ? 1 : targetLayer === 1 ? 6 : targetLayer === 2 ? 12 : 18;
+  const targetIdx = Math.floor(Math.random() * nodeCount);
+  const targetNodeId = targetLayer === 0 ? 'center-0' : `layer${targetLayer}-${targetIdx}`;
+  const targetNode = nodeMap.get(targetNodeId);
+  
+  if (!targetNode) return;
+  
+  // Generate path through center
+  const path = [
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(targetNode.x * 0.5, targetNode.y * 0.5, targetNode.z + 3),
+    new THREE.Vector3(targetNode.x, targetNode.y, targetNode.z)
+  ];
+  
+  particle.userData = {
+    type: type,
+    targetNodeId: targetNodeId,
+    color: colors[type],
+    progress: 0,
+    speed: 0.03 + Math.random() * 0.02,
+    path: path
+  };
+  
+  particleGroup.add(particle);
+  hederaParticles.push(particle);
+  
+  // Update stats
+  hederaStats[type]++;
+  document.getElementById(`${type}-count`).textContent = hederaStats[type];
+}
+
+function generatePathToAgent(agent) {
+  // Generate a path that goes through the lattice structure
+  const path = [];
+  path.push(new THREE.Vector3(0, 0, 0)); // Start at center
+  
+  // Add intermediate points based on sacred geometry
+  const node = agent.userData.nodeId ? nodeMap.get(agent.userData.nodeId) : null;
+  if (node) {
+    path.push(new THREE.Vector3(node.x * 0.5, node.y * 0.5, node.z + 2));
+  }
+  
+  path.push(agent.position.clone());
+  return path;
+}
+
+// Stats
+let stats = {
+  pulses: 0,
+  nodes: nodes.length,
+  edges: edges.length,
+  dedupCount: 0,
+  cacheHits: 0,
+  computationSaved: 0
+};
+
+// UI Updates
+function updateUI() {
+  document.getElementById('center-pulses').textContent = stats.pulses.toLocaleString();
+  document.getElementById('total-nodes').textContent = stats.nodes;
+  document.getElementById('total-edges').textContent = stats.edges;
+  document.getElementById('agent-count').textContent = agents.length;
+  document.getElementById('dedup-count').textContent = stats.dedupCount.toLocaleString();
+  document.getElementById('cache-hit').textContent = Math.min(100, stats.cacheHits * 2) + '%';
+  document.getElementById('comp-saved').textContent = (stats.computationSaved / 1000).toFixed(1) + 's';
+  
+  // Agent variant counts
+  const microCount = agents.filter(a => a.userData.variant === 'micro').length;
+  const normalCount = agents.filter(a => a.userData.variant === 'normal').length;
+  const macroCount = agents.filter(a => a.userData.variant === 'macro').length;
+  
+  document.getElementById('micro-count').textContent = microCount;
+  document.getElementById('normal-count').textContent = normalCount;
+  document.getElementById('macro-count').textContent = macroCount;
+  document.getElementById('lifecycle-active').textContent = agents.filter(a => a.userData.health > 0.5).length;
+  document.getElementById('lifecycle-degraded').textContent = agents.filter(a => a.userData.health <= 0.5).length;
+  document.getElementById('lifecycle-spawned').textContent = agents.length;
+  document.getElementById('lifecycle-recovered').textContent = Math.floor(agents.length * 0.1);
+}
+
+// Activity log
+function logActivity(message) {
+  const log = document.getElementById('activity-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const item = document.createElement('div');
+  item.className = 'activity-item';
+  item.innerHTML = `<span class="activity-time">${time}</span>${message}`;
+  log.insertBefore(item, log.firstChild);
+  if (log.children.length > 10) log.removeChild(log.lastChild);
+}
+
+// Animation loop
+let frame = 0;
+let pulseTimer = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  frame++;
+  
+  // Auto-rotate if not dragging
+  if (!isDragging) {
+    latticeGroup.rotation.y += 0.0003;
+    agentGroup.rotation.y += 0.0003;
+  }
+  
+  // Center pulse animation
+  pulseTimer++;
+  if (pulseTimer % 180 === 0) {
+    stats.pulses++;
+    centerLight.intensity = 3;
+    spawnTaskParticle();
+    if (stats.pulses % 10 === 0) {
+      logActivity(`Center pulse #${stats.pulses} - ${agents.length} agents active`);
+    }
+  }
+  centerLight.intensity = 2 + Math.sin(frame * 0.03) * 0.5;
+  
+  // Animate agents (gentle orbiting)
+  agents.forEach((agent, i) => {
+    const time = frame * 0.01 + i;
+    agent.position.x += Math.sin(time) * 0.02;
+    agent.position.y += Math.cos(time * 0.7) * 0.02;
+    agent.rotation.y += 0.01;
+    
+    // Update material based on health
+    if (agent.userData.health < 0.3) {
+      agent.material = agentMaterials.critical;
+    } else if (agent.userData.health < 0.6) {
+      agent.material = agentMaterials.degraded;
+    }
+  });
+  
+  // Animate task particles
+  for (let i = taskParticles.length - 1; i >= 0; i--) {
+    const particle = taskParticles[i];
+    const data = particle.userData;
+    data.progress += data.speed;
+    
+    if (data.progress >= 1) {
+      // Task delivered
+      particleGroup.remove(particle);
+      taskParticles.splice(i, 1);
+      data.target.userData.taskCount++;
+      stats.dedupCount++;
+      stats.computationSaved += 50;
+    } else {
+      // Move along path
+      const path = data.path;
+      const segment = Math.floor(data.progress * (path.length - 1));
+      const localProgress = (data.progress * (path.length - 1)) - segment;
+      
+      if (segment < path.length - 1) {
+        const p1 = path[segment];
+        const p2 = path[segment + 1];
+        particle.position.lerpVectors(p1, p2, localProgress);
+      }
+    }
+  }
+  
+  // Randomly spawn new task particles
+  if (frame % 60 === 0 && Math.random() > 0.3) {
+    spawnTaskParticle();
+  }
+  
+  // Spawn Hedera transaction particles (simulated)
+  if (frame % 45 === 0) {
+    spawnHederaParticle();
+  }
+  
+  // Animate Hedera particles
+  for (let i = hederaParticles.length - 1; i >= 0; i--) {
+    const particle = hederaParticles[i];
+    particle.userData.progress += particle.userData.speed;
+    
+    if (particle.userData.progress >= 1) {
+      // Transaction complete - pulse the target node
+      const targetNode = nodeMap.get(particle.userData.targetNodeId);
+      if (targetNode && targetNode.mesh) {
+        targetNode.mesh.material.emissive = new THREE.Color(particle.userData.color);
+        setTimeout(() => {
+          if (targetNode.mesh) {
+            targetNode.mesh.material.emissive = new THREE.Color(0x000000);
+          }
+        }, 300);
+      }
+      
+      particleGroup.remove(particle);
+      hederaParticles.splice(i, 1);
+    } else {
+      // Move along path
+      const path = particle.userData.path;
+      const idx = Math.floor(particle.userData.progress * (path.length - 1));
+      const localProg = (particle.userData.progress * (path.length - 1)) - idx;
+      
+      if (idx < path.length - 1) {
+        const p1 = path[idx];
+        const p2 = path[idx + 1];
+        particle.position.lerpVectors(p1, p2, localProg);
+      }
+    }
+  }
+  
+  // Update cache hit simulation
+  if (frame % 120 === 0) {
+    stats.cacheHits = Math.min(50, stats.cacheHits + 1);
+  }
+  
+  // Update UI every 30 frames
+  if (frame % 30 === 0) {
+    updateUI();
+  }
+  
+  renderer.render(scene, camera);
+}
+
+// Handle resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Start - hide loading immediately when ready
+document.getElementById('loading').classList.add('hidden');
+document.getElementById('centerOverlay').classList.add('visible');
+logActivity('Flower of Life lattice initialized');
+logActivity(`${agents.length} swarm agents spawned`);
+logActivity('Task router active with sacred geometry');
+
+animate();
+</script>
+</body>
+</html>

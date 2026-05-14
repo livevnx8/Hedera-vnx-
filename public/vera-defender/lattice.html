@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Defender - Game Lattice Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #lattice-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #lattice-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #0f0;
+            padding: 20px;
+            max-width: 350px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        
+        .legend {
+            margin-top: 15px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+        
+        .stats {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #003300;
+            font-size: 11px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+        
+        #node-info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 20, 0, 0.95);
+            border: 2px solid #0f0;
+            padding: 15px;
+            min-width: 250px;
+            display: none;
+        }
+        
+        #node-info.visible {
+            display: block;
+        }
+        
+        .connections-layer {
+            stroke: #0f0;
+            stroke-width: 1;
+            opacity: 0.3;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            background: transparent;
+            color: #0f0;
+            border: 1px solid #0f0;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="lattice-container">
+        <canvas id="lattice-canvas"></canvas>
+        
+        <div class="ui-overlay">
+            <h1>🎮 VERA DEFENDER LATTICE</h1>
+            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 10px;">
+                Multi-dimensional topic network visualization
+            </p>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #0f0; box-shadow: 0 0 10px #0f0;"></div>
+                    <span>HCS Topics (Consensus Layer)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #0ff; box-shadow: 0 0 10px #0ff;"></div>
+                    <span>Game Agents (Swarm Layer)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff0; box-shadow: 0 0 10px #ff0;"></div>
+                    <span>Game Entities (Logic Layer)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f0f; box-shadow: 0 0 10px #f0f;"></div>
+                    <span>Player Actions (Input Layer)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f00; box-shadow: 0 0 10px #f00;"></div>
+                    <span>Revenue/Economics</span>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-row"><span>Topics:</span><span id="stat-topics">3</span></div>
+                <div class="stat-row"><span>Agents:</span><span id="stat-agents">2</span></div>
+                <div class="stat-row"><span>Entities:</span><span id="stat-entities">8</span></div>
+                <div class="stat-row"><span>Connections:</span><span id="stat-connections">24</span></div>
+                <div class="stat-row"><span>Messages/sec:</span><span id="stat-mps">0</span></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="reset-btn">Reset View</button>
+            <button class="btn" id="animate-btn">Animate Flow</button>
+            <button class="btn" id="game-btn">Launch Game</button>
+        </div>
+        
+        <div id="node-info">
+            <h3 id="node-title">Node Info</h3>
+            <p id="node-type" style="font-size: 11px; opacity: 0.7; margin: 5px 0;"></p>
+            <p id="node-desc" style="font-size: 12px; margin-top: 10px;"></p>
+            <div id="node-metrics" style="margin-top: 10px; font-size: 11px;"></div>
+        </div>
+    </div>
+    
+    <script src="lattice-visualization.js"></script>
+</body>
+</html>

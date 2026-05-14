@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vera Wallet Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .balance-display {
+      font-size: 2em;
+      font-weight: bold;
+      color: #333;
+      margin: 10px 0;
+    }
+    
+    .account-id {
+      font-family: monospace;
+      background: #f5f5f5;
+      padding: 8px 12px;
+      border-radius: 5px;
+      word-break: break-all;
+      margin: 10px 0;
+    }
+    
+    .token-list {
+      display: grid;
+      gap: 15px;
+    }
+    
+    .token-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .token-info h4 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .token-info p {
+      color: #666;
+      font-size: 0.9em;
+    }
+    
+    .token-balance {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+    
+    .transaction-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+    
+    .tx-info h4 {
+      color: #333;
+      margin-bottom: 3px;
+    }
+    
+    .tx-info p {
+      color: #666;
+      font-size: 0.85em;
+    }
+    
+    .tx-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+    
+    .tx-status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .tx-status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .tx-status.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .link {
+      color: #667eea;
+      text-decoration: none;
+    }
+    
+    .link:hover {
+      text-decoration: underline;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      color: #666;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🦊 Vera Wallet</h1>
+      <p>Your Hedera wallet dashboard - manual controls + AI assistance</p>
+    </div>
+
+    <div id="alerts"></div>
+
+    <!-- Account Overview -->
+    <div class="card">
+      <h2>📊 Account Overview</h2>
+      <div id="account-info" class="loading">Loading account information...</div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <h2>⚡ Quick Actions</h2>
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('send')">Send</button>
+        <button class="tab" onclick="showTab('receive')">Receive</button>
+        <button class="tab" onclick="showTab('associate')">Associate Token</button>
+      </div>
+      
+      <div id="send-tab" class="tab-content active">
+        <div class="form-group">
+          <label>Send Type</label>
+          <select id="send-type" onchange="updateSendForm()">
+            <option value="hbar">HBAR</option>
+            <option value="token">Token</option>
+          </select>
+        </div>
+        
+        <div id="hbar-send-form">
+          <div class="form-group">
+            <label>Recipient Account ID</label>
+            <input type="text" id="hbar-to" placeholder="0.0.123456">
+          </div>
+          <div class="form-group">
+            <label>Amount (HBAR)</label>
+            <input type="number" id="hbar-amount" placeholder="0.1" step="0.000001">
+          </div>
+          <div class="form-group">
+            <label>Memo (optional)</label>
+            <input type="text" id="hbar-memo" placeholder="Payment for services">
+          </div>
+          <button class="btn" onclick="sendHbar()">Send HBAR</button>
+        </div>
+        
+        <div id="token-send-form" style="display:none;">
+          <div class="form-group">
+            <label>Token</label>
+            <select id="token-select">
+              <option value="">Loading tokens...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Recipient Account ID</label>
+            <input type="text" id="token-to" placeholder="0.0.123456">
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" id="token-amount" placeholder="100" step="0.000001">
+          </div>
+          <button class="btn" onclick="sendToken()">Send Token</button>
+        </div>
+      </div>
+      
+      <div id="receive-tab" class="tab-content">
+        <div class="form-group">
+          <label>Your Account ID</label>
+          <div class="account-id" id="receive-account-id">Loading...</div>
+        </div>
+        <p style="margin-top: 15px; color: #666;">
+          Share this account ID to receive HBAR or tokens. You can also ask Vera to help you create payment links or QR codes.
+        </p>
+      </div>
+      
+      <div id="associate-tab" class="tab-content">
+        <div class="form-group">
+          <label>Token ID</label>
+          <input type="text" id="associate-token-id" placeholder="0.0.123456">
+        </div>
+        <button class="btn" onclick="associateToken()">Associate Token</button>
+        <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+          Associate tokens to your account before you can receive them. Cost: ~0.05 HBAR
+        </p>
+      </div>
+    </div>
+
+    <!-- Token Holdings -->
+    <div class="card">
+      <h2>💰 Token Holdings</h2>
+      <div id="token-list" class="loading">Loading tokens...</div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card">
+      <h2>📜 Transaction History</h2>
+      <div id="transaction-list" class="loading">Loading transactions...</div>
+    </div>
+
+    <!-- Vera Chat Integration -->
+    <div class="card">
+      <h2>🤖 Ask Vera for Help</h2>
+      <p style="margin-bottom: 15px; color: #666;">
+        Need help with complex operations? Vera can handle multi-step tasks like:
+      </p>
+      <ul style="margin-left: 20px; color: #666; line-height: 1.6;">
+        <li>Create tokens with custom properties</li>
+        <li>Set up liquidity pools on SaucerSwap</li>
+        <li>Deploy smart contracts</li>
+        <li>Batch airdrops to multiple recipients</li>
+        <li>Analyze portfolio performance</li>
+      </ul>
+      <button class="btn" onclick="openVeraChat()">Open Vera Chat</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    
+    // Tab switching
+    function showTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+    }
+    
+    // Update send form based on type
+    function updateSendForm() {
+      const type = document.getElementById('send-type').value;
+      document.getElementById('hbar-send-form').style.display = type === 'hbar' ? 'block' : 'none';
+      document.getElementById('token-send-form').style.display = type === 'token' ? 'block' : 'none';
+    }
+    
+    // Show alerts
+    function showAlert(message, type = 'success') {
+      const alertsContainer = document.getElementById('alerts');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertsContainer.appendChild(alert);
+      
+      setTimeout(() => alert.remove(), 5000);
+    }
+    
+    // Load account overview
+    async function loadAccountOverview() {
+      try {
+        const response = await fetch(`${API_BASE}/wallet/overview`);
+        const data = await response.json();
+        
+        if (data.error) {
+          document.getElementById('account-info').innerHTML = `<p style="color: red;">${data.error}</p>`;
+          return;
+        }
+        
+        document.getElementById('account-info').innerHTML = `
+          <div class="balance-display">${data.account.balance.hbars} HBAR</div>
+          <div class="account-id">${data.account.id}</div>
+          <p style="margin-top: 10px;">
+            <strong>Network:</strong> ${data.network} | 
+            <strong>Created:</strong> ${new Date(data.account.created * 1000).toLocaleDateString()} | 
+            <strong>Tokens:</strong> ${data.account.tokenCount}
+          </p>
+          <p style="margin-top: 10px;">
+            <a href="${data.hashscan}" target="_blank" class="link">View on HashScan →</a>
+          </p>
+        `;
+        
+        document.getElementById('receive-account-id').textContent = data.account.id;
+        
+        // Update token dropdown
+        const tokenSelect = document.getElementById('token-select');
+        tokenSelect.innerHTML = '<option value="">Select a token...</option>';
+        data.tokens.forEach(token => {
+          const option = document.createElement('option');
+          option.value = token.tokenId;
+          option.textContent = `${token.symbol} - ${token.name}`;
+          tokenSelect.appendChild(option);
+        });
+        
+        // Display tokens
+        displayTokens(data.tokens);
+        
+      } catch (error) {
+        document.getElementById('account-info').innerHTML = `<p style="color: red;">Failed to load account info</p>`;
+        console.error(error);
+      }
+    }
+    
+    // Display tokens
+    function displayTokens(tokens) {
+      const tokenList = document.getElementById('token-list');
+      
+      if (tokens.length === 0) {
+        tokenList.innerHTML = '<p>No tokens found. Associate tokens to see them here.</p>';
+        return;
+      }
+      
+      tokenList.innerHTML = tokens.map(token => `
+        <div class="token-item">
+          <div class="token-info">
+            <h4>${token.symbol}</h4>
+            <p>${token.name}</p>
+            <a href="${token.url}" target="_blank" class="link">View on HashScan</a>
+          </div>
+          <div class="token-balance">
+            ${(token.balance / Math.pow(10, token.decimals)).toLocaleString()} ${token.symbol}
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Send HBAR
+    async function sendHbar() {
+      const to = document.getElementById('hbar-to').value;
+      const amount = parseFloat(document.getElementById('hbar-amount').value);
+      const memo = document.getElementById('hbar-memo').value;
+      
+      if (!to || !amount || amount <= 0) {
+        showAlert('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE}/wallet/send/hbar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ toAccountId: to, amount, memo })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showAlert(`HBAR sent! TX: ${result.transactionId}`);
+          document.getElementById('hbar-to').value = '';
+          document.getElementById('hbar-amount').value = '';
+          document.getElementById('hbar-memo').value = '';
+          loadAccountOverview();
+          loadTransactions();
+        } else {
+          showAlert(result.error || 'Transfer failed', 'error');
+        }
+      } catch (error) {
+        showAlert('Transfer failed', 'error');
+        console.error(error);
+      }
+    }
+    
+    // Send Token
+    async function sendToken() {
+      const tokenId = document.getElementById('token-select').value;
+      const to = document.getElementById('token-to').value;
+      const amount = parseFloat(document.getElementById('token-amount').value);
+      
+      if (!tokenId || !to || !amount || amount <= 0) {
+        showAlert('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE}/wallet/send/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tokenId, toAccountId: to, amount })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showAlert(`Tokens sent! TX: ${result.transactionId}`);
+          document.getElementById('token-to').value = '';
+          document.getElementById('token-amount').value = '';
+          loadAccountOverview();
+          loadTransactions();
+        } else {
+          showAlert(result.error || 'Transfer failed', 'error');
+        }
+      } catch (error) {
+        showAlert('Transfer failed', 'error');
+        console.error(error);
+      }
+    }
+    
+    // Associate Token
+    async function associateToken() {
+      const tokenId = document.getElementById('associate-token-id').value;
+      
+      if (!tokenId) {
+        showAlert('Please enter a token ID', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE}/wallet/associate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tokenId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showAlert(`Token associated! TX: ${result.transactionId}`);
+          document.getElementById('associate-token-id').value = '';
+          loadAccountOverview();
+        } else {
+          showAlert(result.error || 'Association failed', 'error');
+        }
+      } catch (error) {
+        showAlert('Association failed', 'error');
+        console.error(error);
+      }
+    }
+    
+    // Load transactions
+    async function loadTransactions() {
+      try {
+        const response = await fetch(`${API_BASE}/wallet/transactions`);
+        const data = await response.json();
+        
+        const txList = document.getElementById('transaction-list');
+        
+        if (data.transactions.length === 0) {
+          txList.innerHTML = '<p>No transactions found.</p>';
+          return;
+        }
+        
+        txList.innerHTML = data.transactions.map(tx => `
+          <div class="transaction-item">
+            <div class="tx-info">
+              <h4>${tx.type}</h4>
+              <p>${new Date(tx.consensusTimestamp * 1000).toLocaleString()}</p>
+              <a href="${tx.hashscan}" target="_blank" class="link">View on HashScan</a>
+            </div>
+            <div class="tx-status ${tx.result.toLowerCase()}">${tx.result}</div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        document.getElementById('transaction-list').innerHTML = '<p style="color: red;">Failed to load transactions</p>';
+        console.error(error);
+      }
+    }
+    
+    // Open Vera Chat
+    function openVeraChat() {
+      window.open('/chat', '_blank');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAccountOverview();
+      loadTransactions();
+      
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        loadAccountOverview();
+        loadTransactions();
+      }, 30000);
+    });
+  </script>
+</body>
+</html>

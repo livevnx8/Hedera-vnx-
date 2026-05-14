@@ -1,0 +1,202 @@
+version: '3.8'
+
+services:
+  # Load Balancer
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - ./nginx.scaling.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - vera_logs:/var/log/nginx
+    depends_on:
+      - vera-app-1
+      - vera-app-2
+      - vera-app-3
+    restart: unless-stopped
+    networks:
+      - vera_network
+
+  # Vera Instance 1
+  vera-app-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - INSTANCE_ID=vera-1
+      - DATABASE_PATH=/app/data/vera.db
+      - REDIS_URL=redis://redis:6379
+      - MODEL_PROVIDER=qvx-direct
+      - QVX_INFER_URL=http://qvx-server:5101
+      - HEDERA_NETWORK=mainnet
+      - NODE_OPTIONS=--max-old-space-size=40960
+      - UV_THREADPOOL_SIZE=64
+    volumes:
+      - vera_data:/app/data
+      - vera_logs:/app/logs
+    depends_on:
+      - redis
+      - qvx-server
+    restart: unless-stopped
+    networks:
+      - vera_network
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+
+  # Vera Instance 2
+  vera-app-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - INSTANCE_ID=vera-2
+      - DATABASE_PATH=/app/data/vera.db
+      - REDIS_URL=redis://redis:6379
+      - MODEL_PROVIDER=qvx-direct
+      - QVX_INFER_URL=http://qvx-server:5101
+      - HEDERA_NETWORK=mainnet
+      - NODE_OPTIONS=--max-old-space-size=40960
+      - UV_THREADPOOL_SIZE=64
+    volumes:
+      - vera_data:/app/data
+      - vera_logs:/app/logs
+    depends_on:
+      - redis
+      - qvx-server
+    restart: unless-stopped
+    networks:
+      - vera_network
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+
+  # Vera Instance 3
+  vera-app-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - INSTANCE_ID=vera-3
+      - DATABASE_PATH=/app/data/vera.db
+      - REDIS_URL=redis://redis:6379
+      - MODEL_PROVIDER=qvx-direct
+      - QVX_INFER_URL=http://qvx-server:5101
+      - HEDERA_NETWORK=mainnet
+      - NODE_OPTIONS=--max-old-space-size=40960
+      - UV_THREADPOOL_SIZE=64
+    volumes:
+      - vera_data:/app/data
+      - vera_logs:/app/logs
+    depends_on:
+      - redis
+      - qvx-server
+    restart: unless-stopped
+    networks:
+      - vera_network
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+
+  # QVX Model Server
+  qvx-server:
+    image: ghcr.io/hedera-qvx/qvx-server:latest
+    ports:
+      - "5101:5101"
+    environment:
+      - MODEL_PATH=/models/vera-model.gguf
+      - NATIVE_CONTEXT_SIZE=2048
+      - NATIVE_GPU_LAYERS=35
+      - MAX_BATCH_SIZE=8
+    volumes:
+      - ./models:/models:ro
+      - qvx_cache:/app/cache
+    restart: unless-stopped
+    networks:
+      - vera_network
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+          cpus: '8'
+
+  # Redis for Shared State
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 0
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - vera_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+    networks:
+      - vera_network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+    networks:
+      - vera_network
+
+volumes:
+  vera_data:
+  vera_logs:
+  qvx_cache:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  vera_network:
+    driver: bridge

@@ -1,0 +1,26 @@
+apiVersion: v2
+name: vera-lattice
+description: Helm chart for VeraLattice — Hedera AI lattice orchestration
+version: 0.1.0
+appVersion: "0.1.0"
+type: application
+keywords:
+  - hedera
+  - ai
+  - blockchain
+  - lattice
+home: https://veralattice.com
+sources:
+  - https://github.com/veralattice/veralattice
+dependencies:
+  - name: postgresql
+    version: "14.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "18.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+maintainers:
+  - name: VeraLattice Team
+    email: dev@veralattice.com

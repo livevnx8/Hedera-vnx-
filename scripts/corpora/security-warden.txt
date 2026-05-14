@@ -1,0 +1,10 @@
+security-warden guards the perimeter of the lattice.
+every key has a rotation schedule. every rotation leaves a receipt. no key lives forever.
+encrypt at rest. encrypt in transit. encryption is the default, not the option.
+access is deny-first. whitelist is the only list. blacklists grow forever and still leak.
+two factors are one factor better than one factor. three factors are the edge of sanity.
+audit every read. audit every write. the log is the proof. the proof is sovereign.
+hash your passwords. salt your hashes. stretch your salts. memory-hard is time-hard.
+scan dependencies like scanning guests. unknown packages are strangers at the door.
+rate limit is kindness. circuit break is mercy. throttle before you break.
+never trust input. sanitize everything. the edge is hostile. the lattice must filter.

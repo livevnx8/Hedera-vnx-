@@ -1,0 +1,248 @@
+{
+  "total_predictions": 17,
+  "correct_predictions": 12,
+  "accuracy": 0.7058823529411765,
+  "accuracy_pct": 70.59,
+  "token_accuracy": {
+    "sauce": {
+      "accuracy": 0.4444444444444444,
+      "count": 9
+    },
+    "hbar": {
+      "accuracy": 1.0,
+      "count": 8
+    }
+  },
+  "calibration": {
+    "0.6-0.7": {
+      "accuracy": 1.0,
+      "count": 1
+    },
+    "0.7-0.8": {
+      "accuracy": 1.0,
+      "count": 2
+    },
+    "0.8-0.9": {
+      "accuracy": 1.0,
+      "count": 1
+    },
+    "0.9-1.0": {
+      "accuracy": 0.5,
+      "count": 2
+    },
+    "1.0-1.1": {
+      "accuracy": 0.6363636363636364,
+      "count": 11
+    }
+  },
+  "up_predictions": 8,
+  "down_predictions": 9,
+  "direction_bias": "DOWN",
+  "predictions": [
+    {
+      "token": "sauce",
+      "round": 1,
+      "price_before": 0.02212483,
+      "price_after": 0.02220119,
+      "delta_pct": 0.34513259536908325,
+      "predicted_direction": "DOWN",
+      "actual_direction": "UP",
+      "confidence": 0.9954,
+      "correct": false,
+      "timestamp": "2026-05-11T19:42:04.489064"
+    },
+    {
+      "token": "hbar",
+      "round": 1,
+      "price_before": 0.096721,
+      "price_after": 0.096721,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T19:42:04.687927"
+    },
+    {
+      "token": "sauce",
+      "round": 2,
+      "price_before": 0.02220119,
+      "price_after": 0.02212533,
+      "delta_pct": -0.3416933957143762,
+      "predicted_direction": "DOWN",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T19:47:04.941054"
+    },
+    {
+      "token": "hbar",
+      "round": 2,
+      "price_before": 0.096872,
+      "price_after": 0.096872,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 0.739,
+      "correct": true,
+      "timestamp": "2026-05-11T19:47:05.167546"
+    },
+    {
+      "token": "sauce",
+      "round": 4,
+      "price_before": 0.02212497,
+      "price_after": 0.022125,
+      "delta_pct": 0.00013559340418580054,
+      "predicted_direction": "DOWN",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": false,
+      "timestamp": "2026-05-11T19:57:05.453865"
+    },
+    {
+      "token": "hbar",
+      "round": 4,
+      "price_before": 0.096871,
+      "price_after": 0.096871,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 0.6108,
+      "correct": true,
+      "timestamp": "2026-05-11T19:57:05.692641"
+    },
+    {
+      "token": "sauce",
+      "round": 5,
+      "price_before": 0.022125,
+      "price_after": 0.02212446,
+      "delta_pct": -0.0024406779661028818,
+      "predicted_direction": "DOWN",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T20:02:05.914119"
+    },
+    {
+      "token": "hbar",
+      "round": 5,
+      "price_before": 0.096866,
+      "price_after": 0.096866,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 0.8142,
+      "correct": true,
+      "timestamp": "2026-05-11T20:02:06.132832"
+    },
+    {
+      "token": "sauce",
+      "round": 6,
+      "price_before": 0.02212446,
+      "price_after": 0.02212427,
+      "delta_pct": -0.0008587780221399162,
+      "predicted_direction": "DOWN",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T20:07:06.402643"
+    },
+    {
+      "token": "hbar",
+      "round": 6,
+      "price_before": 0.096857,
+      "price_after": 0.096857,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 0.7861,
+      "correct": true,
+      "timestamp": "2026-05-11T20:07:06.631861"
+    },
+    {
+      "token": "sauce",
+      "round": 8,
+      "price_before": 0.02212387,
+      "price_after": 0.02212446,
+      "delta_pct": 0.002666802869471891,
+      "predicted_direction": "DOWN",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": false,
+      "timestamp": "2026-05-11T20:17:06.893624"
+    },
+    {
+      "token": "hbar",
+      "round": 8,
+      "price_before": 0.096806,
+      "price_after": 0.096806,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 0.9617,
+      "correct": true,
+      "timestamp": "2026-05-11T20:17:07.125666"
+    },
+    {
+      "token": "sauce",
+      "round": 9,
+      "price_before": 0.02212446,
+      "price_after": 0.02212462,
+      "delta_pct": 0.0007231814923506348,
+      "predicted_direction": "DOWN",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": false,
+      "timestamp": "2026-05-11T20:22:07.377259"
+    },
+    {
+      "token": "hbar",
+      "round": 9,
+      "price_before": 0.096735,
+      "price_after": 0.096735,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T20:22:07.585932"
+    },
+    {
+      "token": "sauce",
+      "round": 11,
+      "price_before": 0.02212442,
+      "price_after": 0.02212823,
+      "delta_pct": 0.017220790420720295,
+      "predicted_direction": "DOWN",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": false,
+      "timestamp": "2026-05-11T20:32:07.797897"
+    },
+    {
+      "token": "hbar",
+      "round": 11,
+      "price_before": 0.096621,
+      "price_after": 0.096621,
+      "delta_pct": 0.0,
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T20:32:08.005842"
+    },
+    {
+      "token": "sauce",
+      "round": 12,
+      "price_before": 0.02212823,
+      "price_after": 0,
+      "delta_pct": -100.0,
+      "predicted_direction": "DOWN",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": true,
+      "timestamp": "2026-05-11T20:37:08.202753"
+    }
+  ],
+  "timestamp": "2026-05-11T20:37:08.362277"
+}

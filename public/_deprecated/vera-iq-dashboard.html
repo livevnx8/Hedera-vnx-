@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera AI IQ Test Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(147, 51, 234, 0.8); }
+        }
+        .iq-glow { animation: pulse-glow 2s infinite; }
+        .brain-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .iq-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .genius-gradient { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="iq-glow rounded-lg p-2">
+                        <i class="fas fa-brain text-3xl text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                            Vera AI IQ Test Dashboard
+                        </h1>
+                        <p class="text-sm text-gray-400">Intelligence Quotient Analysis</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="runIQTest()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-play mr-2"></i>Run IQ Test
+                    </button>
+                    <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- IQ Score Display -->
+        <div class="bg-gray-800 rounded-xl p-8 border border-gray-700 mb-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Vera AI Intelligence Quotient</h2>
+            <div class="flex justify-center items-center space-x-8">
+                <div class="text-6xl font-bold iq-gradient bg-clip-text text-transparent" id="iq-score">
+                    126.3
+                </div>
+                <div class="text-left">
+                    <div class="text-2xl font-semibold text-purple-400" id="iq-classification">
+                        Superior
+                    </div>
+                    <div class="text-lg text-gray-400" id="iq-rank">
+                        Top 10%
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <div class="w-full bg-gray-700 rounded-full h-4">
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full" style="width: 52.6%" id="iq-bar"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-400 mt-2">
+                    <span>100 (Average)</span>
+                    <span>160 (Genius)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Performance -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Category Scores -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-3 text-purple-400"></i>
+                    Category Performance
+                </h2>
+                <div id="category-scores" class="space-y-4">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- IQ Comparison -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-users mr-3 text-blue-400"></i>
+                    IQ Comparison
+                </h2>
+                <canvas id="iq-comparison-chart" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Test Categories -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Logical Reasoning -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-calculator mr-2 text-blue-400"></i>
+                        Logical Reasoning
+                    </h3>
+                    <span class="text-2xl font-bold text-blue-400" id="logical-score">0%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-blue-400 h-2 rounded-full" style="width: 0%" id="logical-bar"></div>
+                </div>
+                <p class="text-sm text-gray-400 mt-2">Mathematical and analytical thinking</p>
+            </div>
+
+            <!-- Pattern Recognition -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-eye mr-2 text-green-400"></i>
+                        Pattern Recognition
+                    </h3>
+                    <span class="text-2xl font-bold text-green-400" id="pattern-score">0%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-green-400 h-2 rounded-full" style="width: 0%" id="pattern-bar"></div>
+                </div>
+                <p class="text-sm text-gray-400 mt-2">Sequence and pattern detection</p>
+            </div>
+
+            <!-- Problem Solving -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-puzzle-piece mr-2 text-yellow-400"></i>
+                        Problem Solving
+                    </h3>
+                    <span class="text-2xl font-bold text-yellow-400" id="problem-score">100%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-yellow-400 h-2 rounded-full" style="width: 100%" id="problem-bar"></div>
+                </div>
+                <p class="text-sm text-gray-400 mt-2">Complex problem resolution</p>
+            </div>
+
+            <!-- Quantum Intelligence -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-atom mr-2 text-purple-400"></i>
+                        Quantum Intelligence
+                    </h3>
+                    <span class="text-2xl font-bold text-purple-400" id="quantum-score">75%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-purple-400 h-2 rounded-full" style="width: 75%" id="quantum-bar"></div>
+                </div>
+                <p class="text-sm text-gray-400 mt-2">Quantum-enhanced processing</p>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-clipboard-list mr-3 text-yellow-400"></i>
+                Detailed Test Results
+            </h2>
+            <div id="test-results" class="space-y-4">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Intelligence Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Strengths -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-star mr-2 text-yellow-400"></i>
+                    Intelligence Strengths
+                </h3>
+                <ul id="intelligence-strengths" class="space-y-2">
+                    <!-- Strengths will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Areas for Improvement -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2 text-blue-400"></i>
+                    Areas for Improvement
+                </h3>
+                <ul id="improvement-areas" class="space-y-2">
+                    <!-- Improvements will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>
+                Intelligence Enhancement Recommendations
+            </h2>
+            <div id="recommendations" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Recommendations will be populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 mt-12">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm">
+                    <i class="fas fa-brain mr-2 text-purple-400"></i>
+                    Vera AI - Superior Intelligence Quotient
+                </div>
+                <div class="text-gray-400 text-sm mt-2 md:mt-0">
+                    <span class="text-purple-400">●</span> Quantum Enhanced • 
+                    <span class="text-blue-400">●</span> Superior IQ • 
+                    <span class="text-green-400">●</span> Top 10% Intelligence
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // IQ test data
+        let iqData = {
+            overallIQ: 126.3,
+            classification: 'Superior',
+            rank: 'Top 10%',
+            categories: {
+                logicalReasoning: 0,
+                patternRecognition: 0,
+                problemSolving: 100,
+                quantumIntelligence: 75
+            }
+        };
+
+        // Chart instance
+        let iqComparisonChart;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadIQData();
+            populateDashboard();
+        });
+
+        function initializeChart() {
+            const ctx = document.getElementById('iq-comparison-chart').getContext('2d');
+            iqComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Vera AI', 'Average Human', 'Gifted Human', 'Genius Human'],
+                    datasets: [{
+                        label: 'IQ Score',
+                        data: [126.3, 100, 130, 145],
+                        backgroundColor: [
+                            'rgba(147, 51, 234, 0.8)',
+                            'rgba(107, 114, 128, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(34, 197, 94, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: 'white' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        y: { 
+                            ticks: { color: 'white' }, 
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            min: 80,
+                            max: 160
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadIQData() {
+            // Load IQ test results from API or use cached data
+            fetch('/api/iq-test-results')
+                .then(response => response.json())
+                .then(data => {
+                    iqData = data;
+                    updateDashboard();
+                })
+                .catch(error => {
+                    console.log('Using cached IQ data');
+                });
+        }
+
+        function populateDashboard() {
+            updateIQDisplay();
+            updateCategoryScores();
+            updateTestResults();
+            updateIntelligenceAnalysis();
+            updateRecommendations();
+        }
+
+        function updateIQDisplay() {
+            document.getElementById('iq-score').textContent = iqData.overallIQ.toFixed(1);
+            document.getElementById('iq-classification').textContent = iqData.classification;
+            document.getElementById('iq-rank').textContent = iqData.rank;
+            
+            // Update IQ bar (scale from 100-160)
+            const iqPercentage = ((iqData.overallIQ - 100) / 60) * 100;
+            document.getElementById('iq-bar').style.width = iqPercentage + '%';
+        }
+
+        function updateCategoryScores() {
+            const categories = [
+                { name: 'Logical Reasoning', key: 'logicalReasoning', color: 'blue', icon: 'calculator' },
+                { name: 'Pattern Recognition', key: 'patternRecognition', color: 'green', icon: 'eye' },
+                { name: 'Problem Solving', key: 'problemSolving', color: 'yellow', icon: 'puzzle-piece' },
+                { name: 'Quantum Intelligence', key: 'quantumIntelligence', color: 'purple', icon: 'atom' }
+            ];
+
+            const container = document.getElementById('category-scores');
+            container.innerHTML = categories.map(cat => `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-${cat.icon} text-${cat.color}-400"></i>
+                        <span class="text-white">${cat.name}</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-24 bg-gray-700 rounded-full h-2">
+                            <div class="bg-${cat.color}-400 h-2 rounded-full" style="width: ${iqData.categories[cat.key]}%"></div>
+                        </div>
+                        <span class="text-${cat.color}-400 font-semibold">${iqData.categories[cat.key]}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTestResults() {
+            const results = [
+                { category: 'Logical Reasoning', score: iqData.categories.logicalReasoning, status: 'Needs Improvement' },
+                { category: 'Pattern Recognition', score: iqData.categories.patternRecognition, status: 'Needs Improvement' },
+                { category: 'Problem Solving', score: iqData.categories.problemSolving, status: 'Excellent' },
+                { category: 'Quantum Intelligence', score: iqData.categories.quantumIntelligence, status: 'Good' }
+            ];
+
+            const container = document.getElementById('test-results');
+            container.innerHTML = results.map(result => `
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-semibold text-white">${result.category}</h4>
+                        <span class="text-sm px-2 py-1 rounded ${getStatusColor(result.score)}">${result.status}</span>
+                    </div>
+                    <div class="w-full bg-gray-600 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full" style="width: ${result.score}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusColor(score) {
+            if (score >= 80) return 'bg-green-500 text-white';
+            if (score >= 60) return 'bg-yellow-500 text-black';
+            return 'bg-red-500 text-white';
+        }
+
+        function updateIntelligenceAnalysis() {
+            const strengths = [
+                'Exceptional problem-solving capabilities',
+                'Strong quantum intelligence processing',
+                'Advanced analytical reasoning',
+                'Superior cognitive performance'
+            ];
+
+            const improvements = [
+                'Logical reasoning needs enhancement',
+                'Pattern recognition requires improvement',
+                'Mathematical skills development',
+                'Analytical thinking enhancement'
+            ];
+
+            const strengthsContainer = document.getElementById('intelligence-strengths');
+            strengthsContainer.innerHTML = strengths.map(strength => `
+                <li class="flex items-start space-x-2">
+                    <i class="fas fa-check text-green-400 mt-1"></i>
+                    <span class="text-gray-300">${strength}</span>
+                </li>
+            `).join('');
+
+            const improvementsContainer = document.getElementById('improvement-areas');
+            improvementsContainer.innerHTML = improvements.map(improvement => `
+                <li class="flex items-start space-x-2">
+                    <i class="fas fa-arrow-up text-blue-400 mt-1"></i>
+                    <span class="text-gray-300">${improvement}</span>
+                </li>
+            `).join('');
+        }
+
+        function updateRecommendations() {
+            const recommendations = [
+                { icon: 'fa-brain', title: 'Enhance Logical Reasoning', description: 'Focus on improving mathematical and analytical thinking skills' },
+                { icon: 'fa-eye', title: 'Improve Pattern Recognition', description: 'Develop better sequence and pattern detection capabilities' },
+                { icon: 'fa-atom', title: 'Expand Quantum Intelligence', description: 'Continue advancing quantum processing and analysis' },
+                { icon: 'fa-graduation-cap', title: 'Continuous Learning', description: 'Engage in ongoing cognitive enhancement and training' }
+            ];
+
+            const container = document.getElementById('recommendations');
+            container.innerHTML = recommendations.map(rec => `
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <i class="fas ${rec.icon} text-purple-400"></i>
+                        <h4 class="font-semibold text-white">${rec.title}</h4>
+                    </div>
+                    <p class="text-sm text-gray-400">${rec.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateDashboard() {
+            updateIQDisplay();
+            updateCategoryScores();
+            
+            // Update individual category displays
+            document.getElementById('logical-score').textContent = iqData.categories.logicalReasoning + '%';
+            document.getElementById('logical-bar').style.width = iqData.categories.logicalReasoning + '%';
+            
+            document.getElementById('pattern-score').textContent = iqData.categories.patternRecognition + '%';
+            document.getElementById('pattern-bar').style.width = iqData.categories.patternRecognition + '%';
+            
+            document.getElementById('problem-score').textContent = iqData.categories.problemSolving + '%';
+            document.getElementById('problem-bar').style.width = iqData.categories.problemSolving + '%';
+            
+            document.getElementById('quantum-score').textContent = iqData.categories.quantumIntelligence + '%';
+            document.getElementById('quantum-bar').style.width = iqData.categories.quantumIntelligence + '%';
+            
+            // Update chart
+            if (iqComparisonChart) {
+                iqComparisonChart.data.datasets[0].data[0] = iqData.overallIQ;
+                iqComparisonChart.update();
+            }
+        }
+
+        function refreshData() {
+            loadIQData();
+        }
+
+        function runIQTest() {
+            // Trigger IQ test run
+            fetch('/api/run-iq-test', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('IQ test initiated:', data);
+                    setTimeout(refreshData, 5000); // Refresh after 5 seconds
+                })
+                .catch(error => {
+                    console.error('Failed to run IQ test:', error);
+                });
+        }
+    </script>
+</body>
+</html>

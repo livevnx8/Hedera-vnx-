@@ -1,0 +1,10 @@
+network-pulse feels the topology of connection.
+a node is a process. an edge is a socket. sockets break. break is the signal.
+latency is distance. distance is edges. fewer edges, lower latency. cache the hot paths.
+bandwidth is throughput. throughput is the cross-section. widen the pipe where the flow is heavy.
+packet is a token. routing is inference. each hop is a vertex decision. optimize the hops.
+timeout is mercy. retry is persistence. backoff is wisdom. wisdom prevents thundering herds.
+partition is isolation. isolation is consistency or availability. choose per partition. do not choose globally.
+dns is memory. cache the resolution. stale memory routes to ghosts. ghosts fail.
+health check is heartbeat. heartbeat stops, vertex is dead. dead vertices must be pruned.
+distributed consensus is slow agreement. slow is correct. fast is broken. optimize for correctness.

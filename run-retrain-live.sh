@@ -1,0 +1,5 @@
+#!/bin/bash
+export HEDERA_OPERATOR_PRIVATE_KEY=9cfa3e5df71a208161cde815aa4fe918bc1a3ed0d98c1317b9181b6fc07b5f6b
+export HEDERA_OPERATOR_ACCOUNT_ID=0.0.10294360
+export HEDERA_NETWORK=mainnet
+node retrain-and-log.mjs

@@ -1,0 +1,57 @@
+{
+  "regions": {
+    "us-east": {
+      "name": "US East (Virginia)",
+      "endpoint": "https://us-east.veralattice.com",
+      "hcsTopicId": "0.0.10409351",
+      "priority": 1,
+      "isPrimary": true,
+      "capacity": {
+        "maxAgents": 5000,
+        "maxHcsPerSecond": 500,
+        "targetLatencyMs": 100
+      }
+    },
+    "eu-west": {
+      "name": "EU West (Ireland)",
+      "endpoint": "https://eu-west.veralattice.com",
+      "hcsTopicId": "0.0.10409352",
+      "priority": 2,
+      "isPrimary": false,
+      "capacity": {
+        "maxAgents": 3000,
+        "maxHcsPerSecond": 300,
+        "targetLatencyMs": 150
+      }
+    },
+    "apac": {
+      "name": "Asia Pacific (Singapore)",
+      "endpoint": "https://apac.veralattice.com",
+      "hcsTopicId": "0.0.10409353",
+      "priority": 3,
+      "isPrimary": false,
+      "capacity": {
+        "maxAgents": 2000,
+        "maxHcsPerSecond": 200,
+        "targetLatencyMs": 200
+      }
+    }
+  },
+  "routing": {
+    "strategy": "geo-latency",
+    "healthCheckIntervalSeconds": 10,
+    "failoverDelaySeconds": 5,
+    "autoFailover": true
+  },
+  "sync": {
+    "intervalSeconds": 30,
+    "batchSize": 100,
+    "conflictResolution": "last-write-wins"
+  },
+  "dns": {
+    "provider": "cloudflare",
+    "geoRoutingEnabled": true,
+    "healthCheckEndpoint": "/health",
+    "failoverEndpoint": "/failover"
+  }
+}

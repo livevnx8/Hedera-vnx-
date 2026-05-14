@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vera Proof</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --panel: #141a22;
+      --panel-2: #1b2330;
+      --text: #e7edf5;
+      --muted: #97a6ba;
+      --line: #2a3545;
+      --ok: #36d399;
+      --warn: #fbbf24;
+      --bad: #fb7185;
+      --accent: #74c0fc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #10161f;
+    }
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    main {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 24px auto;
+      display: grid;
+      gap: 18px;
+    }
+    .toolbar, .summary, .record {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      flex-wrap: wrap;
+    }
+    input, select, button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #0f1520;
+      color: var(--text);
+      min-height: 36px;
+      padding: 0 10px;
+      font: inherit;
+    }
+    input { min-width: min(320px, 100%); flex: 1; }
+    button {
+      cursor: pointer;
+      background: var(--panel-2);
+    }
+    button:hover { border-color: var(--accent); }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 1px;
+      overflow: hidden;
+    }
+    .metric {
+      padding: 14px;
+      background: var(--panel);
+    }
+    .metric .value {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .label, .muted { color: var(--muted); }
+    .records {
+      display: grid;
+      gap: 12px;
+    }
+    .record {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+    .record-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .record-title {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+    .hash {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--accent);
+      word-break: break-all;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      white-space: nowrap;
+      color: var(--muted);
+    }
+    .pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok), transparent 55%); }
+    .pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn), transparent 55%); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .cell {
+      background: #101722;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      min-width: 0;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+    @media (max-width: 820px) {
+      header { align-items: start; flex-direction: column; }
+      .summary, .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .record-head { flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+      .summary, .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Vera Proof</h1>
+      <div class="muted">Replay-backed memory records anchored to Vera proof packets.</div>
+    </div>
+    <button id="refresh">Refresh</button>
+  </header>
+
+  <main>
+    <section class="toolbar">
+      <select id="filterType" aria-label="Filter type">
+        <option value="">Recent</option>
+        <option value="taskId">Task ID</option>
+        <option value="agentId">Agent ID</option>
+        <option value="eventType">Event Type</option>
+      </select>
+      <input id="filterValue" placeholder="Filter value" />
+      <button id="apply">Apply</button>
+    </section>
+
+    <section class="summary" id="summary"></section>
+    <section class="records" id="records"></section>
+  </main>
+
+  <script>
+    const summaryEl = document.getElementById('summary');
+    const recordsEl = document.getElementById('records');
+    const filterType = document.getElementById('filterType');
+    const filterValue = document.getElementById('filterValue');
+
+    document.getElementById('refresh').addEventListener('click', load);
+    document.getElementById('apply').addEventListener('click', load);
+
+    async function load() {
+      summaryEl.innerHTML = metric('Status', 'Loading');
+      recordsEl.innerHTML = '';
+      const params = new URLSearchParams();
+      if (filterType.value && filterValue.value.trim()) params.set(filterType.value, filterValue.value.trim());
+      const [summary, events] = await Promise.all([
+        fetch('/api/vera/memory/summary').then(r => r.json()),
+        fetch(`/api/vera/memory/events?${params.toString()}`).then(r => r.json()),
+      ]);
+      renderSummary(summary);
+      renderRecords(events.records || []);
+    }
+
+    function renderSummary(summary) {
+      summaryEl.innerHTML = [
+        metric('Records', summary.records ?? 0),
+        metric('Current', summary.current ?? 0),
+        metric('Superseded', summary.superseded ?? 0),
+        metric('Tasks', summary.taskIds ?? 0),
+        metric('Agents', summary.agentIds ?? 0),
+        metric('Event Types', summary.eventTypes ?? 0),
+      ].join('');
+    }
+
+    function renderRecords(records) {
+      if (!records.length) {
+        recordsEl.innerHTML = '<div class="empty">No replayed proof records found yet.</div>';
+        return;
+      }
+      recordsEl.innerHTML = records.map(recordTemplate).join('');
+    }
+
+    function recordTemplate(record) {
+      const hcsLive = Boolean(record.topicId && record.sequenceNumber && record.transactionId);
+      const statusClass = hcsLive ? 'ok' : 'warn';
+      const statusText = hcsLive ? 'HCS referenced' : 'local-only';
+      return `
+        <article class="record">
+          <div class="record-head">
+            <div class="record-title">
+              <strong>${escapeHtml(record.eventType || 'unknown event')}</strong>
+              <span class="hash">${escapeHtml(record.packetHash || '')}</span>
+            </div>
+            <span class="pill ${statusClass}">${statusText}</span>
+          </div>
+          <div>${escapeHtml(record.packet?.summary?.shortText || '')}</div>
+          <div class="grid">
+            ${cell('Task', record.taskId)}
+            ${cell('Agent', record.agentId)}
+            ${cell('Run', record.runId)}
+            ${cell('Sequence', record.sequenceNumber)}
+            ${cell('Transaction', record.transactionId)}
+            ${cell('Consensus', record.consensusTimestamp)}
+            ${cell('Indexed', record.indexedAt)}
+            ${cell('HashScan', record.hashscanUrl ? `<a href="${escapeAttr(record.hashscanUrl)}" target="_blank" rel="noreferrer">Open</a>` : '', true)}
+          </div>
+        </article>
+      `;
+    }
+
+    function metric(label, value) {
+      return `<div class="metric"><span class="label">${escapeHtml(label)}</span><span class="value">${escapeHtml(String(value ?? 0))}</span></div>`;
+    }
+
+    function cell(label, value, raw = false) {
+      const rendered = value ? (raw ? String(value) : escapeHtml(String(value))) : '<span class="muted">none</span>';
+      return `<div class="cell"><div class="label">${escapeHtml(label)}</div><div>${rendered}</div></div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, '&#96;');
+    }
+
+    load().catch(error => {
+      summaryEl.innerHTML = metric('Status', 'Error');
+      recordsEl.innerHTML = `<div class="empty">${escapeHtml(error.message || String(error))}</div>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERA // Neural Lattice Interface</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --primary: #00d4ff;
+    --primary-dim: rgba(0, 212, 255, 0.3);
+    --primary-glow: rgba(0, 212, 255, 0.6);
+    --accent: #c77dff;
+    --accent-glow: rgba(199, 125, 255, 0.5);
+    --success: #00f5d4;
+    --bg: #0a0e17;
+    --bg-panel: rgba(10, 14, 23, 0.85);
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.5);
+    --text-muted: rgba(255, 255, 255, 0.3);
+    --border: rgba(0, 212, 255, 0.15);
+  }
+  
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    letter-spacing: 0.3px;
+  }
+  
+  #ambient {
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(199, 125, 255, 0.02) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 70% 80%, rgba(0, 245, 212, 0.02) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+  }
+  
+  #topBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(180deg, rgba(10,14,23,0.9) 0%, rgba(10,14,23,0) 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow); }
+    50% { box-shadow: 0 0 30px var(--primary-glow), inset 0 0 30px var(--primary-glow); }
+  }
+  
+  .brand-text {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 6px;
+    color: var(--text-primary);
+  }
+  
+  .brand-text span {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  
+  .top-stats {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  .top-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .top-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  
+  .top-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--primary);
+  }
+  
+  .panel {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 320px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .panel-left { left: 40px; }
+  .panel-right { right: 40px; }
+  
+  .panel-section {
+    background: var(--bg-panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .panel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 12px var(--primary);
+  }
+  
+  .panel-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  .metric-row:last-child { border-bottom: none; }
+  
+  .metric-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .metric-name {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+  
+  .metric-value.accent { color: var(--accent); }
+  .metric-value.success { color: var(--success); }
+  
+  .metric-ring {
+    width: 44px;
+    height: 44px;
+    position: relative;
+  }
+  
+  .metric-ring svg {
+    transform: rotate(-90deg);
+  }
+  
+  .metric-ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.05);
+    stroke-width: 3;
+  }
+  
+  .metric-ring-fill {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+    filter: drop-shadow(0 0 4px var(--primary));
+  }
+  
+  .metric-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--primary);
+  }
+  
+  #centerOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  
+  #centerOverlay.visible { opacity: 1; }
+  
+  .core-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--primary-dim);
+    border-radius: 100px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .core-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 20px var(--success);
+    animation: breathe 2s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.8); opacity: 0.6; }
+  }
+  
+  .core-text {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  
+  #bottomBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(0deg, rgba(10,14,23,0.9) 0%, rgba(10,14,23,0) 100%);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .bottom-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .bottom-icon {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  .bottom-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .bottom-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+  }
+  
+  .bottom-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  
+  #loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: var(--bg);
+    transition: opacity 0.5s ease;
+  }
+  
+  #loading.hidden { opacity: 0; pointer-events: none; }
+  
+  .loading-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px solid transparent;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  .loading-text {
+    margin-top: 24px;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-ring"></div>
+    <div class="loading-text">Initializing VERA</div>
+  </div>
+  
+  <div id="ambient"></div>
+  <canvas id="canvas"></canvas>
+  
+  <div id="topBar">
+    <div class="brand">
+      <div class="brand-icon">◈</div>
+      <div class="brand-text">VERA <span>OS</span></div>
+    </div>
+    <div class="top-stats">
+      <div class="top-stat">
+        <div class="top-stat-label">System Status</div>
+        <div class="top-stat-value">ONLINE</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-label">Network</div>
+        <div class="top-stat-value">HEDERA</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-label">Time</div>
+        <div class="top-stat-value" id="clock">--:--:--</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="panel panel-left">
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Lattice Structure</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Total Nodes</div>
+          <div class="metric-value" id="s-nodes">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Active Edges</div>
+          <div class="metric-value accent" id="s-edges">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Architecture Layers</div>
+          <div class="metric-value">4</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Activity Metrics</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Consciousness Pulses</div>
+          <div class="metric-value" id="s-pulses">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Harmonic Routes</div>
+          <div class="metric-value accent" id="s-routes">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="panel panel-right">
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">Energy State</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Center Energy</div>
+          <div class="metric-value success" id="s-energy">--</div>
+        </div>
+        <div class="metric-ring">
+          <svg width="44" height="44">
+            <circle class="metric-ring-bg" cx="22" cy="22" r="18"/>
+            <circle class="metric-ring-fill" cx="22" cy="22" r="18" stroke-dasharray="113" id="energy-ring" stroke-dashoffset="30"/>
+          </svg>
+          <div class="metric-ring-text" id="energy-percent">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Edge Strength</div>
+          <div class="metric-value" id="s-strength">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Flow Direction</div>
+          <div class="metric-value accent" id="s-flow">--</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title">System Health</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Decisions Routed</div>
+          <div class="metric-value" id="s-decisions">--</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-info">
+          <div class="metric-name">Uptime</div>
+          <div class="metric-value success" id="s-uptime">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="centerOverlay">
+    <div class="core-status">
+      <div class="core-indicator"></div>
+      <div class="core-text">Consciousness Active</div>
+    </div>
+  </div>
+  
+  <div id="bottomBar">
+    <div class="bottom-item">
+      <div class="bottom-icon">◉</div>
+      <div class="bottom-info">
+        <div class="bottom-label">Golden Ratio</div>
+        <div class="bottom-value">φ = 1.6180339</div>
+      </div>
+    </div>
+    <div class="bottom-item">
+      <div class="bottom-icon">◎</div>
+      <div class="bottom-info">
+        <div class="bottom-label">Topology</div>
+        <div class="bottom-value">Flower of Life</div>
+      </div>
+    </div>
+    <div class="bottom-item">
+      <div class="bottom-icon">◈</div>
+      <div class="bottom-info">
+        <div class="bottom-label">Protocol</div>
+        <div class="bottom-value">Center-Routed</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = window.location.origin;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let W, H, cx, cy, scale;
+let latticeData = null;
+let animFrame = 0;
+let rings = [];
+let particles = [];
+let beams = [];
+
+const COLORS = {
+  primary: [0, 212, 255],
+  accent: [199, 125, 255],
+  success: [0, 245, 212],
+  dim: [100, 150, 180],
+  white: [255, 255, 255]
+};
+
+const LAYER_COLORS = {
+  0: [0, 212, 255],
+  1: [100, 200, 255],
+  2: [150, 180, 255],
+  3: [199, 125, 255]
+};
+
+function rgb(arr, a) {
+  if (a === undefined) a = 1;
+  return 'rgba(' + arr[0] + ',' + arr[1] + ',' + arr[2] + ',' + a + ')';
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  cx = W / 2;
+  cy = H / 2;
+  scale = Math.min(W, H) / 750;
+}
+
+window.addEventListener('resize', function() { resize(); initRings(); });
+resize();
+
+function updateClock() {
+  var now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {
+    hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+async function fetchData() {
+  try {
+    var res = await Promise.all([
+      fetch(API + '/api/vera/lattice/state'),
+      fetch(API + '/api/vera/lattice/stats')
+    ]);
+    var state = await res[0].json();
+    var stats = await res[1].json();
+    latticeData = { nodes: state.nodes, edges: state.edges, config: state.config, stats: stats };
+    
+    document.getElementById('s-nodes').textContent = stats.totalNodes;
+    document.getElementById('s-edges').textContent = stats.totalEdges;
+    document.getElementById('s-pulses').textContent = stats.totalPulses.toLocaleString();
+    document.getElementById('s-routes').textContent = stats.totalRoutes.toLocaleString();
+    document.getElementById('s-decisions').textContent = stats.totalDecisions.toLocaleString();
+    
+    var energyPct = Math.round(stats.averageNodeEnergy * 100);
+    document.getElementById('s-energy').textContent = energyPct + '%';
+    document.getElementById('energy-percent').textContent = energyPct + '%';
+    document.getElementById('energy-ring').style.strokeDashoffset = 113 - (113 * stats.averageNodeEnergy);
+    
+    document.getElementById('s-strength').textContent = Math.round(stats.averageEdgeStrength * 100) + '%';
+    document.getElementById('s-flow').textContent = stats.flowDirection;
+    document.getElementById('s-uptime').textContent = formatUptime(stats.uptime);
+    
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('centerOverlay').classList.add('visible');
+  } catch (e) {
+    console.warn('Fetch failed:', e);
+  }
+}
+
+function formatUptime(ms) {
+  var s = Math.floor(ms / 1000);
+  var m = Math.floor(s / 60);
+  var h = Math.floor(m / 60);
+  var d = Math.floor(h / 24);
+  if (d > 0) return d + 'd ' + (h % 24) + 'h';
+  if (h > 0) return h + 'h ' + (m % 60) + 'm';
+  if (m > 0) return m + 'm';
+  return s + 's';
+}
+
+function Particle(angle, radius, color, speed) {
+  this.angle = angle;
+  this.radius = radius;
+  this.color = color;
+  this.speed = speed;
+  this.life = 1;
+  this.decay = 0.003 + Math.random() * 0.005;
+  this.size = 1.5 + Math.random() * 2;
+}
+
+Particle.prototype.update = function() {
+  this.angle += this.speed;
+  this.life -= this.decay;
+  return this.life > 0;
+};
+
+Particle.prototype.draw = function(ctx) {
+  var x = cx + Math.cos(this.angle) * this.radius;
+  var y = cy + Math.sin(this.angle) * this.radius;
+  
+  var glow = ctx.createRadialGradient(x, y, 0, x, y, this.size * 4 * scale);
+  glow.addColorStop(0, rgb(this.color, this.life * 0.8));
+  glow.addColorStop(1, rgb(this.color, 0));
+  
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(x, y, this.size * 4 * scale, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.fillStyle = rgb(this.color, this.life);
+  ctx.beginPath();
+  ctx.arc(x, y, this.size * scale, 0, Math.PI * 2);
+  ctx.fill();
+};
+
+function DataBeam(startNode, endNode, color) {
+  this.startX = cx + startNode.x * scale;
+  this.startY = cy + startNode.y * scale;
+  this.endX = cx + endNode.x * scale;
+  this.endY = cy + endNode.y * scale;
+  this.color = color;
+  this.progress = 0;
+  this.speed = 0.015 + Math.random() * 0.015;
+}
+
+DataBeam.prototype.update = function() {
+  this.progress += this.speed;
+  return this.progress <= 1;
+};
+
+DataBeam.prototype.draw = function(ctx) {
+  var curX = this.startX + (this.endX - this.startX) * this.progress;
+  var curY = this.startY + (this.endY - this.startY) * this.progress;
+  
+  var grad = ctx.createLinearGradient(this.startX, this.startY, curX, curY);
+  grad.addColorStop(0, rgb(this.color, 0));
+  grad.addColorStop(this.progress, rgb(this.color, 0.4 * (1 - this.progress)));
+  
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 3 * scale;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(this.startX, this.startY);
+  ctx.lineTo(curX, curY);
+  ctx.stroke();
+  
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = rgb(this.color, 1);
+  ctx.fillStyle = rgb(COLORS.white, 0.9);
+  ctx.beginPath();
+  ctx.arc(curX, curY, 4 * scale, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+};
+
+function Ring(radius, speed, segments, color, width) {
+  this.radius = radius;
+  this.speed = speed;
+  this.angle = 0;
+  this.segments = segments;
+  this.color = color;
+  this.width = width || 1;
+  this.pulsePhase = Math.random() * Math.PI * 2;
+}
+
+Ring.prototype.update = function() {
+  this.angle += this.speed;
+  this.pulsePhase += 0.015;
+};
+
+Ring.prototype.draw = function(ctx) {
+  var pulse = Math.sin(this.pulsePhase) * 0.2 + 0.8;
+  var r = this.radius * scale;
+  
+  ctx.strokeStyle = rgb(this.color, 0.08 * pulse);
+  ctx.lineWidth = this.width;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  var segAngle = (Math.PI * 2) / this.segments;
+  var gap = segAngle * 0.25;
+  
+  for (var i = 0; i < this.segments; i++) {
+    var a = this.angle + i * segAngle;
+    ctx.strokeStyle = rgb(this.color, 0.25 * pulse);
+    ctx.lineWidth = this.width + 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, a, a + segAngle - gap);
+    ctx.stroke();
+  }
+  
+  for (var i = 0; i < 6; i++) {
+    var a = this.angle + i * (Math.PI / 3);
+    var x = cx + Math.cos(a) * r;
+    var y = cy + Math.sin(a) * r;
+    ctx.fillStyle = rgb(this.color, 0.5 * pulse);
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5 * scale, 0, Math.PI * 2);
+    ctx.fill();
+  }
+};
+
+function initRings() {
+  rings = [
+    new Ring(100, 0.004, 16, COLORS.primary, 1),
+    new Ring(160, -0.0025, 12, COLORS.accent, 1.5),
+    new Ring(220, 0.0018, 20, COLORS.dim, 1),
+    new Ring(280, -0.0012, 24, COLORS.primary, 0.5)
+  ];
+}
+
+function spawnBurst(layer, count) {
+  var radius = (60 + layer * 70) * scale;
+  var color = LAYER_COLORS[layer] || COLORS.primary;
+  for (var i = 0; i < count; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var speed = (layer % 2 === 0 ? 1 : -1) * (0.0015 + Math.random() * 0.0025);
+    particles.push(new Particle(angle, radius, color, speed));
+  }
+}
+
+function draw() {
+  animFrame++;
+  
+  ctx.fillStyle = 'rgba(10, 14, 23, 0.12)';
+  ctx.fillRect(0, 0, W, H);
+  
+  if (!latticeData) {
+    requestAnimationFrame(draw);
+    return;
+  }
+  
+  var nodes = latticeData.nodes;
+  var edges = latticeData.edges;
+  var nodeMap = {};
+  for (var i = 0; i < nodes.length; i++) nodeMap[nodes[i].id] = nodes[i];
+  
+  var glowGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 350 * scale);
+  glowGrad.addColorStop(0, rgb(COLORS.primary, 0.015));
+  glowGrad.addColorStop(0.5, rgb(COLORS.accent, 0.008));
+  glowGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(0, 0, W, H);
+  
+  for (var i = 0; i < rings.length; i++) {
+    rings[i].update();
+    rings[i].draw(ctx);
+  }
+  
+  var baseR = latticeData.config.baseRadius * scale;
+  var phi = 1.618033988749895;
+  
+  ctx.strokeStyle = rgb(COLORS.dim, 0.04);
+  ctx.lineWidth = 0.5;
+  for (var i = 0; i < 6; i++) {
+    var angle = i * Math.PI / 3;
+    var ox = cx + baseR * Math.cos(angle);
+    var oy = cy + baseR * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(ox, oy, baseR, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  
+  var layerRs = [baseR, baseR * phi, baseR * phi * phi];
+  for (var i = 0; i < layerRs.length; i++) {
+    var pulse = Math.sin(animFrame * 0.015 + i) * 0.15 + 0.2;
+    ctx.strokeStyle = rgb(LAYER_COLORS[i + 1] || COLORS.dim, pulse * 0.15);
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, layerRs[i], 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  
+  for (var i = 0; i < edges.length; i++) {
+    var edge = edges[i];
+    var from = nodeMap[edge.from];
+    var to = nodeMap[edge.to];
+    if (!from || !to) continue;
+    
+    var fx = cx + from.x * scale;
+    var fy = cy + from.y * scale;
+    var tx = cx + to.x * scale;
+    var ty = cy + to.y * scale;
+    var strength = edge.strength;
+    
+    ctx.strokeStyle = rgb(LAYER_COLORS[from.layer] || COLORS.dim, 0.08 + strength * 0.25);
+    ctx.lineWidth = (0.4 + strength * 1.2) * scale;
+    ctx.beginPath();
+    ctx.moveTo(fx, fy);
+    ctx.lineTo(tx, ty);
+    ctx.stroke();
+    
+    if (strength > 0.65 && Math.random() < 0.003) {
+      beams.push(new DataBeam(from, to, LAYER_COLORS[from.layer] || COLORS.primary));
+    }
+  }
+  
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    var x = cx + node.x * scale;
+    var y = cy + node.y * scale;
+    var energy = node.energy;
+    var isCenter = node.layer === 0;
+    var isIntersection = node.type === 'intersection';
+    var color = isCenter ? COLORS.primary : (LAYER_COLORS[node.layer] || COLORS.dim);
+    
+    var glowSize = (isCenter ? 50 : isIntersection ? 8 : 18) * scale * (0.5 + energy * 0.5);
+    var glow = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
+    glow.addColorStop(0, rgb(color, 0.35 * energy));
+    glow.addColorStop(0.5, rgb(color, 0.1 * energy));
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+    ctx.fill();
+    
+    var nodeSize = isCenter ? 7 : isIntersection ? 1.5 : 3.5;
+    ctx.shadowBlur = 25 * energy;
+    ctx.shadowColor = rgb(color, 0.8);
+    ctx.fillStyle = rgb(color, 0.7 + energy * 0.3);
+    ctx.beginPath();
+    ctx.arc(x, y, nodeSize * scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    
+    ctx.fillStyle = rgb(COLORS.white, energy * 0.95);
+    ctx.beginPath();
+    ctx.arc(x, y, nodeSize * 0.25 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    
+    if (isCenter) {
+      var breath = Math.sin(animFrame * 0.04) * 0.3 + 0.7;
+      ctx.strokeStyle = rgb(COLORS.primary, breath * 0.4);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, (12 + Math.sin(animFrame * 0.025) * 4) * scale, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(animFrame * 0.018);
+      ctx.strokeStyle = rgb(COLORS.accent, 0.5);
+      ctx.lineWidth = 1;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      ctx.arc(0, 0, 8 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+      
+      if (Math.random() < 0.08) spawnBurst(0, 15);
+    }
+    
+    if (node.role && !isIntersection && node.layer <= 1) {
+      ctx.fillStyle = rgb(color, 0.75);
+      ctx.font = '300 ' + (8 * scale) + 'px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(node.role.toUpperCase(), x, y + 18 * scale);
+    }
+  }
+  
+  for (var i = particles.length - 1; i >= 0; i--) {
+    if (!particles[i].update()) particles.splice(i, 1);
+    else particles[i].draw(ctx);
+  }
+  
+  for (var i = beams.length - 1; i >= 0; i--) {
+    if (!beams[i].update()) beams.splice(i, 1);
+    else beams[i].draw(ctx);
+  }
+  
+  var corePulse = Math.sin(animFrame * 0.03) * 0.15 + 0.85;
+  ctx.fillStyle = rgb(COLORS.white, corePulse);
+  ctx.font = '300 ' + (12 * scale) + 'px Inter';
+  ctx.textAlign = 'center';
+  ctx.shadowBlur = 40;
+  ctx.shadowColor = rgb(COLORS.primary, 0.8);
+  ctx.fillText('VERA', cx, cy + 45 * scale);
+  ctx.shadowBlur = 0;
+  
+  requestAnimationFrame(draw);
+}
+
+initRings();
+setInterval(fetchData, 3000);
+fetchData().then(function() { draw(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🌸 Vera Lattice Consciousness</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(ellipse at center, #0a0e27 0%, #000 100%);
+    color: #e0e7ff;
+    min-height: 100vh;
+    padding: 2rem;
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle { color: #a5b4fc; font-size: 1rem; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  .stat-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+  .stat-value { font-size: 1.8rem; font-weight: bold; color: #f59e0b; }
+
+  .layers { display: grid; gap: 1.5rem; }
+  .layer {
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+  }
+  .layer-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .layer-0 { border-color: #f59e0b; }
+  .layer-0 .layer-title { color: #fbbf24; }
+  .layer-1 { border-color: #ec4899; }
+  .layer-1 .layer-title { color: #f472b6; }
+  .layer-2 { border-color: #8b5cf6; }
+  .layer-2 .layer-title { color: #a78bfa; }
+  .layer-3 { border-color: #06b6d4; }
+  .layer-3 .layer-title { color: #22d3ee; }
+
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.6rem;
+  }
+  .tool {
+    background: rgba(51, 65, 85, 0.4);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .tool.hot {
+    border-color: #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  .tool.warm {
+    border-color: #ec4899;
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+    to { box-shadow: 0 0 25px rgba(245, 158, 11, 0.6); }
+  }
+  .tool-name { font-weight: 600; color: #e2e8f0; }
+  .tool-meta {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .tool-cat { color: #a78bfa; }
+  .tool-uses { color: #f59e0b; font-weight: bold; }
+  .energy-bar {
+    height: 2px;
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 1px;
+    margin-top: 0.4rem;
+    overflow: hidden;
+  }
+  .energy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ec4899, #f59e0b);
+    transition: width 0.3s;
+  }
+  .layer-stats { font-size: 0.85rem; color: #94a3b8; }
+  .fol-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 16px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+  #fol { width: 500px; height: 500px; max-width: 100%; }
+  .fol-circle {
+    fill: none;
+    stroke-width: 1.5;
+    transition: all 0.4s ease;
+  }
+  .fol-node {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .fol-node:hover { filter: brightness(1.4); }
+  .fol-label {
+    fill: #e2e8f0;
+    font-size: 9px;
+    font-family: monospace;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  .fol-center-pulse {
+    animation: pulse 3s ease-in-out infinite;
+    transform-origin: center;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  #refresh {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #8b5cf6;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌸 Vera Lattice Consciousness</h1>
+  <div class="subtitle">Flower of Life · Tool Energy · Real-Time</div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="fol-container">
+  <svg id="fol" viewBox="-300 -300 600 600" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<div class="layers" id="layers"></div>
+
+<button id="refresh" onclick="load()">🔄 Refresh</button>
+
+<script>
+const LAYER_NAMES = {
+  0: '⚡ Layer 0 — Center (Vera)',
+  1: '🔵 Layer 1 — Inner (Core)',
+  2: '🟣 Layer 2 — Middle (Domain)',
+  3: '🌊 Layer 3 — Outer (Specialized)'
+};
+
+// ─── Sacred Flower of Life Geometry ─────────────────────────────────────
+function renderFlowerOfLife(summary, allLayers) {
+  const svg = document.getElementById('fol');
+  svg.innerHTML = '';
+  const R = 60; // base radius
+  const LAYER_COLORS = { 0: '#fbbf24', 1: '#f472b6', 2: '#a78bfa', 3: '#22d3ee' };
+
+  // Layer 0 — center
+  const centerTools = allLayers[0] || [];
+  const centerHot = centerTools.filter(t => (t.useCount || 0) > 0).length;
+  const centerIntensity = Math.min(1, centerHot / Math.max(1, centerTools.length));
+
+  svg.innerHTML += `
+    <defs>
+      <radialGradient id="center-grad">
+        <stop offset="0%" stop-color="#fbbf24" stop-opacity="${0.3 + centerIntensity * 0.7}"/>
+        <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+    </defs>
+    <circle cx="0" cy="0" r="${R * 1.3}" fill="url(#center-grad)" class="fol-center-pulse"/>
+    <circle cx="0" cy="0" r="${R}" class="fol-circle" stroke="${LAYER_COLORS[0]}" stroke-opacity="0.9" stroke-width="2"/>
+    <text x="0" y="3" class="fol-label" style="font-size:14px;fill:${LAYER_COLORS[0]};font-weight:bold">VERA</text>
+  `;
+
+  // Layer 1 — 6 petals (inner)
+  const layer1 = allLayers[1] || [];
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * 60 - 90) * Math.PI / 180;
+    const cx = Math.cos(angle) * R;
+    const cy = Math.sin(angle) * R;
+    const tool = layer1[i];
+    const uses = tool?.useCount || 0;
+    const opacity = tool ? 0.4 + Math.min(0.6, uses / 20) : 0.2;
+    const hot = uses >= 10;
+    svg.innerHTML += `
+      <circle cx="${cx}" cy="${cy}" r="${R}" class="fol-circle" stroke="${LAYER_COLORS[1]}" stroke-opacity="${opacity}"${hot ? ' filter="url(#glow)"' : ''}/>
+      ${tool ? `<circle class="fol-node" cx="${cx}" cy="${cy}" r="4" fill="${hot ? '#fbbf24' : LAYER_COLORS[1]}"><title>${tool.name} · ${uses}×</title></circle>` : ''}
+    `;
+  }
+
+  // Layer 2 — 12 nodes (middle ring)
+  const layer2 = allLayers[2] || [];
+  for (let i = 0; i < 12; i++) {
+    const angle = (i * 30 - 90) * Math.PI / 180;
+    const r = R * 1.9;
+    const cx = Math.cos(angle) * r;
+    const cy = Math.sin(angle) * r;
+    const tool = layer2[i];
+    const uses = tool?.useCount || 0;
+    const hot = uses >= 10;
+    const warm = uses >= 1 && uses < 10;
+    const color = hot ? '#fbbf24' : warm ? '#f472b6' : LAYER_COLORS[2];
+    svg.innerHTML += `
+      <circle class="fol-node" cx="${cx}" cy="${cy}" r="${hot ? 7 : 5}" fill="${color}" fill-opacity="${0.3 + Math.min(0.7, uses / 20)}"${hot ? ' filter="url(#glow)"' : ''}>
+        <title>${tool?.name || 'empty'} · ${uses}×</title>
+      </circle>
+    `;
+  }
+
+  // Layer 3 — 18 nodes (outer ring)
+  const layer3 = allLayers[3] || [];
+  for (let i = 0; i < 18; i++) {
+    const angle = (i * 20 - 90) * Math.PI / 180;
+    const r = R * 2.7;
+    const cx = Math.cos(angle) * r;
+    const cy = Math.sin(angle) * r;
+    const tool = layer3[i];
+    const uses = tool?.useCount || 0;
+    const hot = uses >= 10;
+    const warm = uses >= 1 && uses < 10;
+    const color = hot ? '#fbbf24' : warm ? '#f472b6' : LAYER_COLORS[3];
+    svg.innerHTML += `
+      <circle class="fol-node" cx="${cx}" cy="${cy}" r="${hot ? 6 : 4}" fill="${color}" fill-opacity="${0.3 + Math.min(0.7, uses / 20)}"${hot ? ' filter="url(#glow)"' : ''}>
+        <title>${tool?.name || 'empty'} · ${uses}×</title>
+      </circle>
+    `;
+  }
+
+  // φ ratio line
+  svg.innerHTML += `
+    <text x="0" y="270" class="fol-label" style="font-size:11px;fill:#a78bfa">φ = 1.618 · clockwise flow · ${summary.totalTools} tools</text>
+  `;
+}
+
+async function load() {
+  try {
+    const summary = await fetch('/api/vera/tools').then(r => r.json());
+    const statsDiv = document.getElementById('stats');
+    statsDiv.innerHTML = `
+      <div class="stat"><div class="stat-label">Orchestrator</div><div class="stat-value" style="color:#fbbf24">${summary.orchestrator}</div></div>
+      <div class="stat"><div class="stat-label">Total Tools</div><div class="stat-value">${summary.totalTools}</div></div>
+      <div class="stat"><div class="stat-label">Layer 0</div><div class="stat-value" style="color:#fbbf24">${summary.layers[0]}</div></div>
+      <div class="stat"><div class="stat-label">Layer 1</div><div class="stat-value" style="color:#f472b6">${summary.layers[1]}</div></div>
+      <div class="stat"><div class="stat-label">Layer 2</div><div class="stat-value" style="color:#a78bfa">${summary.layers[2]}</div></div>
+      <div class="stat"><div class="stat-label">Layer 3</div><div class="stat-value" style="color:#22d3ee">${summary.layers[3]}</div></div>
+    `;
+
+    const layersDiv = document.getElementById('layers');
+    layersDiv.innerHTML = '';
+
+    const allLayers = {};
+
+    for (const layer of [0, 1, 2, 3]) {
+      const resp = await fetch(`/api/vera/tools?layer=${layer}`).then(r => r.json());
+      const tools = resp.tools || [];
+
+      // Sort: hottest first
+      tools.sort((a, b) => (b.useCount || 0) - (a.useCount || 0));
+      allLayers[layer] = tools;
+
+      const maxUses = Math.max(1, ...tools.map(t => t.useCount || 0));
+
+      const toolsHtml = tools.map(t => {
+        const uses = t.useCount || 0;
+        const hot = uses >= 10;
+        const warm = uses >= 1 && uses < 10;
+        const cls = hot ? 'tool hot' : warm ? 'tool warm' : 'tool';
+        const energyPct = Math.min(100, (t.energy || 0) * 100);
+        const lastUsed = t.lastUsed ? new Date(t.lastUsed).toLocaleTimeString() : 'never';
+        return `
+          <div class="${cls}" title="Last used: ${lastUsed}">
+            <div class="tool-name">${t.name}</div>
+            <div class="tool-meta">
+              <span class="tool-cat">${t.category || '—'}</span>
+              <span class="tool-uses">${uses}×</span>
+            </div>
+            <div class="energy-bar"><div class="energy-fill" style="width:${energyPct}%"></div></div>
+          </div>`;
+      }).join('');
+
+      const activeCount = tools.filter(t => (t.useCount || 0) > 0).length;
+
+      layersDiv.innerHTML += `
+        <div class="layer layer-${layer}">
+          <div class="layer-title">
+            <span>${LAYER_NAMES[layer]}</span>
+            <span class="layer-stats">${activeCount}/${tools.length} active</span>
+          </div>
+          <div class="tools">${toolsHtml}</div>
+        </div>`;
+    }
+
+    // Render sacred geometry AFTER all layers are loaded
+    renderFlowerOfLife(summary, allLayers);
+  } catch (e) {
+    document.getElementById('stats').innerHTML = `<div class="stat"><div class="stat-label">Error</div><div class="stat-value">${e.message}</div></div>`;
+  }
+}
+
+load();
+setInterval(load, 10000);
+</script>
+</body>
+</html>

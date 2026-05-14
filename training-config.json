@@ -1,0 +1,21 @@
+{
+  "contextLength": 4096,
+  "batchSize": 4,
+  "learningRate": 0.00001,
+  "maxSteps": 2000,
+  "warmupSteps": 200,
+  "saveSteps": 100,
+  "evalSteps": 50,
+  "loggingSteps": 10,
+  "loraR": 64,
+  "loraAlpha": 128,
+  "loraDropout": 0.05,
+  "dataset_size": 764,
+  "estimated_time": "1528.0 minutes",
+  "hardware": {
+    "gpuLayers": -1,
+    "threads": 8,
+    "batchSize": 512
+  },
+  "timestamp": "2026-03-28T02:44:34.078Z"
+}

@@ -1,0 +1,132 @@
+{
+  "updatedAt": 1778795166085,
+  "ticks": 1285,
+  "weights": [
+    {
+      "tool": "kit_get_exchange_rate",
+      "weight": 1,
+      "calls": 8,
+      "successRate": 1,
+      "avgLatencyMs": 323.125,
+      "lastUpdated": 1777222601317,
+      "reason": "healthy"
+    },
+    {
+      "tool": "hedera_get_balance",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 40,
+      "lastUpdated": 1778795166085,
+      "reason": "success 0% < 85%"
+    },
+    {
+      "tool": "hedera_get_transactions",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 0,
+      "lastUpdated": 1777218758863,
+      "reason": "success 0% < 85%"
+    },
+    {
+      "tool": "hedera_get_nfts",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 0,
+      "lastUpdated": 1777218758863,
+      "reason": "success 0% < 85%"
+    },
+    {
+      "tool": "hedera_get_network_stats",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 0,
+      "lastUpdated": 1777218758863,
+      "reason": "success 0% < 85%"
+    },
+    {
+      "tool": "get_trending_topics",
+      "weight": 1,
+      "calls": 1,
+      "successRate": 1,
+      "avgLatencyMs": 0,
+      "lastUpdated": 1777218878864,
+      "reason": "healthy"
+    },
+    {
+      "tool": "get_network_status",
+      "weight": 1,
+      "calls": 1,
+      "successRate": 1,
+      "avgLatencyMs": 0,
+      "lastUpdated": 1777218878864,
+      "reason": "healthy"
+    },
+    {
+      "tool": "get_exchange_rate_tool",
+      "weight": 1,
+      "calls": 8,
+      "successRate": 1,
+      "avgLatencyMs": 283.25,
+      "lastUpdated": 1777222601317,
+      "reason": "healthy"
+    },
+    {
+      "tool": "hedera_search_tokens",
+      "weight": 1,
+      "calls": 1,
+      "successRate": 1,
+      "avgLatencyMs": 1158,
+      "lastUpdated": 1778338997594,
+      "reason": "healthy"
+    },
+    {
+      "tool": "hedera_get_account_info",
+      "weight": 0.1,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 4495,
+      "lastUpdated": 1778795166085,
+      "reason": "success 0% < 85%; slow 4495ms > 2000ms"
+    },
+    {
+      "tool": "saucerswap_get_pools",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 70,
+      "lastUpdated": 1777217258823,
+      "reason": "success 0% < 85%"
+    },
+    {
+      "tool": "saucerswap_get_token_price",
+      "weight": 1,
+      "calls": 1,
+      "successRate": 1,
+      "avgLatencyMs": 111,
+      "lastUpdated": 1777158561205,
+      "reason": "healthy"
+    },
+    {
+      "tool": "hedera_get_tokens",
+      "weight": 1,
+      "calls": 1,
+      "successRate": 1,
+      "avgLatencyMs": 46,
+      "lastUpdated": 1777157241180,
+      "reason": "healthy"
+    },
+    {
+      "tool": "get_price_chart",
+      "weight": 0.2,
+      "calls": 1,
+      "successRate": 0,
+      "avgLatencyMs": 734,
+      "lastUpdated": 1778106374530,
+      "reason": "success 0% < 85%"
+    }
+  ]
+}

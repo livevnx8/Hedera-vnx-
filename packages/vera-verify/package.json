@@ -1,0 +1,49 @@
+{
+  "name": "@vera/verify",
+  "version": "0.1.0",
+  "description": "Zero-trust verifier for Vera AI action proofs anchored on Hedera HCS. Cryptographically audits AI agent actions against the Hedera mainnet mirror node without trusting any server.",
+  "type": "module",
+  "bin": {
+    "vera-verify": "./bin/vera-verify.mjs"
+  },
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./cli": "./bin/vera-verify.mjs"
+  },
+  "files": [
+    "src",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/basic.test.mjs"
+  },
+  "keywords": [
+    "vera",
+    "ai",
+    "verification",
+    "hedera",
+    "hcs",
+    "audit",
+    "proof",
+    "attestation",
+    "defi",
+    "agent"
+  ],
+  "author": "Vera Lattice",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vera-lattice/hedera-llm-api",
+    "directory": "packages/vera-verify"
+  },
+  "homepage": "https://github.com/vera-lattice/hedera-llm-api/tree/main/packages/vera-verify",
+  "optionalDependencies": {
+    "@noble/secp256k1": "^2.1.0"
+  }
+}

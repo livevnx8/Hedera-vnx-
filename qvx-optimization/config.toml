@@ -1,0 +1,129 @@
+# QVX Node Configuration Optimized for Vera AI Assistant
+# Maximizes performance for conversational AI with enhanced capabilities
+
+[general]
+# Model Configuration
+model_path = "./models/vera-model.gguf"
+model_type = "gguf"
+n_threads = 8
+n_threads_batch = 8
+
+# Memory Optimization for Enhanced Context
+n_ctx = 4096                    # Increased for Vera's enhanced context
+n_batch = 512                   # Optimized batch size
+n_gpu_layers = -1               # Full GPU offload for maximum performance
+main_gpu = 0
+tensor_split = ""                # Auto-detect optimal GPU splitting
+
+# Advanced Memory Management
+use_mmap = true
+use_mlock = false                 # Disabled for better memory management
+memory_f16 = true                # Use float16 for memory efficiency
+numa = false                     # Disabled for single-node optimization
+
+# Vera-Specific Optimizations
+context_size = 4096              # Support for enhanced conversation context
+max_tokens = 2048                # Increased for detailed responses
+temperature = 0.7               # Balanced creativity/consistency
+top_p = 0.9                     # Diverse yet focused responses
+top_k = 40                      # Controlled vocabulary diversity
+repeat_penalty = 1.1            # Reduce repetition in conversations
+
+[performance]
+# Batch Processing for Multiple Users
+batch_size = 4                   # Support concurrent conversations
+batch_prompt_max_tokens = 1024   # Optimize prompt batch size
+batch_n_threads = 8             # Dedicated threads for batch processing
+
+# Response Streaming
+stream = true
+n_predict = -1                  # Unlimited generation for detailed responses
+tfs_z = 1.0                     # Tail free sampling
+typical_p = 1.0                 # Typical sampling
+penalty_last_tokens = 64        # Apply penalty to last tokens
+
+# Caching and Preloading
+cache_prompt = true              # Cache prompts for faster responses
+cache_prompt_tokens = 256        # Cache size for prompts
+cache_prompt_all = false         # Selective caching
+cache_prompt_all_v2 = true        # Enhanced caching algorithm
+
+[memory_management]
+# Dynamic Memory Allocation
+gpu_memory_utilization = 0.85    # Aggressive GPU memory usage
+expandable_segments = true       # Enable expandable memory segments
+max_gpu_layers = -1              # Maximum GPU layer offloading
+max_batch_size = 8               # Maximum batch size for memory limits
+
+# Memory Monitoring
+memory_monitor_interval = 5     # Monitor memory every 5 seconds
+memory_threshold_warning = 0.9   # Warning at 90% memory usage
+memory_threshold_critical = 0.95  # Critical at 95% memory usage
+
+# Automatic Memory Management
+auto_cleanup = true              # Automatic memory cleanup
+cleanup_interval = 60            # Cleanup every 60 seconds
+keep_last_prompt = true          # Keep last prompt in memory
+
+[vera_optimization]
+# Conversation-Specific Settings
+conversation_context_size = 2048  # Dedicated context for conversations
+tool_response_size = 512          # Buffer for tool responses
+awareness_data_size = 256         # Buffer for real-time data
+
+# Enhanced Features
+enable_awareness_caching = true   # Cache awareness data
+enable_context_tracking = true    # Track conversation context
+enable_personality_memory = true  # Remember user preferences
+
+# Performance Tuning for AI Assistant
+response_timeout = 30             # Max response time in seconds
+max_conversation_length = 50      # Max turns per conversation
+context_window_overlap = 200      # Overlap for context continuity
+
+[monitoring]
+# Performance Metrics
+enable_metrics = true
+metrics_port = 5102
+metrics_interval = 10             # Update metrics every 10 seconds
+
+# Logging
+log_level = "info"
+log_file = "./logs/qvx-vera.log"
+log_rotation = true
+max_log_size = "100MB"
+max_log_files = 10
+
+# Health Checks
+health_check_interval = 30        # Health check every 30 seconds
+health_check_timeout = 5          # Health check timeout
+
+[clustering]
+# Multi-Node Support (Future Enhancement)
+enable_clustering = false
+node_id = "vera-qvx-1"
+discovery_port = 5103
+heartbeat_interval = 10
+leader_election_timeout = 30
+
+# Load Balancing
+enable_load_balancing = false
+load_balance_algorithm = "round_robin"
+max_concurrent_requests = 100
+
+[advanced]
+# Experimental Features
+enable_kv_cache = true            # Key-value cache for performance
+enable_prefix_caching = true     # Prefix caching for repeated prompts
+enable_tensor_parallel = false    # Tensor parallelism (future)
+
+# Optimization Flags
+blas_threads = 8                  # BLAS thread count
+flash_attention = false           # Flash attention (experimental)
+matmul_quantization = "none"      # Matrix multiplication quantization
+
+# Debugging and Profiling
+enable_profiling = false
+profile_output = "./profiles/"
+enable_memory_debug = false
+enable_timing_debug = false

@@ -1,0 +1,205 @@
+version: '3.8'
+
+# VeraLattice Developer Sandbox
+# Full stack development environment with testnet support
+
+services:
+  # Main Vera Application - Development Mode
+  vera-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    ports:
+      - "8080:8080"
+      - "9229:9229"  # Node.js debug port
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - HEDERA_NETWORK=testnet
+      - HEDERA_OPERATOR_ACCOUNT_ID=${HEDERA_TESTNET_ACCOUNT_ID:-0.0.123456}
+      - HEDERA_OPERATOR_PRIVATE_KEY=${HEDERA_TESTNET_PRIVATE_KEY:-}
+      - MIRROR_NODE_BASE_URL=https://testnet.mirrornode.hedera.com
+      - DATABASE_PATH=/app/data/vera-sandbox.db
+      - REDIS_URL=redis://redis-dev:6379
+      - POSTGRES_URL=postgresql://vera:vera@postgres-dev:5432/vera_sandbox
+      - MOCK_MODE=${MOCK_MODE:-false}
+      - QVX_MOCK_URL=http://qvx-mock:5101
+      - AUTO_CREATE_TOPICS=true
+      - SANDBOX_MODE=true
+      - UV_THREADPOOL_SIZE=64
+      - NODE_OPTIONS=--max-old-space-size=4096 --inspect=0.0.0.0:9229
+    volumes:
+      - .:/app/src:cached
+      - sandbox_data:/app/data
+      - sandbox_logs:/app/logs
+      - /app/node_modules
+    depends_on:
+      - redis-dev
+      - postgres-dev
+      - qvx-mock
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: npm run dev
+
+  # Mock QVX Inference Service (No GPU required)
+  qvx-mock:
+    build:
+      context: ./src/mocks
+      dockerfile: Dockerfile.qvx-mock
+    ports:
+      - "5101:5101"
+    environment:
+      - MOCK_MODE=fast
+      - RESPONSE_DELAY_MS=100
+      - DETERMINISTIC_OUTPUTS=true
+    volumes:
+      - ./src/mocks/qvx-responses:/app/responses:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5101/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Redis - Development Cache
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_dev_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # PostgreSQL - Development Database
+  postgres-dev:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=vera
+      - POSTGRES_PASSWORD=vera
+      - POSTGRES_DB=vera_sandbox
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./scripts/init-sandbox-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera -d vera_sandbox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Mock HCS Service (Optional - for offline development)
+  mock-hcs:
+    build:
+      context: ./src/mocks
+      dockerfile: Dockerfile.hcs-mock
+    ports:
+      - "8081:8081"
+    environment:
+      - PERSIST_MESSAGES=true
+      - MESSAGE_RETENTION_HOURS=24
+    volumes:
+      - mock_hcs_data:/app/data
+    restart: unless-stopped
+    profiles:
+      - offline
+      - mock-all
+
+  # Mock Mirror Node (Optional - for offline development)
+  mock-mirror:
+    build:
+      context: ./src/mocks
+      dockerfile: Dockerfile.mirror-mock
+    ports:
+      - "8082:8082"
+    environment:
+      - SEED_DATA=true
+      - PRESET=development
+    volumes:
+      - mock_mirror_data:/app/data
+    restart: unless-stopped
+    profiles:
+      - offline
+      - mock-all
+
+  # Documentation Server (Optional)
+  docs:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+      - ./docs:/usr/share/nginx/html/docs:ro
+    restart: unless-stopped
+    profiles:
+      - docs
+
+  # Prometheus - Metrics (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-sandbox.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_dev_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=24h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana - Dashboards (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - grafana_dev_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  sandbox_data:
+    driver: local
+  sandbox_logs:
+    driver: local
+  redis_dev_data:
+    driver: local
+  postgres_dev_data:
+    driver: local
+  mock_hcs_data:
+    driver: local
+  mock_mirror_data:
+    driver: local
+  prometheus_dev_data:
+    driver: local
+  grafana_dev_data:
+    driver: local
+
+networks:
+  default:
+    name: vera-sandbox
+    driver: bridge

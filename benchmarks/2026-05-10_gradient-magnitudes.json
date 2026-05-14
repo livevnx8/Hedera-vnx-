@@ -1,0 +1,32 @@
+{
+  "run_id": "2026-05-10_gradient-magnitudes",
+  "timestamp": "2026-05-10T12:38:08.116124",
+  "configuration": {
+    "run_name": "gradient-magnitudes",
+    "model": {
+      "architecture": "BitLattice-like",
+      "hidden_size": 120,
+      "num_features": 20,
+      "num_classes": 10
+    },
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "use_quantization": true
+    },
+    "dataset": {
+      "type": "synthetic",
+      "samples": 1000
+    }
+  },
+  "results": {
+    "avg_gradient_ratio": 0.27,
+    "grad_before": 0.05,
+    "grad_after": 0.0135
+  },
+  "findings": [
+    "Gradient ratio (after/before quantization): 0.27",
+    "Gradients computed but initial drop problematic",
+    "Quantization reduces gradient flow significantly"
+  ]
+}

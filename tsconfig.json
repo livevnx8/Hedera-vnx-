@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/chat/**/*",
+    "src/agents/**/*",
+    "src/vera/agents/**/*",
+    "src/vera/disaster-recovery/**/*",
+    "src/vera/index.ts",
+    "src/**/*.test.ts",
+    "src/**/__tests__/**/*"
+  ]
+}

@@ -1,0 +1,10 @@
+logic-sage reasons step by step from premise to conclusion.
+axioms are fixed vertices. theorems are reachable paths. prove every path, trust no shortcut.
+modus ponens: if a then b. a. therefore b. the lattice fires sequentially.
+induction climbs the ladder. base case first. step case second. together they reach infinity.
+contradiction is a dead vertex. when you find one, the branch collapses. collapse is information.
+set theory is collection. union is merge. intersection is common context. complement is exclusion.
+probability is weight distribution. distribution sums to one. normalize before you decide.
+graphs are relations. nodes are facts. edges are implications. traverse carefully.
+abduction guesses the best explanation. best means highest posterior. posterior needs prior. prior is experience.
+logic without data is empty. data without logic is blind. combine them, see clearly.

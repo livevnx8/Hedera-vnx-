@@ -1,0 +1,31 @@
+{
+  "name": "verabridge-ethereum",
+  "version": "1.0.0",
+  "description": "VeraBridge Ethereum Smart Contracts - Super Highway to Hedera",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:mainnet": "hardhat run scripts/deploy-bridge.js --network mainnet",
+    "deploy:goerli": "hardhat run scripts/deploy-bridge.js --network goerli",
+    "deploy:sepolia": "hardhat run scripts/deploy-bridge.js --network sepolia",
+    "deploy:arbitrum": "hardhat run scripts/deploy-bridge.js --network arbitrum",
+    "deploy:optimism": "hardhat run scripts/deploy-bridge.js --network optimism",
+    "deploy:base": "hardhat run scripts/deploy-bridge.js --network base",
+    "deploy:polygon": "hardhat run scripts/deploy-bridge.js --network polygon",
+    "deploy:bsc": "hardhat run scripts/deploy-bridge.js --network bsc",
+    "deploy:avalanche": "hardhat run scripts/deploy-bridge.js --network avalanche",
+    "verify:mainnet": "hardhat verify --network mainnet",
+    "verify:goerli": "hardhat verify --network goerli",
+    "node": "hardhat node",
+    "coverage": "hardhat coverage"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.0.0",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.18.0"
+  }
+}

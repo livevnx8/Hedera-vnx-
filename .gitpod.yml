@@ -1,0 +1,69 @@
+# Gitpod Configuration for Vera Sandbox
+# One-click cloud development environment
+
+image: gitpod/workspace-node-lts
+
+tasks:
+  - name: Setup
+    init: |
+      echo "🧪 Setting up Vera Sandbox..."
+      npm install
+      npm run build 2>/dev/null || true
+      mkdir -p data logs checkpoints
+    command: |
+      echo "✅ Environment ready!"
+      echo "Starting sandbox services..."
+      docker-compose -f docker-compose.sandbox.yml up -d
+
+  - name: HCS Topics
+    command: |
+      echo "📡 Checking HCS topics..."
+      sleep 10
+      node scripts/setup-testnet.mjs || echo "⚠️  Testnet setup may require manual configuration"
+
+ports:
+  - port: 8080
+    name: Vera API
+    description: Main API server
+    onOpen: open-preview
+    visibility: public
+  - port: 3000
+    name: Dashboard
+    description: Vera dashboard UI
+    onOpen: open-browser
+    visibility: public
+  - port: 3001
+    name: Grafana
+    description: Metrics dashboards
+    onOpen: notify
+    visibility: public
+  - port: 5101
+    name: QVX Mock
+    description: Mock inference service
+    onOpen: ignore
+  - port: 6379
+    name: Redis
+    description: Cache server
+    onOpen: ignore
+  - port: 5432
+    name: PostgreSQL
+    description: Database
+    onOpen: ignore
+  - port: 9090
+    name: Prometheus
+    description: Metrics collection
+    onOpen: ignore
+  - port: 9229
+    name: Node Debug
+    description: Debugger port
+    onOpen: ignore
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - ms-vscode.vscode-typescript-next
+    - bradlc.vscode-tailwindcss
+    - formulahendry.auto-rename-tag
+    - christian-kohler.path-intellisense
+    - yzhang.markdown-all-in-one

@@ -106,6 +106,7 @@ from src.persistence.vera_db import VeraDB
 # ONNX Inference (Phase 4A)
 from src.prediction.onnx_inference import ONNXPredictionEngine
 from src.prediction.prediction_tracker_api import router as predictions_router
+from src.prediction.fast_tracker_api import router as fast_tracker_router
 
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
@@ -360,6 +361,9 @@ app.include_router(monitoring_router)
 
 # ── Hourly Prediction Tracker ──────────────────────────────────
 app.include_router(predictions_router)
+
+# ── Fast 5-min Prediction Tracker ─────────────────────────────
+app.include_router(fast_tracker_router)
 
 # ── v2 Metrics Bridges ────────────────────────────────────────
 def _metrics_bridge(event_name: str, data):

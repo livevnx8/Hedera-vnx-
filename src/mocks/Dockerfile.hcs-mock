@@ -1,0 +1,10 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy service file
+COPY mockHcsService.js ./
+
+EXPOSE 8081
+
+CMD ["node", "mockHcsService.js"]

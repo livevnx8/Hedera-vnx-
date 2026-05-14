@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-03-28T03:45:21.791Z",
+  "duration": 15495,
+  "throughput": 0.3872216844143272,
+  "results": [
+    {
+      "swarm": "A",
+      "credit": "A-001",
+      "seq": "780",
+      "latency": 3784
+    },
+    {
+      "swarm": "B",
+      "credit": "B-001",
+      "seq": "779",
+      "latency": 4633
+    },
+    {
+      "swarm": "B",
+      "credit": "B-002",
+      "seq": "782",
+      "latency": 8336
+    },
+    {
+      "swarm": "A",
+      "credit": "A-002",
+      "seq": "781",
+      "latency": 11675
+    },
+    {
+      "swarm": "B",
+      "credit": "B-003",
+      "seq": "783",
+      "latency": 12166
+    },
+    {
+      "swarm": "A",
+      "credit": "A-003",
+      "seq": "784",
+      "latency": 15495
+    }
+  ],
+  "exceedsHedera": false
+}

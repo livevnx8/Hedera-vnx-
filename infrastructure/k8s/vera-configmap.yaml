@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vera
+  labels:
+    name: vera
+    environment: production
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vera-config
+  namespace: vera
+data:
+  # Application Configuration
+  node.env: "production"
+  model.provider: "qvx-direct"
+  hedera.network: "mainnet"
+  
+  # Redis Configuration
+  redis.url: "redis://vera-redis:6379"
+  redis.cluster: "false"
+  
+  # QVX Model Server
+  qvx.infer.url: "http://qvx-server:5101"
+  qvx.timeout: "30000"
+  qvx.max.retries: "3"
+  
+  # Scaling Configuration
+  scaling.enabled: "true"
+  scaling.min.replicas: "3"
+  scaling.max.replicas: "20"
+  scaling.target.cpu: "70"
+  scaling.target.memory: "80"
+  
+  # Feature Flags
+  features.ensemble.enabled: "true"
+  features.shadow.council: "true"
+  features.quantum.parallel: "true"
+  features.flower.of.life: "true"
+  
+  # Cost Optimization
+  cost.spot.instances: "true"
+  cost.hbar.batching: "true"
+  cost.tiered.storage: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vera-secrets
+  namespace: vera
+type: Opaque
+stringData:
+  # Hedera credentials (base64 encoded in production)
+  HEDERA_OPERATOR_ID: ""
+  HEDERA_OPERATOR_KEY: ""
+  
+  # Redis password
+  REDIS_PASSWORD: ""
+  
+  # API Keys
+  OPENAI_API_KEY: ""
+  GOOGLE_AI_STUDIO_API_KEY: ""
+  
+  # Slack Webhook
+  SLACK_WEBHOOK_URL: ""

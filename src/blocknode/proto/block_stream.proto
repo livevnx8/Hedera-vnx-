@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package hedera.block;
+
+option go_package = "github.com/hiero-ledger/hiero-block-node/blockstream";
+
+// HIP-1056: A unified stream of block items replacing record files, event files,
+// state files, and signature files.
+
+message BlockItem {
+  oneof item {
+    BlockHeader header = 1;
+    RoundHeader round_header = 2;
+    EventHeader event_header = 3;
+    EventTransaction event_transaction = 4;
+    TransactionResult transaction_result = 5;
+    TransactionOutput transaction_output = 6;
+    StateChanges state_changes = 7;
+    BlockData block_data = 8;
+    BlockProof block_proof = 9;
+  }
+}
+
+message BlockHeader {
+  uint64 block_number = 1;
+  bytes previous_block_hash = 2;
+  bytes hash = 3;
+  int64 consensus_timestamp = 4; // nanoseconds since epoch
+}
+
+message RoundHeader {
+  uint64 round_number = 1;
+  int64 consensus_timestamp = 2;
+}
+
+message EventHeader {
+  bytes event_hash = 1;
+  bytes parent_hash = 2;
+  int64 timestamp = 3;
+}
+
+// Contains the raw transaction bytes (e.g. SignedTransaction protobuf)
+message EventTransaction {
+  bytes transaction_bytes = 1;
+  bytes transaction_hash = 2;
+}
+
+message TransactionResult {
+  bytes transaction_hash = 1;
+  int64 status = 2; // ResponseCodeEnum value
+  bytes result_bytes = 3; // TransactionRecord protobuf
+}
+
+message TransactionOutput {
+  bytes transaction_hash = 1;
+  bytes output_bytes = 2; // ContractFunctionResult, etc.
+}
+
+message StateChanges {
+  repeated StateChange changes = 1;
+}
+
+message StateChange {
+  bytes key = 1;
+  bytes value = 2;
+  int64 slot = 3; // for contract storage
+}
+
+// Arbitrary block-attached data (e.g. HCS messages extracted for indexing)
+message BlockData {
+  bytes data = 1;
+  string mime_type = 2;
+}
+
+// Self-contained proof that the block is valid per network consensus.
+// Replaces per-record-file RSA signatures with a single threshold signature.
+message BlockProof {
+  uint64 block_number = 1;
+  bytes block_hash = 2;
+  bytes signature = 3;           // Aggregated threshold signature
+  repeated bytes signers = 4;    // Public keys of signing nodes
+  int64 signature_algorithm = 5; // 1 = Ed25519, 2 = Falcon-512 (future)
+}
+
+// ─── gRPC Services ──────────────────────────────────────────────────────────
+
+service BlockStreamService {
+  // Server-streaming: client subscribes, server pushes BlockItems as they arrive.
+  rpc SubscribeBlockStream(SubscribeRequest) returns (stream BlockItem);
+
+  // Bidirectional: client can request specific block ranges and receive items.
+  rpc SubscribeBlockStreamBidirectional(stream SubscribeRequest) returns (stream BlockItem);
+}
+
+service BlockAccessService {
+  // Request a specific block by number.
+  rpc GetBlockByNumber(GetBlockRequest) returns (BlockItemList);
+
+  // Request the latest verified block.
+  rpc GetLatestBlock(GetLatestRequest) returns (BlockItemList);
+}
+
+message SubscribeRequest {
+  uint64 start_block_number = 1;
+  bool include_proofs = 2;
+  repeated string filter_topics = 3; // HCS topic IDs to filter (optional)
+}
+
+message BlockItemList {
+  repeated BlockItem items = 1;
+}
+
+message GetBlockRequest {
+  uint64 block_number = 1;
+}
+
+message GetLatestRequest {
+  bool include_proofs = 1;
+}

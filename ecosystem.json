@@ -1,0 +1,81 @@
+{
+  "apps": [
+    {
+      "name": "vera-lattice-api",
+      "script": "src/index.ts",
+      "interpreter": "tsx",
+      "instances": 1,
+      "exec_mode": "fork",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "env_production": {
+        "NODE_ENV": "production"
+      },
+      "log_file": "/app/logs/vera-pm2.log",
+      "out_file": "/app/logs/vera-out.log",
+      "error_file": "/app/logs/vera-error.log",
+      "merge_logs": true,
+      "time": true,
+      "watch": false,
+      "ignore_watch": ["node_modules", "logs", "data"],
+      "max_memory_restart": "2G",
+      "restart_delay": 3000,
+      "max_restarts": 10,
+      "min_uptime": "10s",
+      "kill_timeout": 5000,
+      "listen_timeout": 10000,
+      "wait_ready": true,
+      "autorestart": true,
+      "vizion": false
+    },
+    {
+      "name": "vera-abft-consensus",
+      "script": "src/swarm/abftWorker.ts",
+      "interpreter": "tsx",
+      "instances": 1,
+      "exec_mode": "fork",
+      "env": {
+        "NODE_ENV": "production",
+        "WORKER_TYPE": "abft_consensus"
+      },
+      "log_file": "/app/logs/vera-abft-pm2.log",
+      "out_file": "/app/logs/vera-abft-out.log",
+      "error_file": "/app/logs/vera-abft-error.log",
+      "merge_logs": true,
+      "time": true,
+      "watch": false,
+      "max_memory_restart": "1G",
+      "restart_delay": 5000,
+      "max_restarts": 5,
+      "min_uptime": "30s",
+      "kill_timeout": 10000,
+      "autorestart": true,
+      "vizion": false
+    },
+    {
+      "name": "vera-hcs-gossip",
+      "script": "src/swarm/gossipWorker.ts",
+      "interpreter": "tsx",
+      "instances": 1,
+      "exec_mode": "fork",
+      "env": {
+        "NODE_ENV": "production",
+        "WORKER_TYPE": "hcs_gossip"
+      },
+      "log_file": "/app/logs/vera-gossip-pm2.log",
+      "out_file": "/app/logs/vera-gossip-out.log",
+      "error_file": "/app/logs/vera-gossip-error.log",
+      "merge_logs": true,
+      "time": true,
+      "watch": false,
+      "max_memory_restart": "512M",
+      "restart_delay": 3000,
+      "max_restarts": 5,
+      "min_uptime": "30s",
+      "kill_timeout": 5000,
+      "autorestart": true,
+      "vizion": false
+    }
+  ]
+}

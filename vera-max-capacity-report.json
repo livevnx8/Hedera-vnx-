@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-03-28T03:46:33.457Z",
+  "network": "mainnet",
+  "topicId": "0.0.10409351",
+  "dualSwarm": true,
+  "performance": {
+    "totalValidations": 20,
+    "totalDuration": 51898,
+    "throughput": 0.3853713052526109,
+    "successRate": 100,
+    "avgLatency": 5110.5,
+    "maxLatency": 8309,
+    "minLatency": 3787
+  },
+  "swarmA": {
+    "credits": 10,
+    "submitted": 10,
+    "failed": 0,
+    "duration": 50334,
+    "avgLatency": 5033.4
+  },
+  "swarmB": {
+    "credits": 10,
+    "submitted": 10,
+    "failed": 0,
+    "duration": 51876,
+    "avgLatency": 5187.6
+  },
+  "capacity": {
+    "veraThroughput": 0.3853713052526109,
+    "hederaLimit": 10,
+    "utilization": 3.8537130525261087,
+    "exceedsHedera": false
+  },
+  "errors": {
+    "total": 0,
+    "rateLimitHits": 0,
+    "details": []
+  },
+  "hashscanUrl": "https://hashscan.io/mainnet/topic/0.0.10409351"
+}

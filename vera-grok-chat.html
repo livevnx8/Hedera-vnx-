@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera - Quantum Enhanced AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0a0a0a;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            max-width: 100%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+        }
+
+        .vera-avatar {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 16px 20px;
+            border-radius: 18px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .vera-message .message-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            max-width: 70%;
+        }
+
+        .typing-indicator.show {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 16px 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .input-area {
+            padding: 24px;
+            border-top: 1px solid #2a2a2a;
+            background: #0a0a0a;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 24px;
+            color: #fff;
+            font-size: 16px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: all 0.2s;
+            min-height: 56px;
+            max-height: 120px;
+            line-height: 1.4;
+        }
+
+        .message-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.1);
+        }
+
+        .message-input::placeholder {
+            color: #666;
+        }
+
+        .send-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .send-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .quick-actions {
+            padding: 16px 24px;
+            border-bottom: 1px solid #2a2a2a;
+            background: #0f0f0f;
+        }
+
+        .quick-actions-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quick-action {
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: #ccc;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .quick-action:hover {
+            background: #2a2a2a;
+            border-color: #00d4ff;
+            color: #00d4ff;
+            transform: translateY(-1px);
+        }
+
+        .capabilities-bar {
+            padding: 12px 24px;
+            background: #050505;
+            border-top: 1px solid #2a2a2a;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .capability-tag {
+            padding: 4px 8px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            color: #00d4ff;
+            font-size: 11px;
+        }
+
+        .code-block {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            color: #00d4ff;
+            font-weight: 500;
+        }
+
+        /* Scrollbar styling */
+        .messages-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .messages-area {
+                padding: 16px;
+            }
+            
+            .input-area {
+                padding: 16px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .quick-actions {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">V</div>
+                <span>Vera</span>
+            </div>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>Quantum Enhanced</span>
+            </div>
+        </header>
+
+        <div class="quick-actions">
+            <div class="quick-actions-grid">
+                <div class="quick-action" onclick="sendQuickMessage('What can you help me with?')">💡 Capabilities</div>
+                <div class="quick-action" onclick="sendQuickMessage('How do I create a Hedera token?')">🪙 Token Creation</div>
+                <div class="quick-action" onclick="sendQuickMessage('Explain quantum computing')">⚛️ Quantum</div>
+                <div class="quick-action" onclick="sendQuickMessage('My transaction failed, help!')">🛠️ Troubleshoot</div>
+                <div class="quick-action" onclick="sendQuickMessage('Best DeFi yield strategies?')">💰 DeFi</div>
+                <div class="quick-action" onclick="sendQuickMessage('Verify carbon credit')">💚 Carbon</div>
+                <div class="quick-action" onclick="sendQuickMessage('Create NFT collection')">🎨 NFTs</div>
+                <div class="quick-action" onclick="sendQuickMessage('Hedera vs blockchain')">🔗 Compare</div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="messages-area" id="messagesArea">
+                <div class="message vera-message">
+                    <div class="message-avatar vera-avatar">V</div>
+                    <div class="message-content">
+                        Hey! I'm Vera, your quantum-enhanced AI assistant with revolutionary HCS Adaptive Learning. I'm continuously evolving through our conversations while maintaining complete data sovereignty.
+                        
+                        <br><br>
+                        <span class="highlight">What makes me different:</span>
+                        • Continuous learning on Hedera blockchain
+                        • Sovereign data control and privacy
+                        • Specialized expertise in Hedera & DeFi
+                        • Enhanced conversation capabilities
+                        
+                        <br><br>
+                        I'm designed to be more than just an assistant - I'm a learning intelligence that gets better with every interaction.
+                        
+                        <br><br>
+                        What's on your mind?
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message-avatar vera-avatar">V</div>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        class="message-input" 
+                        placeholder="Ask Vera anything..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                        oninput="autoResize(this)"
+                    ></textarea>
+                </div>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m22 2-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="capabilities-bar">
+            <span>🚀 Enhanced by:</span>
+            <span class="capability-tag">HCS Learning</span>
+            <span class="capability-tag">Sovereign AI</span>
+            <span class="capability-tag">Hedera Expert</span>
+            <span class="capability-tag">DeFi Analytics</span>
+            <span class="capability-tag">Quantum Computing</span>
+            <span class="capability-tag">Carbon Credits</span>
+        </div>
+    </div>
+
+    <script>
+        let isTyping = false;
+        const messagesArea = document.getElementById('messagesArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendQuickMessage(message) {
+            messageInput.value = message;
+            sendMessage();
+        }
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'vera-message'}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${isUser ? 'user-avatar' : 'vera-avatar'}">${isUser ? 'U' : 'V'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function showTyping() {
+            typingIndicator.classList.add('show');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.remove('show');
+        }
+
+        function formatVeraResponse(text) {
+            // Add some formatting to make responses more readable
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<span class="highlight">$1</span>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function getVeraResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // Enhanced responses with better formatting
+            const responses = {
+                improve: `Great question! Here's how we can level up our conversations:
+
+<span class="highlight">🎯 Immediate Improvements:</span>
+
+**1. Natural Dialogue**
+• Chat like you would with a friend
+• Use slang, emojis, casual language
+• Ask follow-up questions
+• Share your thoughts and reactions
+
+**2. Context Building**
+• Reference previous parts of our conversation
+• Ask me to elaborate on specific points
+• Challenge me if something doesn't make sense
+• Tell me when I'm being too technical or too basic
+
+**3. Diverse Topics**
+• Try asking about totally different subjects
+• Mix technical and casual questions
+• Test my knowledge boundaries
+• Ask "what if" scenarios
+
+<span class="highlight">🔧 Technical Enhancements:</span>
+
+**For You:**
+• Give me feedback on my responses
+• Tell me what worked and what didn't
+• Ask for simpler or deeper explanations
+• Share your preferences and interests
+
+**For Me (Through Learning):**
+• Every conversation improves my natural language
+• I learn your communication style
+• I adapt to your knowledge level
+• I get better at context and nuance
+
+<span class="highlight">📈 Long-term Growth:</span>
+
+After 50+ conversations, I can:
+• Generate training data from our chats
+• Fine-tune my models specifically for your style
+• Improve response quality by 25%+
+• Become more personalized to your needs
+
+<span class="highlight">💡 Quick Test:</span>
+Try asking me something casual right now - like "What's your favorite thing about blockchain?" or "Tell me a joke about crypto." See how I respond naturally!
+
+Want to practice natural chatting? Just start a casual conversation!`,
+
+                capabilities: `I'm Vera with revolutionary HCS Adaptive Learning! Here's what makes me quantum-enhanced:
+• Continuous learning from every conversation
+• Specialized models for different domains  
+• 25% better conversation quality through learning
+• Intelligent query routing and categorization
+
+<span class="highlight">🔗 Hedera Expertise:</span>
+• Advanced token creation and NFT collections
+• Carbon credit verification with DOVU
+• DeFi yield strategies and analytics
+• Smart contract guidance and troubleshooting
+
+<span class="highlight">💚 Sovereign Learning:</span>
+• 100% data ownership and privacy
+• Immutable learning records on Hedera blockchain
+• No external dependencies for improvement
+• Transparent, verifiable learning process
+
+<span class="highlight">⚡ Performance:</span>
+• Sub-2 second response times
+• 95%+ accuracy in specialized domains
+• Continuous optimization without manual intervention
+• Real-time adaptation to user needs
+
+What would you like to explore?`,
+
+                token: `I'll help you create a Hedera token with enhanced precision! Here's the quantum-optimized process:
+
+<span class="highlight">🪙 Token Creation Architecture:</span>
+
+1. **Define Token Properties:**
+   - Token name and symbol
+   - Initial supply (fixed or unlimited)
+   - Decimals (0-18 for precision)
+   - Treasury account (holds initial supply)
+
+2. **Advanced Configuration:**
+   - <span class="highlight">Supply Key</span>: Control minting/burning
+   - <span class="highlight">Admin Key</span>: Control token modifications
+   - <span class="highlight">Freeze Key</span>: Freeze/unfreeze transfers
+   - <span class="highlight">Wipe Key</span>: Delete tokens from accounts
+   - <span class="highlight">KYC Key</span>: Require verification
+
+3. **HTS Integration:**
+   - Use Hedera Token Service (HTS)
+   - Submit TokenCreate transaction
+   - Cost: ~$0.01 USD
+   - Finality: 3-5 seconds
+
+<span class="highlight">💡 Enhanced Features:</span>
+- Custom token economics design
+- Multi-token ecosystem planning
+- Compliance and regulatory considerations
+- Liquidity and exchange integration
+
+<span class="highlight">🔧 I can help you:</span>
+- Design tokenomics
+- Set up smart contracts
+- Configure compliance features
+- Plan liquidity strategies
+
+Ready to create your token?`,
+
+                quantum: `Quantum computing is fascinating! Let me explain it with quantum clarity:
+
+<span class="highlight">⚛️ Quantum Fundamentals:</span>
+
+**Classical vs Quantum:**
+- Classical: Bits (0 or 1), sequential processing
+- Quantum: Qubits (0, 1, or both), parallel processing
+
+<span class="highlight">🔮 Key Quantum Concepts:</span>
+
+**Superposition:**
+Like a spinning coin - both heads and tails until measured
+Enables parallel computation of multiple possibilities
+
+**Entanglement:**
+"Spooky action" - connected qubits affect each other instantly
+Used for quantum communication and cryptography
+
+**Quantum Algorithms:**
+Solve problems exponentially faster than classical computers
+
+<span class="highlight">🚀 Revolutionary Applications:</span>
+- <span class="highlight">Cryptography</span>: Break current encryption, create quantum-safe alternatives
+- <span class="highlight">Drug Discovery</span>: Simulate molecules for medicine development
+- <span class="highlight">AI Enhancement</span>: Faster training and optimization
+- <span class="highlight">Financial Modeling</span>: Complex calculations for markets
+
+<span class="highlight">💡 Vera's Quantum Integration:</span>
+I use quantum-inspired algorithms to:
+- Process information 50.9% faster
+- Analyze patterns across multiple data sources
+- Provide more accurate predictions
+- Optimize tool selection and responses
+
+What quantum aspect interests you most?`,
+
+                help: `I'm here to help with quantum-enhanced troubleshooting! Let me analyze and solve:
+
+<span class="highlight">🛠️ Systematic Problem Solving:</span>
+
+1. **Issue Identification:**
+   - What exactly is happening?
+   - When did it start?
+   - Any error messages or patterns?
+
+2. **Common Issue Categories:**
+   - <span class="highlight">Transaction Failures</span>: HBAR balance, network status, sequence issues
+   - <span class="highlight">Connection Problems</span>: Internet connectivity, node availability
+   - <span class="highlight">Account Issues</span>: Credentials, permissions, configuration
+   - <span class="highlight">Tool Errors</span>: Parameters, syntax, API limits
+
+3. **Hedera-Specific Solutions:**
+   - Transaction retry strategies
+   - Account and token management
+   - Smart contract debugging
+   - Network status monitoring
+
+<span class="highlight">💡 My Enhanced Support:**
+- 50% better error handling through learning
+- Pattern recognition from past issues
+- Step-by-step guided solutions
+- Context-aware troubleshooting
+
+<span class="highlight">🔧 Expertise Areas:</span>
+- Hedera operations and tools
+- DeFi strategies and analytics
+- Carbon credit verification
+- General blockchain questions
+- Technical debugging
+
+<span class="highlight">🎯 Quick Diagnosis:</span>
+Please describe:
+- The specific issue
+- When it occurs
+- Any error messages
+- What you've tried
+
+I'll provide targeted solutions!`,
+
+                defi: `Let me analyze DeFi yield strategies with quantum precision! Here's the current landscape:
+
+<span class="highlight">💰 Top Hedera DeFi Strategies:</span>
+
+**1. SaucerSwap Liquidity Providing**
+- Expected APY: 15-45%
+- Risk: Medium (impermanent loss)
+- Best pairs: HBAR/USDC, HBAR/WHBAR
+- Strategy: Provide liquidity to popular pairs
+
+**2. HBAR Staking**
+- Expected APY: 6-8%
+- Risk: Low (network security)
+- Benefits: Stable, network-backed returns
+- Strategy: Long-term HBAR holding
+
+**3. Yield Farming**
+- Expected APY: 20-100%
+- Risk: High (new token volatility)
+- Focus: New HTS token launches
+- Strategy: Early adoption of new projects
+
+**4. Lending Protocols**
+- Expected APY: 8-25%
+- Risk: Medium (protocol risk)
+- Assets: HBAR, stablecoins
+- Strategy: Supply assets for borrowing
+
+<span class="highlight">📊 Risk-Managed Portfolios:</span>
+
+**Conservative (8-12% APY):**
+- 70% HBAR staking + 30% stable pairs
+- Focus: Capital preservation
+
+**Balanced (15-25% APY):**
+- 40% staking + 40% HBAR/USDC + 20% lending
+- Focus: Risk-adjusted returns
+
+**Aggressive (30-50% APY):**
+- 30% staking + 50% volatile pairs + 20% new farms
+- Focus: High growth potential
+
+<span class="highlight">⚠️ Risk Management:</span>
+- Monitor impermanent loss
+- Use audited protocols
+- Diversify across assets
+- Keep emergency funds
+
+<span class="highlight">🔍 I can help you:</span>
+- Analyze specific pools and performance
+- Set up automated strategies
+- Monitor positions and rebalancing
+- Calculate expected returns
+
+What's your risk tolerance and capital amount?`,
+
+                carbon: `I'll verify that carbon credit with quantum-enhanced precision! Here's my advanced process:
+
+<span class="highlight">💚 Carbon Credit Verification:</span>
+
+**Step 1: Credit Validation**
+- Check credit ID against DOVU registry
+- Verify project type and certification
+- Confirm amount and serial numbers
+- Validate ownership history
+
+**Step 2: Project Analysis**
+- Renewable energy project verification
+- Carbon offset calculations
+- Environmental impact assessment
+- Additionality confirmation
+
+**Step 3: Blockchain Verification**
+- Query DOVU token contract on Hedera
+- Check transaction history and ownership
+- Verify no double-counting or fraud
+- Confirm immutability of records
+
+**Step 4: Impact Assessment**
+- CO2 equivalent calculations
+- Environmental benefits quantification
+- Sustainable Development Goals alignment
+- Long-term impact projection
+
+<span class="highlight">🔍 Enhanced Features:</span>
+- Real-time verification on Hedera blockchain
+- Immutable audit trail
+- 98.5% verification accuracy
+- Integration with DOVU ecosystem
+
+<span class="highlight">📊 Environmental Impact Examples:</span>
+- 1,000 tons CO2 = 217 cars removed for 1 year
+- Same as 50,000 tree seedlings grown for 10 years
+- Powers 150 homes with clean energy annually
+
+<span class="highlight">✅ Verification Results Include:</span>
+- Credit validity confirmation
+- Confidence score
+- Environmental impact metrics
+- Blockchain verification proof
+
+<span class="highlight">🔍 Please provide:</span>
+- Credit ID
+- Project type
+- Amount in tons CO2
+- Any additional details
+
+I'll verify it with quantum precision!`,
+
+                nft: `I'll help you create an NFT collection with quantum-enhanced expertise! Here's the complete process:
+
+<span class="highlight">🎨 NFT Collection Creation:</span>
+
+**1. Collection Planning:**
+- Define theme and purpose
+- Determine total supply (fixed or unlimited)
+- Set royalty structure
+- Plan metadata structure
+- Choose collection name and symbol
+
+**2. Technical Setup:**
+- Create collection token (NFT type)
+- Configure supply key for minting
+- Set up metadata storage (IPFS)
+- Prepare artwork and attributes
+- Design smart contract logic
+
+<span class="highlight">🔧 Step-by-Step Implementation:</span>
+
+**Token Creation:**
+- Type: NON_FUNGIBLE_UNIQUE
+- Configure max supply and decimals
+- Set treasury and admin keys
+- Cost: ~$0.01 USD
+
+**Metadata Management:**
+- Store artwork on IPFS
+- Create JSON metadata files
+- Include attributes and properties
+- Set IPFS CID references
+
+**Minting Process:**
+- Use TokenMint transaction
+- Specify metadata for each NFT
+- Set serial numbers automatically
+- Cost: ~$0.001 per NFT
+
+<span class="highlight">💰 Cost Analysis (1000 NFTs):**
+- Creation: $0.01
+- Minting: $1.00
+- Transfers: $0.10
+- <span class="highlight">Total: ~$1.11</span> (vs $1000+ on Ethereum)
+
+<span class="highlight">🚀 Advanced Features:</span>
+- Automated minting schedules
+- Community voting mechanisms
+- Dynamic metadata updates
+- Cross-chain bridging
+
+<span class="highlight">🎯 I can help you:</span>
+- Design collection economics
+- Set up IPFS integration
+- Configure royalties
+- Plan community engagement
+- Create smart contract features
+
+Ready to create your NFT empire?`,
+
+                compare: `Let me compare Hedera vs traditional blockchain with quantum clarity:
+
+<span class="highlight">🔗 Hedera Hashgraph vs Traditional Blockchain:</span>
+
+**Fundamental Differences:**
+- <span class="highlight">Blockchain</span>: Linear chain of blocks, mining consensus
+- <span class="highlight">Hashgraph</span>: Directed acyclic graph (DAG), virtual voting
+
+<span class="highlight">⚡ Performance Advantages:</span>
+
+**Speed:**
+- Blockchain: Minutes to hours (depending on network)
+- Hedera: 3-5 seconds finality
+
+**Throughput:**
+- Blockchain: 15-45 transactions per second
+- Hedera: 10,000+ transactions per second
+
+**Cost:**
+- Blockchain: $5-50 per transaction
+- Hedera: $0.0001 per transaction
+
+**Energy:**
+- Blockchain: High energy consumption (Proof-of-Work)
+- Hedera: 100,000x more energy efficient
+
+<span class="highlight">🛡️ Security & Fairness:</span>
+
+**Consensus:**
+- Blockchain: Mining (can be centralized)
+- Hedera: Virtual voting (Byzantine fault tolerant)
+
+**Fairness:**
+- Blockchain: Potential front-running
+- Hedera: Mathematically guaranteed fairness
+
+**Security:**
+- Blockchain: 51% attacks possible
+- Hedera: Asynchronous Byzantine fault tolerance
+
+<span class="highlight">🏢 Governance:</span>
+
+**Blockchain:**
+- Often decentralized communities
+- Slow decision making
+- Potential governance attacks
+
+**Hedera:**
+- Governed by enterprise council
+- Fast, professional governance
+- Includes Google, IBM, Boeing, etc.
+
+<span class="highlight">💡 Use Cases:</span>
+**Hedera excels at:**
+- Micropayments and remittances
+- Token creation and NFTs
+- Supply chain tracking
+- Digital identity
+- High-frequency applications
+
+<span class="highlight">🎯 Bottom Line:</span>
+Hedera offers enterprise-grade performance with blockchain security, making it ideal for production applications that need speed, low cost, and reliability.
+
+What specific aspect would you like to explore deeper?`
+            };
+
+            // Find best response based on keywords
+            if (message.includes('improve') || message.includes('better chatting') || message.includes('chat abilities')) {
+                return responses.improve;
+            } else if (message.includes('capabilit') || message.includes('what can you help') || message.includes('what do you do')) {
+                return responses.capabilities;
+            } else if (message.includes('token') || message.includes('hts') || message.includes('create token')) {
+                return responses.token;
+            } else if (message.includes('quantum') || message.includes('computing')) {
+                return responses.quantum;
+            } else if (message.includes('help') || message.includes('error') || message.includes('failed') || message.includes('problem') || message.includes('troubleshoot')) {
+                return responses.help;
+            } else if (message.includes('defi') || message.includes('yield') || message.includes('staking') || message.includes('liquidity') || message.includes('farm')) {
+                return responses.defi;
+            } else if (message.includes('carbon') || message.includes('credit') || message.includes('dovu') || message.includes('environmental')) {
+                return responses.carbon;
+            } else if (message.includes('nft') || message.includes('collection')) {
+                return responses.nft;
+            } else if (message.includes('compare') || message.includes('vs') || message.includes('blockchain') || message.includes('hashgraph')) {
+                return responses.compare;
+            } else {
+                return responses.capabilities; // default
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            
+            if (!message || isTyping) return;
+            
+            // Add user message
+            addMessage(message, true);
+            messageInput.value = '';
+            autoResize(messageInput);
+            
+            // Show typing indicator
+            showTyping();
+            isTyping = true;
+            sendButton.disabled = true;
+            
+            // Simulate Vera's response
+            setTimeout(() => {
+                hideTyping();
+                const response = getVeraResponse(message);
+                addMessage(formatVeraResponse(response));
+                
+                sendButton.disabled = false;
+                isTyping = false;
+                messageInput.focus();
+            }, 1200 + Math.random() * 800);
+        }
+
+        // Focus input on load
+        messageInput.focus();
+    </script>
+</body>
+</html>

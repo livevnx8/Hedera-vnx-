@@ -1,0 +1,17 @@
+{
+  "topicId": "0.0.10415922",
+  "createdAt": "2026-03-31T23:24:36.529Z",
+  "network": "mainnet",
+  "initialized": false,
+  "config": {
+    "pollIntervalMs": 300000,
+    "volumeThreshold": 100,
+    "alertThreshold": 200,
+    "maxMonitored": 50,
+    "autoDiscovery": true,
+    "monitoredTopics": [
+      "0.0.10414316",
+      "0.0.10414355"
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "updatedAt": 1778795166088,
+  "nodes": [
+    {
+      "id": "skill:kit_get_exchange_rate",
+      "tool": "kit_get_exchange_rate",
+      "calls": 10,
+      "successRate": 1,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "kit"
+    },
+    {
+      "id": "skill:hedera_get_balance",
+      "tool": "hedera_get_balance",
+      "calls": 20,
+      "successRate": 0.95,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "hedera"
+    },
+    {
+      "id": "skill:get_exchange_rate_tool",
+      "tool": "get_exchange_rate_tool",
+      "calls": 10,
+      "successRate": 1,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "get"
+    },
+    {
+      "id": "skill:hedera_search_tokens",
+      "tool": "hedera_search_tokens",
+      "calls": 16,
+      "successRate": 1,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "hedera"
+    },
+    {
+      "id": "skill:hedera_get_account_info",
+      "tool": "hedera_get_account_info",
+      "calls": 15,
+      "successRate": 0.8666666666666667,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "hedera"
+    },
+    {
+      "id": "skill:saucerswap_get_pools",
+      "tool": "saucerswap_get_pools",
+      "calls": 4,
+      "successRate": 0,
+      "spawnedAt": 1777094664502,
+      "layer": "skill",
+      "parentCluster": "saucerswap"
+    }
+  ],
+  "edges": [
+    {
+      "from": "skill:hedera_get_balance",
+      "to": "skill:hedera_search_tokens",
+      "weight": 1,
+      "createdAt": 1777094664502
+    },
+    {
+      "from": "skill:hedera_get_balance",
+      "to": "skill:hedera_get_account_info",
+      "weight": 1,
+      "createdAt": 1777094664502
+    },
+    {
+      "from": "skill:hedera_search_tokens",
+      "to": "skill:hedera_get_account_info",
+      "weight": 1,
+      "createdAt": 1777094664502
+    }
+  ]
+}

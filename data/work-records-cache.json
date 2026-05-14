@@ -1,0 +1,2695 @@
+{
+  "records": [
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "## Findings\n- DeFi yield farming involves staking tokens like DAI, USDC, USDT to"
+      },
+      "toolsUsed": [
+        "get_news"
+      ],
+      "durationMs": 11272,
+      "success": true,
+      "id": "18b158e2-edfe-485a-b9de-ef1a7946046b",
+      "timestamp": 1774579545024
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "I can check active tokens, recent transactions, and token balances — but not dec"
+      },
+      "toolsUsed": [],
+      "durationMs": 1957,
+      "success": true,
+      "id": "a836fb08-6084-40b3-a07e-abfc76fcb6a1",
+      "timestamp": 1774579546982
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "A staking contract allows holders of an NFT (like BONZO mainnet) to lock their t"
+      },
+      "toolsUsed": [],
+      "durationMs": 3718,
+      "success": true,
+      "id": "04bc0407-bcb9-4482-817f-754c206905d9",
+      "timestamp": 1774579550700
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Great — I've got the full DApp launch plan structure. Now filled with actual num"
+      },
+      "toolsUsed": [
+        "vera_memory_recall"
+      ],
+      "durationMs": 2549,
+      "success": true,
+      "id": "a243178a-8e09-45a6-a540-9b3c867b24bf",
+      "timestamp": 1774579553249
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "I'm Vera's Critic, not a red team. I don't guess exploits — that would be unethi"
+      },
+      "toolsUsed": [],
+      "durationMs": 2240,
+      "success": true,
+      "id": "570a73f1-2133-46e2-a7a2-60183c85b864",
+      "timestamp": 1774579555489
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "## Findings\n- **Leverage** bridges Ethereum and other blockchains, enabling cros"
+      },
+      "toolsUsed": [
+        "get_news"
+      ],
+      "durationMs": 8055,
+      "success": true,
+      "id": "7e5838dd-08d9-4fa5-8859-4771bfe24326",
+      "timestamp": 1774579563544
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "The current HBAR fee schedule is:\n- HBAR transfer: 0.01–0.05 HBAR (min 0.01 HBAR"
+      },
+      "toolsUsed": [],
+      "durationMs": 5577,
+      "success": true,
+      "id": "e42d343b-954a-4eb1-82c3-cfcf26dd8e41",
+      "timestamp": 1774579569122
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "I can instrument the contract for profiling and debugging — what specific optimi"
+      },
+      "toolsUsed": [],
+      "durationMs": 2171,
+      "success": true,
+      "id": "4ce60093-f540-482d-bb66-85ae071c9b46",
+      "timestamp": 1774579571293
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "<tool_response name=\"vera_memory_save\">\n{\"error\":\"title is required for memory s"
+      },
+      "toolsUsed": [
+        "vera_memory_recall",
+        "vera_memory_save",
+        "vera_memory_save",
+        "vera_memory_save"
+      ],
+      "durationMs": 18806,
+      "success": true,
+      "id": "4a32c9a7-582e-4bef-94c3-dda9dcb16090",
+      "timestamp": 1774579590100
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "## Critical Issues\n1. **Vague wording** — \"I need to check if the audit passed\" "
+      },
+      "toolsUsed": [],
+      "durationMs": 10525,
+      "success": true,
+      "id": "660870d4-2ca0-4607-8a8e-110849bef265",
+      "timestamp": 1774579600625
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "## Findings\n- DeFi yield farming involves staking tokens in DEXs like Uniswap (U"
+      },
+      "toolsUsed": [
+        "get_news"
+      ],
+      "durationMs": 11241,
+      "success": true,
+      "id": "7582b77e-8e5b-4d99-9c97-a3dd8b684b86",
+      "timestamp": 1774579817506
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "I can check active tokens, recent transactions, and token balances — but not dec"
+      },
+      "toolsUsed": [],
+      "durationMs": 1972,
+      "success": true,
+      "id": "351df6c8-942a-4cb5-b465-cbd1221f7414",
+      "timestamp": 1774579819478
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "A staking contract allows holders of an asset (like HBARX) to lock their coins a"
+      },
+      "toolsUsed": [],
+      "durationMs": 4077,
+      "success": true,
+      "id": "7f6ecf76-800b-439b-a858-002fa268ab1e",
+      "timestamp": 1774579823556
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Structured DApp launch plan:\n\n**Vision**\n- Launch a DeFi DApp that provides a us"
+      },
+      "toolsUsed": [
+        "vera_memory_recall"
+      ],
+      "durationMs": 21250,
+      "success": true,
+      "id": "a5e9e7ed-2ff7-4fd7-8569-d366dab4af25",
+      "timestamp": 1774579844807
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "I'm Vera's Critic, not a live chat. I read the original prompt and this one sepa"
+      },
+      "toolsUsed": [],
+      "durationMs": 2924,
+      "success": true,
+      "id": "4b059592-9202-403f-994b-55e15b2015d6",
+      "timestamp": 1774579847731
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "## Findings\n- **UT-VPN** (UT-VPN): Free, open-source L2 bridge software\n- Suppor"
+      },
+      "toolsUsed": [
+        "wiki_search"
+      ],
+      "durationMs": 7526,
+      "success": true,
+      "id": "76f470bd-d5ce-4212-b511-93af0ba54a7f",
+      "timestamp": 1774579855257
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "The current fee schedule is:\n- Base fee: 10.59 HBAR for transactions under 10 by"
+      },
+      "toolsUsed": [],
+      "durationMs": 5167,
+      "success": true,
+      "id": "adf55d3e-eda8-4491-9de9-4482baf45866",
+      "timestamp": 1774579860425
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "I can instrument the existing contract with gas traces and audit suggestions — b"
+      },
+      "toolsUsed": [],
+      "durationMs": 2314,
+      "success": true,
+      "id": "f34ae2bc-4b19-4714-aa27-6897d0991b8e",
+      "timestamp": 1774579862739
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "The memory store is empty for this session. No Q2-Q4 roadmap data was loaded bef"
+      },
+      "toolsUsed": [
+        "vera_memory_recall",
+        "vera_memory_recall"
+      ],
+      "durationMs": 7955,
+      "success": true,
+      "id": "a231148e-aee0-45a3-aef2-4257d9e57e31",
+      "timestamp": 1774579870695
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "## Critical Issues\n1. **Incomplete context** — the review box shows only flagged"
+      },
+      "toolsUsed": [],
+      "durationMs": 9023,
+      "success": true,
+      "id": "dc2da387-e4ad-4f6a-b1b1-4c76fe74e2e3",
+      "timestamp": 1774579879718
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 8,
+      "success": true,
+      "id": "1187d225-d8da-42ed-bc0f-644ec2628d16",
+      "timestamp": 1774581596503
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "84770bf3-2462-4abc-819c-49a08cea8c0d",
+      "timestamp": 1774581596504
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "d3ed4d18-9f30-4162-bbaa-bc647b453a25",
+      "timestamp": 1774581596505
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "20816d3a-5f71-4713-bd44-6acc106cd7bc",
+      "timestamp": 1774581596506
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "487db83c-e43e-4c1e-8616-55ff6e4a183d",
+      "timestamp": 1774581596507
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "97955364-f2c8-434a-ae62-86fa1da3630a",
+      "timestamp": 1774581596508
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "f24648fb-414d-435a-a17d-211841679e37",
+      "timestamp": 1774581596509
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "5f77aaa3-08aa-460b-949f-54412038bb77",
+      "timestamp": 1774581596510
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "f6e5eb93-1809-4c4e-9751-e01763b37900",
+      "timestamp": 1774581596511
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "5d780b8e-8da9-46be-b589-679143f19f41",
+      "timestamp": 1774581596512
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 31,
+      "success": true,
+      "id": "f60e2d5e-d221-4059-b927-2610571d876d",
+      "timestamp": 1774582593059
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 4,
+      "success": true,
+      "id": "23ec2f7b-b5fe-4ffb-b9c8-6a05b89dd8cb",
+      "timestamp": 1774582593064
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 6,
+      "success": true,
+      "id": "b7ab51d3-5aae-4fa7-9d43-59418d3db9aa",
+      "timestamp": 1774582593071
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "370695a6-a97b-4853-af96-760a9b094806",
+      "timestamp": 1774582593074
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "81dd252d-f815-4da6-8899-98a0c8cfd8eb",
+      "timestamp": 1774582593076
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "0e0ed548-c0ba-49d3-8270-f7105e43a759",
+      "timestamp": 1774582593079
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "0d76fe4c-7231-4f6a-9b05-f46bc2ce2a03",
+      "timestamp": 1774582593081
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "72c80404-585e-41e4-84af-2c35979089c1",
+      "timestamp": 1774582593083
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "458d34c2-3092-441b-b66d-c5e0d09ba321",
+      "timestamp": 1774582593086
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "5ad6d96e-0f01-477d-81fe-02cd6d9fe175",
+      "timestamp": 1774582593088
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 12,
+      "success": true,
+      "id": "cc3434b2-c1ad-4136-989a-f0bdcb5e9d6e",
+      "timestamp": 1774583195468
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "2e3e15eb-3ad7-403e-8b52-712277dfae69",
+      "timestamp": 1774583195471
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9ecf7bf3-3745-446b-905c-112bbe0d9802",
+      "timestamp": 1774583195473
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "60e4ba96-3632-477e-8a6f-4c8b4fe4b023",
+      "timestamp": 1774583195473
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "9739dd9f-ec8b-4dd5-b3aa-bad087ee1ff0",
+      "timestamp": 1774583195474
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "db5b2561-60f7-4aef-bf8e-2c087ff28be9",
+      "timestamp": 1774583195475
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "ab93d41f-d33e-45b1-b5c0-2c94f360ab50",
+      "timestamp": 1774583195476
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "15e9e59b-9313-427e-bb55-bdbd7efaef4a",
+      "timestamp": 1774583195477
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8072ecde-0f5e-4cd5-9f98-c0aadc0ae074",
+      "timestamp": 1774583195478
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "af617491-8444-48ee-a23e-a770bc19328e",
+      "timestamp": 1774583195479
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 11,
+      "success": true,
+      "id": "8511d9f6-bad0-4161-b89e-4682801e4bd0",
+      "timestamp": 1774583869486
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "140aecd8-9d05-4269-a263-916e8c0358b2",
+      "timestamp": 1774583869488
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9511d125-fbcf-4adc-97f0-155502e5b7b9",
+      "timestamp": 1774583869489
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "746104f6-7818-4fe7-86cf-541737e2d309",
+      "timestamp": 1774583869490
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "c85ddbc9-d9d8-4a4a-a99f-ab1863a67125",
+      "timestamp": 1774583869491
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "88d3c812-947a-4e79-bf9a-3fefd131f870",
+      "timestamp": 1774583869492
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "84244001-0b72-467f-8c5a-e398658ce5ea",
+      "timestamp": 1774583869493
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "774ebbfa-8cb2-4d81-bdbf-e235f2579a3e",
+      "timestamp": 1774583869494
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "cbf53687-f372-4a96-b020-fb0918b668c9",
+      "timestamp": 1774583869495
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "11f50d9b-e437-437c-9735-7dc47d77f9f9",
+      "timestamp": 1774583869496
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 20,
+      "success": true,
+      "id": "519756fa-8803-4ba2-9f57-6d411384acbf",
+      "timestamp": 1774583873988
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "8b4aa9d7-8f7b-40c3-9fd7-6a396b5c96f3",
+      "timestamp": 1774583873992
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "39c595b8-8cd9-400f-afff-716bfaef13e6",
+      "timestamp": 1774583873994
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "03065e2b-e15d-48e6-8e64-cfca8bed86af",
+      "timestamp": 1774583873997
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "b0488f29-56e6-44a8-88b9-a46360c4936f",
+      "timestamp": 1774583873999
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "96ccd43b-1bd3-4521-96ca-f2e4262fe85b",
+      "timestamp": 1774583874001
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "3fdafb7a-226d-42fc-b7e8-ba55ee07f25e",
+      "timestamp": 1774583874004
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "31d3f172-c608-4107-a47c-0868308fd755",
+      "timestamp": 1774583874006
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "2add1034-6023-4491-b13d-bead6377a420",
+      "timestamp": 1774583874008
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "6b952ed8-4cfe-4098-af05-3530781c101e",
+      "timestamp": 1774583874011
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 12,
+      "success": true,
+      "id": "fd247428-83a9-4f8a-8ccf-3e30952a9491",
+      "timestamp": 1774584187175
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "e8ba5b32-4e68-4c09-a866-d1313895540f",
+      "timestamp": 1774584187177
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "fdef57f5-5a06-4ff9-8c75-fbe07eab0f04",
+      "timestamp": 1774584187179
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "a08e751c-9e3e-4a79-93e5-33c89eaa3ea2",
+      "timestamp": 1774584187180
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "0d3dfebd-5c13-4ad8-bfd8-589d9972b97e",
+      "timestamp": 1774584187181
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8ad20551-040c-40c7-8bbc-655b569b15d6",
+      "timestamp": 1774584187183
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "fe18cc57-24de-4f5b-9b90-cf2514d0e677",
+      "timestamp": 1774584187184
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "b48ff981-5d81-4564-bfa8-59c368e5cc6a",
+      "timestamp": 1774584187186
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "1617aea8-e153-47dc-acee-6d336d7b2781",
+      "timestamp": 1774584187187
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8198281e-6363-40ba-819f-8648207c5513",
+      "timestamp": 1774584187188
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 13,
+      "success": true,
+      "id": "7d2c7df6-9471-49f1-975c-c7750dd2591d",
+      "timestamp": 1774751310380
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "cac4b485-87a4-4378-b2ef-1a8a118167b0",
+      "timestamp": 1774751310383
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "cf1e932d-084c-43f7-a577-732b2e222814",
+      "timestamp": 1774751310385
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8e2fff05-a5e4-4da6-98f4-ea3f779765e7",
+      "timestamp": 1774751310386
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "7dfda62f-0943-4679-b403-63e1d228b947",
+      "timestamp": 1774751310387
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "6e1b3717-a6a0-4658-bcec-01176947401f",
+      "timestamp": 1774751310388
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "3ed38cab-701a-4d5a-bef5-aed3c8951a7e",
+      "timestamp": 1774751310389
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "d3603ed5-a434-4803-97b5-325f98ab65f8",
+      "timestamp": 1774751310390
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "34ec7560-ed71-4ccf-ab81-367dd35c9fa0",
+      "timestamp": 1774751310392
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "5106dad0-16e8-405e-9f59-52b7101af652",
+      "timestamp": 1774751310393
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 11,
+      "success": true,
+      "id": "cccdbf47-df7f-4faa-9866-3d56010a2060",
+      "timestamp": 1774751310438
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 4,
+      "success": true,
+      "id": "f7291a6a-df81-4c7c-9566-9b97307249fe",
+      "timestamp": 1774751310443
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "f6053ba3-a4ce-42b0-8a5c-53c3437e7566",
+      "timestamp": 1774751310444
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "5389587b-3ae6-4dc0-b8f2-906574ad0f5d",
+      "timestamp": 1774751310445
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "90c368aa-027b-4567-9fb5-657599973b72",
+      "timestamp": 1774751310446
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "6741157f-f1ec-4976-95df-276e6e4e7071",
+      "timestamp": 1774751310448
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "7e967d64-de4d-498c-ba42-5613a2ebf062",
+      "timestamp": 1774751310449
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "0b166d38-487f-4d78-a864-bced47722963",
+      "timestamp": 1774751310450
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "335e60e3-5099-44ae-b761-8d326e13670f",
+      "timestamp": 1774751310451
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "748d0882-57a8-4c22-b512-8f1d24ad18c4",
+      "timestamp": 1774751310452
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 7,
+      "success": true,
+      "id": "915a6706-363c-4283-bf21-21391f74ccd3",
+      "timestamp": 1774751314178
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "61fd9885-13a1-436b-9eb9-3ee7d045c0fa",
+      "timestamp": 1774751314180
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "50a5a8a4-305f-4290-86bd-a8586c0ddf80",
+      "timestamp": 1774751314181
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8403baab-3237-421b-bab8-a2f1bcb43efc",
+      "timestamp": 1774751314182
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "5d02ea42-ffe6-46ba-973b-c70b9a3d560a",
+      "timestamp": 1774751314183
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "a2f32cfd-4414-470d-bf33-743328a7909c",
+      "timestamp": 1774751314184
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "5f65daed-d600-4646-85dc-f44b92bcf191",
+      "timestamp": 1774751314185
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "0dcf973f-fb4c-44ac-be66-67ed347096e9",
+      "timestamp": 1774751314186
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "b28045d0-b5ee-4a07-b659-9557fc7689af",
+      "timestamp": 1774751314187
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "e48b612e-37ba-4e25-93c8-d636354dafb4",
+      "timestamp": 1774751314188
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 10,
+      "success": true,
+      "id": "c3c1836a-9c8c-403b-8263-f7e3ddbac352",
+      "timestamp": 1774752227136
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "7eb3306c-2910-409d-b5f5-448e378bdb9b",
+      "timestamp": 1774752227138
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "a9064a82-aa4a-4f28-967f-0e8ba1cc36c7",
+      "timestamp": 1774752227139
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9c5f1f3f-56dd-4391-9d32-8e4d5573e931",
+      "timestamp": 1774752227140
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "941f8b52-a910-4b13-aa08-fca9517c4a61",
+      "timestamp": 1774752227142
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "6e4122b6-7e86-466e-bff9-ecc78dd602f0",
+      "timestamp": 1774752227143
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "043aa7ae-cb00-47ef-81f2-3aaa2bb4cc11",
+      "timestamp": 1774752227144
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "804ba4fa-5eac-48f0-b635-d023335da606",
+      "timestamp": 1774752227145
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "72e5aeca-92d7-4b00-a7ab-dbdffab489ee",
+      "timestamp": 1774752227146
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "908478df-310b-4d5b-a6d6-598db7bcb76c",
+      "timestamp": 1774752227147
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 11,
+      "success": true,
+      "id": "43638289-0512-4bf5-9147-b0c691b2f635",
+      "timestamp": 1774752227149
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "2cce6264-1a1b-4a43-b3f9-0e75efb5a124",
+      "timestamp": 1774752227152
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "1bb49711-906b-49d7-8b2b-1162e9d923d5",
+      "timestamp": 1774752227154
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "f53a51b9-f757-49c3-af9f-1fb16abb2fb3",
+      "timestamp": 1774752227155
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "1f9549bf-ffe4-409d-8737-89b7bf529ed7",
+      "timestamp": 1774752227156
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "4ef7fd5d-f73a-40fe-a65d-422d89ea1ad2",
+      "timestamp": 1774752227157
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "048d85c4-f252-41f9-b3fd-30ff9a274058",
+      "timestamp": 1774752227158
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "3a6b46db-f57b-47b3-bb9c-4fba701e223d",
+      "timestamp": 1774752227159
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "7cf50604-897b-4d7b-904a-2d71369b4f7a",
+      "timestamp": 1774752227160
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "bafe0e42-3b5e-4d33-b2b3-4210a01a8ce2",
+      "timestamp": 1774752227161
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 20,
+      "success": true,
+      "id": "b990671c-19da-44ca-8163-923dd992a547",
+      "timestamp": 1774752231185
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "85d8ea89-7111-4dad-a629-4ace23e22fba",
+      "timestamp": 1774752231189
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "95d0fbc4-7018-4bd3-9f97-0b521c1efcd1",
+      "timestamp": 1774752231194
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "5c096921-7d56-4aec-bf72-7d7f02f81cd4",
+      "timestamp": 1774752231197
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "8fcaaae2-fa48-4073-9413-ce04bab91bf6",
+      "timestamp": 1774752231200
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "9e7e241f-7654-42eb-b19e-dbdec09bfa55",
+      "timestamp": 1774752231202
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "a15cfa43-8398-41d0-a99b-aaedc2eb392c",
+      "timestamp": 1774752231205
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9b9d794b-e5e5-4c40-a96a-8d53913b65e9",
+      "timestamp": 1774752231207
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "dcb06356-a6f0-4a06-ae79-cc241dfe9f16",
+      "timestamp": 1774752231210
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "0720db7d-2bf2-479e-8487-acb182d16450",
+      "timestamp": 1774752231213
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 12,
+      "success": true,
+      "id": "6db103ef-181a-4588-8a1d-326c535270f1",
+      "timestamp": 1774753175665
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "8f93f594-5cfd-4ce4-971f-38a7a77fc3d5",
+      "timestamp": 1774753175668
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "f4cdcded-a140-4199-8b8f-b773ba7fb7f4",
+      "timestamp": 1774753175668
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9bb0a3ec-626d-4545-831f-5ccb03a2a6ce",
+      "timestamp": 1774753175670
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "829ddc74-604f-485b-bd40-94ca4acff09c",
+      "timestamp": 1774753175671
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "d17190f7-a98c-4867-bad5-bf2c0d712032",
+      "timestamp": 1774753175671
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "2bb48d65-da26-449f-a517-a87e44724a33",
+      "timestamp": 1774753175672
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 2,
+      "success": true,
+      "id": "4f370270-880e-4c23-9c9a-12c302f883b4",
+      "timestamp": 1774753175673
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "87fc7b9d-057c-4281-9828-003c37cfd286",
+      "timestamp": 1774753175674
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "c4a27dad-9098-4295-8e71-fc85ab5bc929",
+      "timestamp": 1774753175675
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "ba508bdd-ae1a-4dbf-a354-6430dbd03d78",
+      "timestamp": 1774753175675
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "38df852c-b5a1-4842-bc46-afeeb5be4340",
+      "timestamp": 1774753175676
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "40ed713c-5f6e-420d-b2c9-0cf280ec25a3",
+      "timestamp": 1774753175677
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "5db0bd8d-efef-4470-b847-02ee0ad556c1",
+      "timestamp": 1774753175678
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "c31e0c1a-5978-4eba-a965-60e156b935b0",
+      "timestamp": 1774753175680
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 11,
+      "success": true,
+      "id": "0007fcc1-620c-44e6-82e6-4ad608fd6589",
+      "timestamp": 1774753180120
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "90c23087-b72c-44c7-b1ef-d05d819ce0f8",
+      "timestamp": 1774753180122
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "c01a7122-7918-4533-9e10-224c707b60aa",
+      "timestamp": 1774753180127
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "0a794154-5ec6-448b-a929-62d5751e199d",
+      "timestamp": 1774753180129
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "3aba91e8-4eea-4826-a1fb-86d3ea8bff43",
+      "timestamp": 1774753180130
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "3a9c53ff-fea9-464b-bda1-f8fa5af1b0c8",
+      "timestamp": 1774753180131
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "8d3589c2-8767-4c50-80b2-185a9cdedde4",
+      "timestamp": 1774753180132
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "2b5d6fdc-74ab-486c-afb0-90f9fb949f30",
+      "timestamp": 1774753180133
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "4dfe32b1-6918-4c4d-afe8-eb6ac2169650",
+      "timestamp": 1774753180135
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "63f65804-72a3-4c49-b563-cecd25ec64f5",
+      "timestamp": 1774753180136
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research DeFi yield strategies",
+      "inputs": {
+        "task": "Research DeFi yield strategies"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 11,
+      "success": true,
+      "id": "5eb178fd-e1f9-4c36-a7a0-e41c7eedabcc",
+      "timestamp": 1774753402054
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Analyze token vesting schedules",
+      "inputs": {
+        "task": "Analyze token vesting schedules"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 3,
+      "success": true,
+      "id": "a6e09b30-e5c1-4e9f-8952-0cdae9fa614e",
+      "timestamp": 1774753402057
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Design staking contract",
+      "inputs": {
+        "task": "Design staking contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8b388dc9-248f-4959-ae3f-4fe93cb662d2",
+      "timestamp": 1774753402059
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Plan DApp launch phases",
+      "inputs": {
+        "task": "Plan DApp launch phases"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "b9abd14a-ebe1-4feb-8e0a-a3ca7c313ac4",
+      "timestamp": 1774753402060
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Review security exploits",
+      "inputs": {
+        "task": "Review security exploits"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "f5169b56-eeae-41d7-ab19-6d7357beb5a4",
+      "timestamp": 1774753402061
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "researcher: Research L2 solutions",
+      "inputs": {
+        "task": "Research L2 solutions"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "8520842d-50a3-4027-bf7d-f9e2fdc1d824",
+      "timestamp": 1774753402063
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "analyst: Compare gas costs",
+      "inputs": {
+        "task": "Compare gas costs"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "926942ba-d4c0-4811-ab7d-cb9545cb24fc",
+      "timestamp": 1774753402064
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "deccf112-21e4-4f58-a881-175c3cde1758",
+      "timestamp": 1774753402065
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "9338ed71-8425-466d-bec6-b9a8f6f9c790",
+      "timestamp": 1774753402066
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "3bf222ea-89e5-43ae-8b6e-7dcf8cd0e3eb",
+      "timestamp": 1774753402067
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "coder: Optimize contract",
+      "inputs": {
+        "task": "Optimize contract"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 0,
+      "success": true,
+      "id": "c1ec9c30-a817-4aea-af45-42626e68a86b",
+      "timestamp": 1774753402068
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "planner: Roadmap Q2-Q4",
+      "inputs": {
+        "task": "Roadmap Q2-Q4"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "282c83e0-fd49-4d61-8fdf-791c904a4f0d",
+      "timestamp": 1774753402070
+    },
+    {
+      "taskType": "sub_agent",
+      "description": "critic: Audit findings review",
+      "inputs": {
+        "task": "Audit findings review"
+      },
+      "outputs": {
+        "result": "Sub-agent error: connect ECONNREFUSED 127.0.0.1:5101"
+      },
+      "toolsUsed": [],
+      "durationMs": 1,
+      "success": true,
+      "id": "08f155e5-3f2a-4d20-b340-85a7f94b81b3",
+      "timestamp": 1774753402071
+    }
+  ],
+  "lastAnchor": 0
+}

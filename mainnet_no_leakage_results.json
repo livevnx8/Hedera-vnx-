@@ -1,0 +1,102 @@
+{
+  "dataset": "mainnet_no_leakage",
+  "features_used": [
+    "account_id_normalized",
+    "transaction_fee_log",
+    "hour_of_day",
+    "day_of_week",
+    "memo_length",
+    "max_fee",
+    "token_id_normalized",
+    "fee_efficiency",
+    "is_high_volume",
+    "volume_multiplier",
+    "has_custom_fees",
+    "transfer_count_log",
+    "has_memo",
+    "nonce_normalized",
+    "has_valid_start",
+    "entity_type",
+    "is_child_transaction",
+    "tx_byte_size_log",
+    "is_batched"
+  ],
+  "seeds": [
+    11,
+    23,
+    42,
+    77,
+    101
+  ],
+  "accuracy": {
+    "mean": 0.9952153086662292,
+    "std": 0.0052413580426048855
+  },
+  "runs": [
+    {
+      "seed": 11,
+      "test_acc": 0.9952152967453003,
+      "baseline": 0.49760765550239233,
+      "improvement": 0.49760764124290796,
+      "per_class": {
+        "0": 0.9903846383094788,
+        "3": 1.0,
+        "4": 1.0,
+        "6": 1.0,
+        "7": 1.0
+      }
+    },
+    {
+      "seed": 23,
+      "test_acc": 0.9856459498405457,
+      "baseline": 0.49760765550239233,
+      "improvement": 0.4880382943381533,
+      "per_class": {
+        "0": 0.9903846383094788,
+        "3": 0.9772727489471436,
+        "4": 0.9599999785423279,
+        "6": 1.0,
+        "7": 1.0
+      }
+    },
+    {
+      "seed": 42,
+      "test_acc": 0.9952152967453003,
+      "baseline": 0.49760765550239233,
+      "improvement": 0.49760764124290796,
+      "per_class": {
+        "0": 1.0,
+        "3": 1.0,
+        "4": 0.9599999785423279,
+        "6": 1.0,
+        "7": 1.0
+      }
+    },
+    {
+      "seed": 77,
+      "test_acc": 1.0,
+      "baseline": 0.49760765550239233,
+      "improvement": 0.5023923444976077,
+      "per_class": {
+        "0": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "6": 1.0,
+        "7": 1.0
+      }
+    },
+    {
+      "seed": 101,
+      "test_acc": 1.0,
+      "baseline": 0.49760765550239233,
+      "improvement": 0.5023923444976077,
+      "per_class": {
+        "0": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "6": 1.0,
+        "7": 1.0
+      }
+    }
+  ]
+}

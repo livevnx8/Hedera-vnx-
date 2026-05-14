@@ -1,0 +1,103 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: vera-lattice-hpa
+  namespace: vera
+  labels:
+    app: vera-lattice
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vera-lattice
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    # CPU-based scaling
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    # Custom metric: tasks per second per pod
+    - type: Pods
+      pods:
+        metric:
+          name: vera_tasks_per_second
+        target:
+          type: AverageValue
+          averageValue: "50"
+    # Custom metric: HCS queue depth
+    - type: External
+      external:
+        metric:
+          name: hedera_hcs_queue_depth
+          selector:
+            matchLabels:
+              topic: agent-beacon
+        target:
+          type: AverageValue
+          averageValue: "100"
+  behavior:
+    # Scale up quickly
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+        - type: Pods
+          value: 4
+          periodSeconds: 60
+      selectPolicy: Max
+    # Scale down slowly to avoid thrashing
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+      selectPolicy: Min
+---
+# Custom Metrics for HPA
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-metrics-config
+  namespace: vera
+data:
+  # Prometheus Adapter configuration for custom metrics
+  config.yaml: |
+    rules:
+      - seriesQuery: 'vera_tasks_total{namespace="vera"}'
+        resources:
+          overrides:
+            namespace:
+              resource: namespace
+            pod:
+              resource: pod
+        name:
+          matches: "^(.*)_total$"
+          as: "${1}_per_second"
+        metricsQuery: sum(rate(<<.Series>>{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)
+      
+      - seriesQuery: 'vera_hcs_queue_depth{namespace="vera"}'
+        resources:
+          overrides:
+            namespace:
+              resource: namespace
+        name:
+          matches: "^(.*)_depth$"
+          as: "${1}"
+        metricsQuery: avg(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)

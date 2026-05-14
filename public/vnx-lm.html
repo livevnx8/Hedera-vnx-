@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VNX BitLattice Forge — train ternary-weighted language models in-browser, export .vnx artifacts, and publish verifiable proof receipts to the Hedera ledger.">
+  <title>VNX-LM Forge | VeraLattice</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a0b;
+      --panel: #101618;
+      --panel-2: #151b1d;
+      --line: #2c393b;
+      --text: #eef4ef;
+      --muted: #9daaa6;
+      --green: #7bffb2;
+      --cyan: #62d9d2;
+      --amber: #f0c25b;
+      --red: #ff766f;
+      --blue: #8db7ff;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(8, 10, 11, 0.78), rgba(8, 10, 11, 0.98)),
+        repeating-linear-gradient(90deg, rgba(98, 217, 210, 0.05) 0 1px, transparent 1px 96px),
+        repeating-linear-gradient(0deg, rgba(123, 255, 178, 0.035) 0 1px, transparent 1px 96px),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    textarea,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #172124;
+      color: var(--text);
+      min-height: 40px;
+      padding: 0 14px;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    button:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: #1e2b2e;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    button.primary {
+      background: #d7fbe2;
+      color: #06100b;
+      border-color: #d7fbe2;
+      font-weight: 800;
+    }
+
+    button.warning {
+      background: #2b2214;
+      border-color: #6c5524;
+      color: #f5d98d;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="number"],
+    input[type="range"] {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #080d0e;
+      color: var(--text);
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      line-height: 1.48;
+    }
+
+    input[type="range"] {
+      accent-color: var(--cyan);
+    }
+
+    .shell {
+      width: min(1680px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      padding: 10px 0 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 5.4rem);
+      line-height: 0.95;
+      font-weight: 900;
+      max-width: 980px;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(16, 22, 24, 0.85);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 18px var(--amber);
+    }
+
+    .status-dot.ready {
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.92fr) minmax(420px, 1.18fr) minmax(340px, 0.9fr);
+      gap: 16px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(16, 22, 24, 0.92);
+      box-shadow: 0 22px 50px var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-header h2,
+    .panel-header h3 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: #dfe9e4;
+    }
+
+    .panel-body {
+      padding: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 76px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: #0c1112;
+      padding: 11px;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.25rem;
+      overflow-wrap: anywhere;
+    }
+
+    .onboarding-banner {
+      max-width: 1200px;
+      margin: 0 auto 16px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(16, 43, 36, 0.6), rgba(22, 30, 40, 0.6));
+      border: 1px solid rgba(123, 255, 178, 0.18);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .onboarding-banner strong {
+      color: var(--green);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .onboarding-banner ol {
+      margin: 0 0 10px;
+      padding-left: 18px;
+    }
+
+    .onboarding-banner li {
+      margin-bottom: 4px;
+    }
+
+    .onboarding-banner .dismiss {
+      background: transparent;
+      border-color: rgba(123, 255, 178, 0.25);
+      color: var(--green);
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      min-height: 28px;
+    }
+
+    .onboarding-banner.hidden {
+      display: none;
+    }
+
+    .progress-track,
+    .hist-track {
+      height: 10px;
+      background: #070b0c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--amber));
+      transition: width 120ms ease;
+    }
+
+    .histogram {
+      display: grid;
+      gap: 9px;
+    }
+
+    .hist-row {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr) 54px;
+      gap: 9px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .hist-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+    }
+
+    .hist-fill.negative {
+      background: var(--red);
+    }
+
+    .hist-fill.zero {
+      background: var(--amber);
+    }
+
+    .hist-fill.positive {
+      background: var(--green);
+    }
+
+    .visual-panel {
+      display: grid;
+      grid-template-rows: auto minmax(360px, 1fr) auto;
+      min-height: 780px;
+    }
+
+    #lattice-canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      display: block;
+      background: #060909;
+    }
+
+    .vertex-strip {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+      padding: 12px 14px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(6, 9, 9, 0.8);
+    }
+
+    .vertex-chip {
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.74rem;
+      background: #0a1011;
+    }
+
+    .vertex-chip.active {
+      color: #04110a;
+      background: var(--green);
+      border-color: var(--green);
+      font-weight: 900;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .control-grid .wide {
+      grid-column: 1 / -1;
+    }
+
+    .number-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .output {
+      min-height: 220px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: #070b0c;
+      padding: 14px;
+      line-height: 1.72;
+      overflow-wrap: anywhere;
+    }
+
+    .token {
+      display: inline-block;
+      min-width: 0.52em;
+      border-bottom: 1px solid rgba(98, 217, 210, 0.45);
+      cursor: help;
+    }
+
+    .token:hover {
+      background: rgba(123, 255, 178, 0.16);
+      color: #ffffff;
+    }
+
+    .trace {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--bg-panel);
+      padding: 12px;
+      border-radius: 8px;
+      min-height: 40px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .swarm-tab {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(123,255,178,0.15);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .swarm-tab.active {
+      background: rgba(123,255,178,0.12);
+      color: var(--green);
+      border-color: rgba(123,255,178,0.35);
+    }
+
+    .failure-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .failure {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(16, 22, 24, 0.9);
+      padding: 14px;
+      min-height: 130px;
+    }
+
+    .failure h3 {
+      font-size: 0.96rem;
+      margin-bottom: 10px;
+    }
+
+    .failure p {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.92rem;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 20;
+      width: min(310px, calc(100vw - 28px));
+      border: 1px solid rgba(123, 255, 178, 0.45);
+      border-radius: 8px;
+      background: #07100c;
+      color: var(--text);
+      padding: 11px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+      display: none;
+      pointer-events: none;
+      font-size: 0.84rem;
+    }
+
+    .tooltip strong {
+      color: var(--green);
+    }
+
+    .tooltip table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      color: var(--muted);
+    }
+
+    .tooltip td {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 5px 0;
+    }
+
+    .mono {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    @media (max-width: 1180px) {
+      .grid,
+      .failure-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .visual-panel {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 20px, 720px);
+        padding-top: 14px;
+      }
+
+      header,
+      .grid,
+      .failure-grid,
+      .control-grid,
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2.35rem;
+      }
+
+      .status-pill {
+        justify-content: center;
+      }
+
+      .visual-panel {
+        min-height: 600px;
+      }
+
+      #lattice-canvas {
+        min-height: 330px;
+      }
+
+      .vertex-strip {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>VNX-LM Forge</h1>
+        <p class="subtitle">Ternary BitLattice inference, trained in-tab, routed through a scalable lattice topology, exported as a portable .vnx artifact.</p>
+      </div>
+      <div class="status-pill" aria-live="polite">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">No lattice forged</span>
+      </div>
+    </header>
+
+    <div id="onboarding" class="onboarding-banner">
+      <strong>How to use the Forge</strong>
+      <ol>
+        <li><b>Pick a corpus</b> — use Manifesto or QVX samples, or paste your own text.</li>
+        <li><b>Click FORGE LATTICE</b> — this trains a ternary model in your browser tab. More vertices and larger context = better quality.</li>
+        <li><b>Type a prompt & hit GENERATE</b> — then Export .vnx, Export proof, or Publish proof to Hedera.</li>
+      </ol>
+      <button type="button" id="dismiss-onboarding" class="dismiss">Got it</button>
+    </div>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Corpus</h2>
+          <div class="toolbar">
+            <button type="button" id="sample-manifesto">Manifesto</button>
+            <button type="button" id="sample-qvx">QVX</button>
+          </div>
+          <div class="toolbar" style="margin-top:8px;">
+            <span class="label" style="align-self:center;font-size:0.75rem;opacity:0.7;">Preset:</span>
+            <button type="button" id="preset-tiny">Tiny</button>
+            <button type="button" id="preset-standard">Standard</button>
+            <button type="button" id="preset-deep">Deep</button>
+            <button type="button" id="preset-max">Max</button>
+          </div>
+        </div>
+        <div class="panel-body stack">
+          <textarea id="corpus" spellcheck="false"></textarea>
+          <div class="control-grid">
+            <label class="number-field">
+              <span class="label">Context K</span>
+              <input id="context-size" type="number" value="4" min="2" max="32">
+            </label>
+            <label class="number-field">
+              <span class="label">Vertices</span>
+              <input id="vertex-count" type="number" value="60" min="12" max="120" step="4">
+            </label>
+            <label class="number-field">
+              <span class="label">Tokenizer</span>
+              <input type="text" value="char-level" readonly>
+            </label>
+            <button type="button" class="primary wide" id="train-button">FORGE LATTICE</button>
+          </div>
+          <div class="progress-track" aria-label="training progress">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="toolbar">
+            <button type="button" id="export-button" disabled>Export .vnx</button>
+            <button type="button" id="export-proof-button" disabled>Export proof</button>
+            <button type="button" id="publish-proof-button" disabled>Publish proof</button>
+            <button type="button" id="import-button">Import .vnx</button>
+            <input class="hidden-file" id="import-file" type="file" accept=".vnx,application/octet-stream">
+          </div>
+        </div>
+      </section>
+
+      <section class="panel visual-panel">
+        <div class="panel-header">
+          <h2>Lattice Router</h2>
+          <span class="label" id="active-vertex">v--</span>
+        </div>
+        <canvas id="lattice-canvas"></canvas>
+        <div class="vertex-strip" id="vertex-strip" aria-label="lattice vertices"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Inference</h2>
+          <span class="label" id="model-size-label">0 B</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="stat-grid">
+            <div class="stat"><span class="label">Tokens</span><strong id="stat-tokens">--</strong></div>
+            <div class="stat"><span class="label">Fired</span><strong id="stat-fired">--</strong></div>
+            <div class="stat"><span class="label">Perplexity</span><strong id="stat-perplexity">--</strong></div>
+            <div class="stat"><span class="label">Corpus SHA</span><strong class="mono" id="stat-hash">--</strong></div>
+            <div class="stat"><span class="label">Model SHA</span><strong class="mono" id="stat-model-hash">--</strong></div>
+            <div class="stat"><span class="label">Proof SHA</span><strong class="mono" id="stat-proof-hash">--</strong></div>
+          </div>
+
+          <div class="histogram">
+            <div class="hist-row">
+              <span>negative</span>
+              <div class="hist-track"><div class="hist-fill negative" id="hist-negative"></div></div>
+              <span id="hist-negative-value">0%</span>
+            </div>
+            <div class="hist-row">
+              <span>zero</span>
+              <div class="hist-track"><div class="hist-fill zero" id="hist-zero"></div></div>
+              <span id="hist-zero-value">0%</span>
+            </div>
+            <div class="hist-row">
+              <span>positive</span>
+              <div class="hist-track"><div class="hist-fill positive" id="hist-positive"></div></div>
+              <span id="hist-positive-value">0%</span>
+            </div>
+          </div>
+
+          <label class="number-field">
+            <span class="label">Prompt</span>
+            <input id="prompt" type="text" value="vera nexum is">
+          </label>
+          <div class="control-grid">
+            <label class="number-field">
+              <span class="label">Tokens</span>
+              <input id="max-tokens" type="number" min="1" max="240" value="96">
+            </label>
+            <label class="number-field">
+              <span class="label">Temp</span>
+              <input id="temperature" type="number" min="0.1" max="2" step="0.05" value="0.85">
+            </label>
+            <button type="button" class="primary wide" id="generate-button" disabled>GENERATE</button>
+            <button type="button" id="swarm-toggle">🐝 Swarm</button>
+          </div>
+          <div class="output" id="output"></div>
+          <div class="trace mono" id="trace-panel">Trace waits for a generated token.</div>
+          <div id="swarm-results" style="display:none; margin-top:12px;">
+            <div style="font-size:0.75rem; color:var(--muted); margin-bottom:6px;">Swarm specialists</div>
+            <div id="swarm-tabs" class="toolbar"></div>
+            <div id="swarm-output" class="output" style="margin-top:6px; min-height:40px; font-size:0.82rem;"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="failure-grid" aria-label="failure modes">
+      <article class="failure">
+        <h3>Opaque weights</h3>
+        <p>Every row is ternary {-1, 0, +1}; the histogram exposes the live weight state.</p>
+      </article>
+      <article class="failure">
+        <h3>Vendor sovereignty</h3>
+        <p>Training and inference run in the browser after the page loads.</p>
+      </article>
+      <article class="failure">
+        <h3>Missing provenance</h3>
+        <p>Each emitted character carries vertex and top-candidate trace data.</p>
+      </article>
+      <article class="failure">
+        <h3>Runaway size</h3>
+        <p>Five ternary weights pack into one byte inside the .vnx artifact.</p>
+      </article>
+    </section>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script type="module">
+    import {
+      createVnxProofPacket,
+      DODECAHEDRON_EDGES,
+      DODECAHEDRON_VERTICES,
+      emitSignal,
+      exportVnxModel,
+      formatBytes,
+      generateEdges,
+      generateSphereVertices,
+      generateText,
+      hashVnxModel,
+      importVnxModel,
+      setSignalEmitter,
+      sha256Hex,
+      trainVnxModelWithHash,
+    } from './js/vnx-lm-core.js';
+    import { loadSwarm, swarmInfer } from './js/vnx-swarm.js';
+
+    const DEFAULT_FORGE_VERTEX_COUNT = 60;
+
+    const manifesto = `vera nexum is sovereign intelligence at the edge.
+the lattice remembers the receipt and refuses the black box.
+each token is a trace. each trace is a route. each route belongs to the operator.
+bit weights become ternary cells. ternary cells become local inference.
+the model is small enough to carry, inspect, export, and run without permission.
+vera does not ask a cloud to think. vera forges the lattice here.`;
+
+    const qvxCorpus = `qvx watches markets, hedera receipts, verifier outcomes, payment flows, and lattice health.
+the stack routes pressure through rig telemetry, adaptive scheduling, proof kernels, hcs memory, and operator review.
+edge intelligence is not one large opaque answer. it is many tiny proven transitions, settled, replayed, scored, and learned.
+vnx-lm is the local language layer for that operating picture.`;
+
+    const els = {
+      corpus: document.getElementById('corpus'),
+      sampleManifesto: document.getElementById('sample-manifesto'),
+      sampleQvx: document.getElementById('sample-qvx'),
+      presetTiny: document.getElementById('preset-tiny'),
+      presetStandard: document.getElementById('preset-standard'),
+      presetDeep: document.getElementById('preset-deep'),
+      presetMax: document.getElementById('preset-max'),
+      contextSize: document.getElementById('context-size'),
+      vertexCount: document.getElementById('vertex-count'),
+      trainButton: document.getElementById('train-button'),
+      progressFill: document.getElementById('progress-fill'),
+      exportButton: document.getElementById('export-button'),
+      exportProofButton: document.getElementById('export-proof-button'),
+      publishProofButton: document.getElementById('publish-proof-button'),
+      importButton: document.getElementById('import-button'),
+      importFile: document.getElementById('import-file'),
+      generateButton: document.getElementById('generate-button'),
+      swarmToggle: document.getElementById('swarm-toggle'),
+      swarmResults: document.getElementById('swarm-results'),
+      swarmTabs: document.getElementById('swarm-tabs'),
+      swarmOutput: document.getElementById('swarm-output'),
+      prompt: document.getElementById('prompt'),
+      maxTokens: document.getElementById('max-tokens'),
+      temperature: document.getElementById('temperature'),
+      output: document.getElementById('output'),
+      tracePanel: document.getElementById('trace-panel'),
+      statTokens: document.getElementById('stat-tokens'),
+      statFired: document.getElementById('stat-fired'),
+      statPerplexity: document.getElementById('stat-perplexity'),
+      statHash: document.getElementById('stat-hash'),
+      statModelHash: document.getElementById('stat-model-hash'),
+      statProofHash: document.getElementById('stat-proof-hash'),
+      sizeLabel: document.getElementById('model-size-label'),
+      statusDot: document.getElementById('status-dot'),
+      statusText: document.getElementById('status-text'),
+      activeVertex: document.getElementById('active-vertex'),
+      vertexStrip: document.getElementById('vertex-strip'),
+      canvas: document.getElementById('lattice-canvas'),
+      tooltip: document.getElementById('tooltip'),
+      histNegative: document.getElementById('hist-negative'),
+      histZero: document.getElementById('hist-zero'),
+      histPositive: document.getElementById('hist-positive'),
+      histNegativeValue: document.getElementById('hist-negative-value'),
+      histZeroValue: document.getElementById('hist-zero-value'),
+      histPositiveValue: document.getElementById('hist-positive-value'),
+    };
+
+    let model = null;
+    let modelHash = null;
+    let lastGeneration = null;
+    let currentVertices = generateSphereVertices(DEFAULT_FORGE_VERTEX_COUNT);
+    let currentEdges = generateEdges(currentVertices);
+    let lastProof = null;
+    let activeVertex = null;
+    let trace = [];
+    let rotation = 0;
+    let swarmMode = false;
+    let swarmLoaded = false;
+    let worker = null;
+    let requestId = 0;
+    const pending = new Map();
+
+    setSignalEmitter((type, payload) => {
+      fetch('/api/vnx/emit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventType: type, payload }),
+      }).catch(() => {});
+    });
+
+    function bootWorker() {
+      if (!('Worker' in window)) return null;
+      const nextWorker = new Worker('./js/vnx-lm-worker.js', { type: 'module' });
+      nextWorker.onmessage = (event) => {
+        const { id, type, payload } = event.data || {};
+        const item = pending.get(id);
+
+        if (type === 'progress') {
+          updateProgress(payload);
+          return;
+        }
+
+        if (!item) return;
+        pending.delete(id);
+
+        if (type === 'error') item.reject(new Error(payload.message));
+        else item.resolve({ type, payload });
+      };
+      return nextWorker;
+    }
+
+    function callWorker(type, payload, transfer = []) {
+      if (!worker) return Promise.reject(new Error('Worker unavailable'));
+      const id = ++requestId;
+      return new Promise((resolve, reject) => {
+        pending.set(id, { resolve, reject });
+        worker.postMessage({ id, type, payload }, transfer);
+      });
+    }
+
+    function setStatus(text, ready = false) {
+      els.statusText.textContent = text;
+      els.statusDot.classList.toggle('ready', ready);
+    }
+
+    function updateProgress(progress) {
+      const pct = Math.max(0, Math.min(100, Math.round((progress?.progress || 0) * 100)));
+      els.progressFill.style.width = `${pct}%`;
+      if (typeof progress?.currentVertex === 'number') setActiveVertex(progress.currentVertex);
+      setStatus(`Forging ${pct}%`, false);
+    }
+
+    function setActiveVertex(vertex) {
+      activeVertex = vertex;
+      els.activeVertex.textContent = typeof vertex === 'number' ? `v${String(vertex).padStart(2, '0')}` : 'v--';
+      document.querySelectorAll('.vertex-chip').forEach((chip, index) => {
+        chip.classList.toggle('active', index === vertex);
+      });
+    }
+
+    function updateModelUi(nextModel, elapsedMs = null) {
+      model = nextModel;
+      modelHash = null;
+      lastGeneration = null;
+      lastProof = null;
+      trace = [];
+
+      const vCount = model.vertexCount || 20;
+      if (model.vertices && model.edges) {
+        currentVertices = model.vertices;
+        currentEdges = model.edges;
+      } else if (vCount !== 20) {
+        currentVertices = generateSphereVertices(vCount);
+        currentEdges = generateEdges(currentVertices);
+      } else {
+        currentVertices = DODECAHEDRON_VERTICES;
+        currentEdges = DODECAHEDRON_EDGES;
+      }
+      setupVertices(vCount);
+
+      els.generateButton.disabled = false;
+      els.exportButton.disabled = false;
+      els.exportProofButton.disabled = true;
+      els.publishProofButton.disabled = true;
+      els.progressFill.style.width = '100%';
+      els.statTokens.textContent = String(model.trainedTokens ?? '--');
+      els.statFired.textContent = `${model.firedVertices ?? '--'}/${model.vertexCount}`;
+      els.statPerplexity.textContent = Number.isFinite(model.perplexity) ? model.perplexity.toFixed(2) : '--';
+      els.statHash.textContent = model.corpusHash ? `${model.corpusHash.slice(0, 10)}...` : '--';
+      els.statModelHash.textContent = 'hashing...';
+      els.statProofHash.textContent = '--';
+      els.output.textContent = '';
+      els.tracePanel.textContent = 'Trace waits for a generated token.';
+      els.sizeLabel.textContent = formatBytes(model.packedWeightBytes || 0);
+      updateHistogram(model.histogram);
+      setStatus(elapsedMs === null ? 'Lattice loaded' : `Forged in ${elapsedMs.toFixed(1)} ms`, true);
+      hashVnxModel(model).then((hash) => {
+        if (model === nextModel) {
+          modelHash = hash;
+          els.statModelHash.textContent = shortHash(hash);
+        }
+      }).catch(() => {
+        els.statModelHash.textContent = 'unavailable';
+      });
+    }
+
+    function updateHistogram(histogram) {
+      const entries = [
+        ['negative', histogram?.negativePct || 0, els.histNegative, els.histNegativeValue],
+        ['zero', histogram?.zeroPct || 0, els.histZero, els.histZeroValue],
+        ['positive', histogram?.positivePct || 0, els.histPositive, els.histPositiveValue],
+      ];
+
+      for (const [, value, fill, label] of entries) {
+        const pct = Math.round(value * 1000) / 10;
+        fill.style.width = `${pct}%`;
+        label.textContent = `${pct.toFixed(1)}%`;
+      }
+    }
+
+    function renderSwarmResults(results) {
+      els.swarmTabs.textContent = '';
+      els.swarmOutput.textContent = '';
+      const valid = results.filter((r) => r.output && !r.error);
+      if (valid.length === 0) {
+        els.swarmOutput.textContent = 'No swarm results available.';
+        return;
+      }
+      const maxConf = Math.max(...valid.map((r) => r.confidence), 1);
+
+      valid.forEach((result, index) => {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'swarm-tab' + (index === 0 ? ' active' : '');
+        tab.textContent = `${result.meta.icon} ${result.meta.name} · r${result.routeScore}`;
+        tab.title = `${result.meta.guidance} ${result.reasons?.length ? `Matched: ${result.reasons.join(', ')}` : ''}`;
+        tab.addEventListener('click', () => {
+          els.swarmTabs.querySelectorAll('.swarm-tab').forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          els.swarmOutput.textContent = formatSwarmResult(result);
+        });
+        els.swarmTabs.appendChild(tab);
+      });
+      els.swarmOutput.textContent = formatSwarmResult(valid[0]);
+    }
+
+    function formatSwarmResult(result) {
+      const reasons = result.reasons?.length ? result.reasons.join(', ') : 'fallback route';
+      return [
+        `${result.meta.name} | route ${result.routeScore} | confidence ${result.confidence.toFixed(1)}% | ${reasons}`,
+        result.meta.guidance,
+        '',
+        result.output,
+      ].join('\n');
+    }
+
+    function renderTrace() {
+      els.output.textContent = '';
+
+      for (const item of trace) {
+        const span = document.createElement('span');
+        span.className = 'token';
+        span.textContent = item.token === ' ' ? ' ' : item.token;
+        span.dataset.index = String(item.index);
+        span.addEventListener('mouseenter', showTraceTooltip);
+        span.addEventListener('mousemove', moveTooltip);
+        span.addEventListener('mouseleave', hideTooltip);
+        els.output.appendChild(span);
+      }
+
+      if (trace.length > 0) {
+        const last = trace.at(-1);
+        els.tracePanel.textContent = `${last.vertexLabel} -> ${JSON.stringify(last.top.map((candidate) => [
+          candidate.token,
+          Number(candidate.probability.toFixed(4)),
+        ]))}`;
+        if (lastProof) {
+          els.tracePanel.textContent += `\nproof ${shortHash(lastProof.proofHash)} | trace ${shortHash(lastProof.inference.traceHash)}`;
+        }
+      }
+    }
+
+    function showTraceTooltip(event) {
+      const item = trace[Number(event.currentTarget.dataset.index)];
+      if (!item) return;
+
+      setActiveVertex(item.vertex);
+      els.tooltip.innerHTML = `
+        <div><strong>${item.vertexLabel}</strong> fired for <span class="mono">${escapeHtml(item.token)}</span></div>
+        <table>
+          ${item.top.map((candidate) => `
+            <tr>
+              <td class="mono">${escapeHtml(candidate.token === ' ' ? 'space' : candidate.token)}</td>
+              <td style="text-align:right">${(candidate.probability * 100).toFixed(2)}%</td>
+            </tr>
+          `).join('')}
+        </table>
+      `;
+      els.tooltip.style.display = 'block';
+      moveTooltip(event);
+    }
+
+    function moveTooltip(event) {
+      const x = Math.min(window.innerWidth - 326, event.clientX + 16);
+      const y = Math.min(window.innerHeight - 180, event.clientY + 18);
+      els.tooltip.style.transform = `translate(${Math.max(10, x)}px, ${Math.max(10, y)}px)`;
+    }
+
+    function hideTooltip() {
+      els.tooltip.style.display = 'none';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function train() {
+      els.trainButton.disabled = true;
+      els.generateButton.disabled = true;
+      els.exportButton.disabled = true;
+      els.progressFill.style.width = '0%';
+      setStatus('Forging 0%', false);
+
+      const corpus = els.corpus.value;
+      const contextSize = Number(els.contextSize.value) || 4;
+
+      const vertexCount = Math.max(12, Math.min(120, Number(els.vertexCount.value) || DEFAULT_FORGE_VERTEX_COUNT));
+
+      try {
+        emitSignal('vnx.train.started', {
+          modelName: 'VNX-LM Forge',
+          corpusHash: await sha256Hex(corpus + ':' + contextSize + ':' + vertexCount),
+          contextSize,
+          vertexCount,
+        });
+
+      const payload = {
+          corpus,
+          contextSize,
+          vertexCount,
+          name: 'VNX-LM Forge',
+        };
+
+        let result;
+        if (worker) {
+          result = await callWorker('train', payload);
+          updateModelUi(result.payload.model, result.payload.elapsedMs);
+        } else {
+          const started = performance.now();
+          const trained = await trainVnxModelWithHash(payload.corpus, {
+            contextSize: payload.contextSize,
+            vertexCount: payload.vertexCount,
+            name: payload.name,
+            onProgress: (progress) => {
+              updateProgress(progress);
+              emitSignal('vnx.train.progress', {
+                progress: progress.progress,
+                firedVertices: progress.currentVertex ?? 0,
+                trainedTokens: progress.trainedTokens ?? 0,
+              });
+            },
+          });
+          updateModelUi(trained, performance.now() - started);
+        }
+
+        emitSignal('vnx.train.completed', {
+          modelHash: modelHash ?? '',
+          perplexity: model?.perplexity ?? 0,
+          packedWeightBytes: model?.packedWeightBytes ?? 0,
+        });
+      } catch (error) {
+        setStatus(error.message, false);
+      } finally {
+        els.trainButton.disabled = false;
+      }
+    }
+
+    async function generate() {
+      if (!model) return;
+      const promptHash = await sha256Hex(els.prompt.value);
+      emitSignal('vnx.inference.started', {
+        modelHash: modelHash ?? '',
+        promptHash,
+      });
+
+      const result = generateText(model, els.prompt.value, {
+        maxTokens: Number(els.maxTokens.value) || 96,
+        temperature: Number(els.temperature.value) || 0.85,
+      });
+      trace = result.trace;
+      lastGeneration = {
+        prompt: els.prompt.value,
+        output: result.text,
+        trace,
+      };
+      lastProof = null;
+      els.exportProofButton.disabled = true;
+      els.publishProofButton.disabled = true;
+      els.statProofHash.textContent = 'hashing...';
+
+      for (const item of trace) {
+        emitSignal('vnx.vertex.fired', {
+          token: item.token,
+          vertex: item.vertex,
+          probability: item.top?.[0]?.probability ?? 0,
+          topCandidates: item.top?.slice(0, 3)?.map((c) => ({ token: c.token, p: c.probability })) ?? [],
+        });
+      }
+
+      if (trace[0]) setActiveVertex(trace[0].vertex);
+      renderTrace();
+
+      if (swarmMode) {
+        try {
+          if (!swarmLoaded) {
+            await loadSwarm();
+            swarmLoaded = true;
+          }
+          const results = await swarmInfer(els.prompt.value, {
+            maxTokens: Number(els.maxTokens.value) || 96,
+            temperature: Number(els.temperature.value) || 0.85,
+          });
+          renderSwarmResults(results);
+          els.swarmResults.style.display = 'block';
+        } catch (e) {
+          console.error('[swarm] inference failed:', e);
+        }
+      }
+
+      lastProof = await createVnxProofPacket({
+        model,
+        prompt: lastGeneration.prompt,
+        output: lastGeneration.output,
+        trace: lastGeneration.trace,
+        runtimeTier: 'forge-browser',
+      });
+      els.statProofHash.textContent = shortHash(lastProof.proofHash);
+      els.exportProofButton.disabled = false;
+      els.publishProofButton.disabled = false;
+
+      emitSignal('vnx.inference.completed', {
+        modelHash: modelHash ?? '',
+        outputHash: lastProof.inference.outputHash,
+        traceHash: lastProof.inference.traceHash,
+        generatedTokens: trace.length,
+        uniqueVertices: new Set(trace.map((t) => t.vertex)).size,
+      });
+
+      renderTrace();
+    }
+
+    async function exportModel() {
+      if (!model) return;
+
+      let bytes;
+      if (worker) {
+        const result = await callWorker('export', { model });
+        bytes = new Uint8Array(result.payload);
+      } else {
+        bytes = await exportVnxModel(model);
+      }
+
+      const blob = new Blob([bytes], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `vnx-lm-${Date.now()}.vnx`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function exportProof() {
+      if (!model || !lastGeneration) return;
+
+      if (!lastProof) {
+        lastProof = await createVnxProofPacket({
+          model,
+          prompt: lastGeneration.prompt,
+          output: lastGeneration.output,
+          trace: lastGeneration.trace,
+          runtimeTier: 'forge-browser',
+        });
+      }
+
+      downloadBlob(
+        new Blob([JSON.stringify(lastProof, null, 2)], { type: 'application/json' }),
+        `vnx-proof-${Date.now()}.json`,
+      );
+    }
+
+    async function publishProof() {
+      if (!model || !lastGeneration || !lastProof) return;
+
+      const button = els.publishProofButton;
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Publishing...';
+
+      try {
+        const response = await fetch('/api/vnx/publish-proof', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hcsReadySummary: lastProof.hcsReadySummary, modelName: model.name }),
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          button.textContent = 'Published';
+          button.parentElement.querySelectorAll('.hashscan-link').forEach((el) => el.remove());
+          const link = document.createElement('a');
+          link.href = result.receipt.hashscanUrl;
+          link.target = '_blank';
+          link.textContent = 'View on HashScan';
+          link.className = 'hashscan-link';
+          link.style.cssText = 'color:var(--green);margin-left:8px;font-size:0.82rem;';
+          button.parentElement.appendChild(link);
+        } else {
+          button.textContent = originalText;
+          button.disabled = false;
+          alert(`Publish failed: ${result.error || response.statusText}`);
+        }
+      } catch (error) {
+        button.textContent = originalText;
+        button.disabled = false;
+        alert(`Publish error: ${error.message}`);
+      }
+    }
+
+    async function importModel(file) {
+      if (!file) return;
+      const buffer = await file.arrayBuffer();
+      let imported;
+
+      if (worker) {
+        const result = await callWorker('import', { buffer }, [buffer]);
+        imported = result.payload.model;
+      } else {
+        imported = importVnxModel(buffer);
+      }
+
+      updateModelUi(imported, null);
+    }
+
+    function shortHash(hash) {
+      return hash ? `${hash.slice(0, 12)}...` : '--';
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function setupVertices(count = DEFAULT_FORGE_VERTEX_COUNT) {
+      els.vertexStrip.textContent = '';
+      const digits = count >= 100 ? 3 : 2;
+      for (let i = 0; i < count; i += 1) {
+        const chip = document.createElement('div');
+        chip.className = 'vertex-chip';
+        chip.textContent = `v${String(i).padStart(digits, '0')}`;
+        els.vertexStrip.appendChild(chip);
+      }
+    }
+
+    function drawLattice() {
+      const canvas = els.canvas;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(1, Math.floor(rect.width * dpr));
+      const height = Math.max(1, Math.floor(rect.height * dpr));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#060909';
+      ctx.fillRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height / 2;
+      const scale = Math.min(width, height) * 0.32;
+      rotation += 0.005;
+
+      const vertices = currentVertices;
+      const edges = currentEdges;
+
+      const projected = vertices.map((vertex, index) => {
+        const cosY = Math.cos(rotation);
+        const sinY = Math.sin(rotation);
+        const cosX = Math.cos(rotation * 0.61);
+        const sinX = Math.sin(rotation * 0.61);
+        const x1 = vertex[0] * cosY - vertex[2] * sinY;
+        const z1 = vertex[0] * sinY + vertex[2] * cosY;
+        const y1 = vertex[1] * cosX - z1 * sinX;
+        const z2 = vertex[1] * sinX + z1 * cosX;
+        const depth = 1.55 + z2 * 0.52;
+        return {
+          index,
+          x: cx + (x1 / depth) * scale,
+          y: cy + (y1 / depth) * scale,
+          z: z2,
+          depth,
+        };
+      });
+
+      ctx.lineWidth = Math.max(1, dpr);
+      for (const [from, to] of edges) {
+        const a = projected[from];
+        const b = projected[to];
+        const hot = activeVertex === from || activeVertex === to;
+        ctx.strokeStyle = hot ? 'rgba(123, 255, 178, 0.75)' : 'rgba(141, 183, 255, 0.18)';
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      for (const point of projected.sort((a, b) => a.z - b.z)) {
+        const hot = point.index === activeVertex;
+        const radius = (hot ? 8 : 4.8) * dpr * (1.2 / point.depth);
+        ctx.beginPath();
+        ctx.fillStyle = hot ? '#7bffb2' : '#62d9d2';
+        ctx.shadowBlur = hot ? 28 * dpr : 8 * dpr;
+        ctx.shadowColor = hot ? '#7bffb2' : '#62d9d2';
+        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = hot ? '#07100c' : '#d7f7f4';
+        ctx.font = `${Math.max(10, 11 * dpr)}px ui-monospace, monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(point.index).padStart(2, '0'), point.x, point.y - 16 * dpr);
+      }
+
+      requestAnimationFrame(drawLattice);
+    }
+
+    document.getElementById('dismiss-onboarding')?.addEventListener('click', () => {
+      document.getElementById('onboarding').classList.add('hidden');
+    });
+
+    els.sampleManifesto.addEventListener('click', () => { els.corpus.value = manifesto; });
+    els.sampleQvx.addEventListener('click', () => { els.corpus.value = qvxCorpus; });
+    els.presetTiny.addEventListener('click', () => {
+      els.contextSize.value = '4';
+      els.vertexCount.value = '12';
+      setStatus('Preset: Tiny (12 vertices, 4 context) — fastest forge', true);
+    });
+    els.presetStandard.addEventListener('click', () => {
+      els.contextSize.value = '8';
+      els.vertexCount.value = '60';
+      setStatus('Preset: Standard (60 vertices, 8 context) — balanced', true);
+    });
+    els.presetDeep.addEventListener('click', () => {
+      els.contextSize.value = '16';
+      els.vertexCount.value = '60';
+      setStatus('Preset: Deep (60 vertices, 16 context) — higher quality', true);
+    });
+    els.presetMax.addEventListener('click', () => {
+      els.contextSize.value = '32';
+      els.vertexCount.value = '120';
+      setStatus('Preset: Max (120 vertices, 32 context) — best quality', true);
+    });
+    els.trainButton.addEventListener('click', train);
+    els.generateButton.addEventListener('click', generate);
+    els.exportButton.addEventListener('click', exportModel);
+    els.exportProofButton.addEventListener('click', exportProof);
+    els.publishProofButton.addEventListener('click', publishProof);
+    els.swarmToggle.addEventListener('click', () => {
+      swarmMode = !swarmMode;
+      els.swarmToggle.classList.toggle('active', swarmMode);
+      els.swarmToggle.textContent = swarmMode ? '🐝 Swarm On' : '🐝 Swarm';
+      if (!swarmMode) els.swarmResults.style.display = 'none';
+    });
+    els.importButton.addEventListener('click', () => { els.importFile.click(); });
+    els.importFile.addEventListener('change', () => importModel(els.importFile.files?.[0]));
+
+    els.corpus.value = manifesto;
+    worker = bootWorker();
+    setupVertices(DEFAULT_FORGE_VERTEX_COUNT);
+    updateHistogram(null);
+    drawLattice();
+
+    // Reset any stale error state and show welcome
+    setStatus('Ready — click FORGE LATTICE to begin', true);
+  </script>
+</body>
+</html>

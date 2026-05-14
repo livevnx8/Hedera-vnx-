@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeraBridge Demo - Working Bridge Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.5.0/web3.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .demo-badge { 
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Demo Banner -->
+    <div class="demo-badge text-center py-2 text-sm font-semibold">
+        🚧 DEMO MODE - No real transactions. Connect wallet to test.
+    </div>
+
+    <!-- Header -->
+    <nav class="gradient-bg px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                    <span class="text-2xl">🌉</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">VeraBridge</h1>
+                    <p class="text-xs text-gray-200">50 Chains • Working Demo</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right hidden md:block">
+                    <p class="text-xs text-gray-300">Demo Volume</p>
+                    <p class="text-lg font-bold">$127,450</p>
+                </div>
+                <button id="connectWallet" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Bridge Form -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="glass rounded-2xl p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-2">Bridge Assets</h2>
+                    <p class="text-sm text-gray-400 mb-6">Transfer assets across 50+ supported chains</p>
+                    
+                    <!-- Chain Selection -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">From Chain</label>
+                            <select id="fromChain" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500">
+                                <option value="ethereum">⬡ Ethereum</option>
+                                <option value="bsc">🟡 BNB Chain</option>
+                                <option value="polygon">💜 Polygon</option>
+                                <option value="arbitrum">🔵 Arbitrum</option>
+                                <option value="optimism">🔴 Optimism</option>
+                                <option value="base">🔷 Base</option>
+                                <option value="solana">◎ Solana</option>
+                                <option value="avalanche">🔺 Avalanche</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">To Chain</label>
+                            <select id="toChain" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500">
+                                <option value="hedera" selected>◆ Hedera</option>
+                                <option value="ethereum">⬡ Ethereum</option>
+                                <option value="solana">◎ Solana</option>
+                                <option value="polygon">💜 Polygon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Token Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Token</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="token-btn bg-purple-600 text-white px-4 py-2 rounded-lg font-medium" data-token="ETH">ETH</button>
+                            <button class="token-btn bg-gray-800 text-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-700" data-token="USDC">USDC</button>
+                            <button class="token-btn bg-gray-800 text-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-700" data-token="USDT">USDT</button>
+                            <button class="token-btn bg-gray-800 text-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-700" data-token="WBTC">WBTC</button>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Amount</label>
+                        <div class="relative">
+                            <input type="number" id="amount" placeholder="0.00" step="0.001"
+                                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white text-xl focus:ring-2 focus:ring-purple-500">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                                <span id="balance">0.00</span> <span id="tokenSymbol">ETH</span>
+                            </div>
+                        </div>
+                        <button id="maxBtn" class="text-purple-400 text-sm mt-1 hover:text-purple-300">Use Max</button>
+                    </div>
+
+                    <!-- Recipient -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Recipient Address</label>
+                        <input type="text" id="recipient" placeholder="0.0.12345 or 0x..." 
+                            class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500">
+                        <p class="text-xs text-gray-500 mt-1">Enter the destination wallet address</p>
+                    </div>
+
+                    <!-- Fee Breakdown -->
+                    <div class="bg-gray-800 rounded-lg p-4 mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Bridge Fee (0.25%)</span>
+                            <span id="bridgeFee">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Network Gas</span>
+                            <span id="networkFee">~$2.50</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Exchange Rate</span>
+                            <span id="exchangeRate">1 ETH = 200 HBAR</span>
+                        </div>
+                        <div class="flex justify-between font-bold pt-2 border-t border-gray-700 text-lg">
+                            <span>You Receive</span>
+                            <span id="receiveAmount" class="text-green-400">0.00 HBAR</span>
+                        </div>
+                    </div>
+
+                    <!-- Bridge Button -->
+                    <button id="bridgeBtn" class="w-full gradient-bg text-white font-bold py-4 rounded-lg hover:opacity-90 transition flex items-center justify-center">
+                        <span id="btnText">Connect Wallet to Bridge</span>
+                    </button>
+
+                    <div class="flex items-center justify-center space-x-4 mt-4 text-xs text-gray-500">
+                        <span class="flex items-center"><span class="text-green-400 mr-1">✓</span> HTLC Security</span>
+                        <span class="flex items-center"><span class="text-green-400 mr-1">✓</span> 2-5 min</span>
+                        <span class="flex items-center"><span class="text-green-400 mr-1">✓</span> HCS Attested</span>
+                    </div>
+                </div>
+
+                <!-- Transaction Status -->
+                <div id="txStatus" class="hidden glass rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold mb-4">Transaction Status</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div id="step1" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">1</div>
+                            <div class="flex-1">
+                                <p class="font-medium">Initiate Transfer</p>
+                                <p class="text-sm text-gray-400">Create HTLC on source chain</p>
+                            </div>
+                            <span id="step1Status" class="text-gray-500">Pending</span>
+                        </div>
+                        <div class="w-px h-8 bg-gray-700 ml-4"></div>
+                        <div class="flex items-center">
+                            <div id="step2" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">2</div>
+                            <div class="flex-1">
+                                <p class="font-medium">Validator Signatures</p>
+                                <p class="text-sm text-gray-400">3-of-5 multi-sig consensus</p>
+                            </div>
+                            <span id="step2Status" class="text-gray-500">Waiting</span>
+                        </div>
+                        <div class="w-px h-8 bg-gray-700 ml-4"></div>
+                        <div class="flex items-center">
+                            <div id="step3" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">3</div>
+                            <div class="flex-1">
+                                <p class="font-medium">Release Funds</p>
+                                <p class="text-sm text-gray-400">Claim HTLC on destination</p>
+                            </div>
+                            <span id="step3Status" class="text-gray-500">Waiting</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-800 rounded-lg">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-400">Progress</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div id="progressBar" class="bg-purple-500 h-2 rounded-full progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="txLinks" class="mt-4 space-y-2 hidden">
+                        <a id="sourceTxLink" href="#" target="_blank" class="text-purple-400 text-sm hover:text-purple-300 block">📤 View Source Transaction →</a>
+                        <a id="hcsLink" href="#" target="_blank" class="text-purple-400 text-sm hover:text-purple-300 block">📜 View HCS Attestation →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Stats -->
+                <div class="glass rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold mb-4">📊 Bridge Stats</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Total Volume</span>
+                            <span class="font-semibold">$127,450</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Active Chains</span>
+                            <span class="font-semibold text-green-400">50</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Avg Time</span>
+                            <span class="font-semibold">3.2 min</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Success Rate</span>
+                            <span class="font-semibold text-green-400">99.9%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Demo Transfers -->
+                <div class="glass rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold mb-4">🔄 Recent Transfers</h3>
+                    <div class="space-y-3 max-h-64 overflow-y-auto">
+                        <div class="bg-gray-800 rounded-lg p-3 text-sm">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-300">ETH → HBAR</span>
+                                <span class="text-green-400 text-xs">✓ Complete</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>2.5 ETH</span>
+                                <span>2 min ago</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-3 text-sm">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-300">SOL → ETH</span>
+                                <span class="text-green-400 text-xs">✓ Complete</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>150 SOL</span>
+                                <span>5 min ago</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-3 text-sm">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-300">USDC → USDC</span>
+                                <span class="text-yellow-400 text-xs">⏳ Processing</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>5,000 USDC</span>
+                                <span>1 min ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="glass rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold mb-4">🔐 Security</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center text-gray-300">
+                            <span class="text-green-400 mr-2">✓</span>
+                            Falcon-512 Signatures
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <span class="text-green-400 mr-2">✓</span>
+                            HCS Attestation
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <span class="text-green-400 mr-2">✓</span>
+                            3-of-5 Multi-sig
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <span class="text-green-400 mr-2">✓</span>
+                            HTLC Atomic Swaps
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <span class="text-green-400 mr-2">✓</span>
+                            Non-Custodial
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Developer Info -->
+                <div class="glass rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold mb-4">👨‍💻 Developers</h3>
+                    <p class="text-sm text-gray-400 mb-3">Embed this bridge on your site:</p>
+                    <code class="block bg-gray-800 rounded-lg p-3 text-xs text-gray-300 overflow-x-auto">
+&lt;script src="https://veralattice.com/bridge-widget.js"&gt;&lt;/script&gt;<br>
+&lt;script&gt;<br>
+&nbsp;&nbsp;VeraBridge.init({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;apiKey: 'your-key',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;partnerId: 'your-site'<br>
+&nbsp;&nbsp;});<br>
+&lt;/script&gt;
+                    </code>
+                    <a href="VERA_BRIDGE_API.md" target="_blank" class="text-purple-400 text-sm hover:text-purple-300 mt-3 block">📚 View Full API Docs →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center text-gray-500">
+            <p class="mb-2">VeraBridge - The Trustless Cross-Chain Highway</p>
+            <p class="text-sm">50 Chains • Falcon-512 Security • HCS Attested</p>
+            <div class="mt-4 flex justify-center space-x-4 text-xs">
+                <a href="VERA_BRIDGE_API.md" class="hover:text-purple-400">API Docs</a>
+                <a href="#" class="hover:text-purple-400">Status</a>
+                <a href="#" class="hover:text-purple-400">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Demo State
+        let web3 = null;
+        let userAddress = null;
+        let selectedToken = 'ETH';
+        let isConnected = false;
+
+        // Token rates (mock)
+        const tokenRates = {
+            'ETH': { rate: 200, symbol: 'HBAR', decimals: 18 },
+            'USDC': { rate: 1, symbol: 'USDC', decimals: 6 },
+            'USDT': { rate: 1, symbol: 'USDT', decimals: 6 },
+            'WBTC': { rate: 0.00005, symbol: 'WBTC', decimals: 8 }
+        };
+
+        // DOM Elements
+        const connectBtn = document.getElementById('connectWallet');
+        const bridgeBtn = document.getElementById('bridgeBtn');
+        const btnText = document.getElementById('btnText');
+        const amountInput = document.getElementById('amount');
+        const fromChain = document.getElementById('fromChain');
+        const toChain = document.getElementById('toChain');
+        const recipient = document.getElementById('recipient');
+        const tokenBtns = document.querySelectorAll('.token-btn');
+        const maxBtn = document.getElementById('maxBtn');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            updateQuote();
+        });
+
+        function setupEventListeners() {
+            // Connect wallet
+            connectBtn.addEventListener('click', connectWallet);
+            bridgeBtn.addEventListener('click', handleBridge);
+
+            // Token selection
+            tokenBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tokenBtns.forEach(b => {
+                        b.classList.remove('bg-purple-600', 'text-white');
+                        b.classList.add('bg-gray-800', 'text-gray-300');
+                    });
+                    btn.classList.remove('bg-gray-800', 'text-gray-300');
+                    btn.classList.add('bg-purple-600', 'text-white');
+                    selectedToken = btn.dataset.token;
+                    document.getElementById('tokenSymbol').textContent = selectedToken;
+                    updateQuote();
+                });
+            });
+
+            // Amount input
+            amountInput.addEventListener('input', updateQuote);
+            maxBtn.addEventListener('click', () => {
+                amountInput.value = '10'; // Mock max
+                updateQuote();
+            });
+
+            // Chain changes
+            fromChain.addEventListener('change', updateQuote);
+            toChain.addEventListener('change', updateQuote);
+        }
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask or another Web3 wallet');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                isConnected = true;
+
+                // Update UI
+                connectBtn.textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+                btnText.textContent = 'Bridge Assets';
+                document.getElementById('balance').textContent = '10.50';
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        disconnect();
+                    } else {
+                        userAddress = accounts[0];
+                        connectBtn.textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+                alert('Failed to connect wallet');
+            }
+        }
+
+        function disconnect() {
+            isConnected = false;
+            userAddress = null;
+            connectBtn.textContent = 'Connect Wallet';
+            btnText.textContent = 'Connect Wallet to Bridge';
+            document.getElementById('balance').textContent = '0.00';
+        }
+
+        function updateQuote() {
+            const amount = parseFloat(amountInput.value) || 0;
+            const token = tokenRates[selectedToken];
+            
+            const bridgeFee = amount * 0.0025;
+            const receiveAmount = amount * token.rate * 0.9975;
+
+            document.getElementById('bridgeFee').textContent = '$' + (bridgeFee * (selectedToken === 'ETH' ? 200 : 1)).toFixed(2);
+            document.getElementById('exchangeRate').textContent = `1 ${selectedToken} = ${token.rate} ${token.symbol}`;
+            document.getElementById('receiveAmount').textContent = receiveAmount.toFixed(token.decimals > 8 ? 2 : 4) + ' ' + token.symbol;
+        }
+
+        async function handleBridge() {
+            if (!isConnected) {
+                await connectWallet();
+                return;
+            }
+
+            const amount = parseFloat(amountInput.value);
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            const recipientAddr = recipient.value.trim();
+            if (!recipientAddr) {
+                alert('Please enter a recipient address');
+                return;
+            }
+
+            // Show status panel
+            const statusPanel = document.getElementById('txStatus');
+            statusPanel.classList.remove('hidden');
+
+            // Start bridge process
+            bridgeBtn.disabled = true;
+            btnText.textContent = 'Processing...';
+
+            // Simulate bridge process
+            await simulateBridge();
+
+            // Reset
+            bridgeBtn.disabled = false;
+            btnText.textContent = 'Bridge Assets';
+        }
+
+        async function simulateBridge() {
+            // Step 1: Initiate
+            await updateStep(1, 'processing');
+            await sleep(2000);
+            await updateStep(1, 'complete');
+
+            // Step 2: Validators
+            await updateStep(2, 'processing');
+            await sleep(3000);
+            await updateStep(2, 'complete');
+
+            // Step 3: Release
+            await updateStep(3, 'processing');
+            await sleep(2000);
+            await updateStep(3, 'complete');
+
+            // Show links
+            document.getElementById('txLinks').classList.remove('hidden');
+            
+            // Show success
+            alert('Demo bridge complete! In production, this would transfer real assets.');
+        }
+
+        async function updateStep(step, status) {
+            const stepEl = document.getElementById(`step${step}`);
+            const statusEl = document.getElementById(`step${step}Status`);
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+
+            if (status === 'processing') {
+                stepEl.classList.remove('bg-gray-700');
+                stepEl.classList.add('bg-yellow-500', 'animate-pulse');
+                statusEl.textContent = 'Processing...';
+                statusEl.className = 'text-yellow-400';
+            } else if (status === 'complete') {
+                stepEl.classList.remove('bg-yellow-500', 'animate-pulse');
+                stepEl.classList.add('bg-green-500');
+                stepEl.innerHTML = '✓';
+                statusEl.textContent = 'Complete';
+                statusEl.className = 'text-green-400';
+                
+                // Update progress
+                const progress = step * 33;
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = progress + '%';
+            }
+
+            await sleep(500);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize with demo values
+        recipient.value = '0.0.12345';
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+{
+  "duration_sec": 30.5,
+  "total_requests": 1443,
+  "total_errors": 0,
+  "actual_rps": 47.3,
+  "target_rps": 50,
+  "error_rate_pct": 0.0,
+  "overall_latency_ms": {
+    "min": 0.4,
+    "max": 162.43,
+    "mean": 2.73,
+    "median": 1.92,
+    "p50": 1.92,
+    "p95": 4.31,
+    "p99": 6.28
+  },
+  "endpoint_stats": {
+    "/health": {
+      "requests": 249,
+      "errors": 0,
+      "error_rate_pct": 0.0,
+      "latency_ms": {
+        "min": 0.59,
+        "max": 38.06,
+        "mean": 1.66,
+        "median": 1.41,
+        "p50": 1.41,
+        "p95": 2.3,
+        "p99": 3.18
+      },
+      "status_codes": {
+        "200": 249
+      }
+    },
+    "/predict/hbar": {
+      "requests": 700,
+      "errors": 0,
+      "error_rate_pct": 0.0,
+      "latency_ms": {
+        "min": 1.29,
+        "max": 162.43,
+        "mean": 3.55,
+        "median": 3.17,
+        "p50": 3.17,
+        "p95": 5.28,
+        "p99": 7.09
+      },
+      "status_codes": {
+        "500": 700
+      }
+    },
+    "/swarm/predict/hbar": {
+      "requests": 299,
+      "errors": 0,
+      "error_rate_pct": 0.0,
+      "latency_ms": {
+        "min": 0.85,
+        "max": 143.09,
+        "mean": 2.75,
+        "median": 2.08,
+        "p50": 2.08,
+        "p95": 3.38,
+        "p99": 5.02
+      },
+      "status_codes": {
+        "200": 299
+      }
+    },
+    "/metrics": {
+      "requests": 131,
+      "errors": 0,
+      "error_rate_pct": 0.0,
+      "latency_ms": {
+        "min": 0.4,
+        "max": 2.69,
+        "mean": 1.12,
+        "median": 1.04,
+        "p50": 1.04,
+        "p95": 1.89,
+        "p99": 2.57
+      },
+      "status_codes": {
+        "200": 131
+      }
+    },
+    "/": {
+      "requests": 64,
+      "errors": 0,
+      "error_rate_pct": 0.0,
+      "latency_ms": {
+        "min": 0.43,
+        "max": 2.51,
+        "mean": 1.19,
+        "median": 1.2,
+        "p50": 1.21,
+        "p95": 1.89,
+        "p99": 2.51
+      },
+      "status_codes": {
+        "200": 64
+      }
+    }
+  },
+  "thresholds": {
+    "throughput_ok": true,
+    "latency_ok": true,
+    "error_ok": true
+  },
+  "grade": "A",
+  "timestamp": "2026-05-11T19:11:23.138506"
+}

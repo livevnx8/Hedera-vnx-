@@ -1,0 +1,12 @@
+{
+  "network": "goerli",
+  "startedAt": "2026-04-03T01:45:10.896Z",
+  "steps": [
+    {
+      "name": "Ethereum Bridge Contract",
+      "status": "failed",
+      "error": "Hardhat deployment failed: Command failed: npx hardhat run scripts/deploy-bridge.js --network goerli\nError HH8: There's one or more errors in your config file:\n\n  * Invalid account: #0 for network: mainnet - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: goerli - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: sepolia - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: arbitrum - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: optimism - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: base - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: polygon - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: bsc - private key too short, expected 32 bytes\n  * Invalid account: #0 for network: avalanche - private key too short, expected 32 bytes\n\nTo learn more about Hardhat's configuration, please go to https://v2.hardhat.org/config/\nFor more info go to https://v2.hardhat.org/HH8 or run Hardhat with --show-stack-traces\n"
+    }
+  ],
+  "status": "failed"
+}

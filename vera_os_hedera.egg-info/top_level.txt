@@ -1,0 +1,16 @@
+analytics_engine
+auditor_specialist
+feature_infrastructure
+graph_data_engine
+hedera_agent_toolkit
+hedera_connector
+hedera_vnx_specialists
+hedera_vnx_specialists_advanced
+hedera_vnx_specialists_extended
+prediction_server_production
+prediction_server_v3
+reward_agent
+src
+transaction_validator
+vera_os
+vnx_swarm_engine

@@ -58,6 +58,15 @@ check_and_heal "HCS-Bridge" "8001" \
   "http://127.0.0.1:8001/health" \
   "nohup $VERA_DIR/scripts/start-hcs-bridge.sh >> '$LOG_DIR/hcs-bridge.log' 2>&1 &"
 
+# ── 4. Fast Predictor (background process) ──
+if ! pgrep -f "fast_predictor.py" > /dev/null; then
+  echo "[$(date)] Fast Predictor DOWN — restarting"
+  cd "$VERA_DIR"
+  set -a && source .env && set +a
+  nohup python3 scripts/fast_predictor.py >> "$LOG_DIR/fast_predictor.log" 2>&1 &
+  echo "[$(date)] Fast Predictor restart issued"
+fi
+
 # ── GPU temperature check ──
 if command -v nvidia-smi &> /dev/null; then
   GPU_TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | head -1)

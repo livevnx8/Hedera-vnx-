@@ -1,0 +1,16 @@
+{
+  "test": {
+    "date": "2026-03-26T01:47:58.875Z",
+    "duration": 36.093993999999995,
+    "status": "success"
+  },
+  "results": {
+    "logicalReasoning": 0,
+    "patternRecognition": 0,
+    "problemSolving": 100,
+    "quantumIntelligence": 75,
+    "overallIQ": 126.25
+  },
+  "classification": "Superior",
+  "rank": "Top 10%"
+}

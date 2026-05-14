@@ -1,0 +1,8 @@
+{
+  "name": "vera-live-dovu",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "live": "node --experimental-specifier-resolution=node --loader ts-node/esm go-live.ts"
+  }
+}

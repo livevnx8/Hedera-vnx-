@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetherium OS - Dashboard v2</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #141420;
+      --accent-green: #00d4aa;
+      --accent-blue: #3498db;
+      --accent-yellow: #ffa502;
+      --accent-red: #ff4757;
+      --accent-purple: #9b59b6;
+      --text-primary: #f5f6fa;
+      --text-secondary: #7f8fa4;
+      --border: rgba(255,255,255,0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 30px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .header h1 {
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .header p {
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-top: 5px;
+    }
+    
+    .main-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: calc(100vh - 80px);
+    }
+    
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .nav-item {
+      padding: 12px 16px;
+      margin: 4px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      color: white;
+    }
+    
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .content {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    
+    .stat-value.green { color: var(--accent-green); }
+    .stat-value.blue { color: var(--accent-blue); }
+    .stat-value.yellow { color: var(--accent-yellow); }
+    .stat-value.red { color: var(--accent-red); }
+    
+    .topology-container {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      height: 500px;
+      position: relative;
+    }
+    
+    .topology-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .topology-header h2 {
+      font-size: 1.1rem;
+    }
+    
+    .topology-controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+    }
+    
+    .btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--accent-green);
+    }
+    
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      border: none;
+    }
+    
+    #topology-svg {
+      width: 100%;
+      height: calc(100% - 60px);
+    }
+    
+    .node circle {
+      stroke-width: 2;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .node:hover circle {
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+    
+    .node text {
+      font-size: 12px;
+      fill: var(--text-primary);
+      pointer-events: none;
+    }
+    
+    .link {
+      stroke: var(--border);
+      stroke-width: 1;
+      stroke-opacity: 0.6;
+    }
+    
+    .link.active {
+      stroke: var(--accent-green);
+      stroke-opacity: 1;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { stroke-width: 1; }
+      50% { stroke-width: 3; }
+    }
+    
+    .data-flow {
+      fill: var(--accent-green);
+      animation: flow 1.5s linear infinite;
+    }
+    
+    @keyframes flow {
+      0% { offset-distance: 0%; }
+      100% { offset-distance: 100%; }
+    }
+    
+    .tooltip {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.85rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 1000;
+      min-width: 200px;
+    }
+    
+    .tooltip.visible {
+      opacity: 1;
+    }
+    
+    .panel {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .panel h2 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: var(--accent-blue);
+    }
+    
+    .log-entry {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .log-time {
+      color: var(--text-secondary);
+    }
+    
+    .log-level {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-right: 8px;
+    }
+    
+    .log-level.info {
+      background: rgba(52, 152, 219, 0.2);
+      color: var(--accent-blue);
+    }
+    
+    .log-level.warn {
+      background: rgba(255, 165, 2, 0.2);
+      color: var(--accent-yellow);
+    }
+    
+    .log-level.error {
+      background: rgba(255, 71, 87, 0.2);
+      color: var(--accent-red);
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-indicator.online {
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+    
+    .status-indicator.offline {
+      background: var(--accent-red);
+    }
+    
+    .heat-map {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 2px;
+      margin-top: 10px;
+    }
+    
+    .heat-cell {
+      aspect-ratio: 1;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+    
+    .heat-cell:hover {
+      transform: scale(1.2);
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>✨ Aetherium OS v2.0</h1>
+      <p>Truth, anchored in light</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; color: var(--accent-green);">🟠 Lattice Active</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary);">View 1 • 5 Nodes</div>
+      </div>
+      <button class="btn primary" onclick="refreshTopology()">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="sidebar">
+      <div class="nav-item active" onclick="showView('topology')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+        </svg>
+        Lattice Topology
+      </div>
+      <div class="nav-item" onclick="showView('agents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        </svg>
+        Agents
+      </div>
+      <div class="nav-item" onclick="showView('metrics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 20V10M12 20V4M6 20v-6"/>
+        </svg>
+        Metrics
+      </div>
+      <div class="nav-item" onclick="showView('logs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+        Logs
+      </div>
+      <div class="nav-item" onclick="showView('consensus')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        Consensus
+      </div>
+      <div class="nav-item" onclick="showView('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24"/>
+        </svg>
+        Settings
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Nodes</h3>
+          <div class="stat-value green" id="stat-nodes">5</div>
+        </div>
+        <div class="stat-card">
+          <h3>Consensus View</h3>
+          <div class="stat-value blue" id="stat-view">1</div>
+        </div>
+        <div class="stat-card">
+          <h3>Network Load</h3>
+          <div class="stat-value yellow" id="stat-load">34%</div>
+        </div>
+        <div class="stat-card">
+          <h3>HCS Messages</h3>
+          <div class="stat-value" id="stat-messages">12,847</div>
+        </div>
+      </div>
+
+      <div class="topology-container">
+        <div class="topology-header">
+          <h2>🔗 Lattice Topology</h2>
+          <div class="topology-controls">
+            <button class="btn" onclick="resetZoom()">🔍 Reset</button>
+            <button class="btn" onclick="toggleAnimation()">▶️ Animate</button>
+            <button class="btn primary" onclick="addNode()">➕ Add Node</button>
+          </div>
+        </div>
+        <svg id="topology-svg"></svg>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+
+      <div class="panel">
+        <h2>📜 Recent Activity</h2>
+        <div id="log-container">
+          <div class="log-entry">
+            <span class="log-time">04:30:12</span>
+            <span class="log-level info">INFO</span>
+            Node node-1a2b3c joined lattice
+          </div>
+          <div class="log-entry">
+            <span class="log-time">04:30:15</span>
+            <span class="log-level info">INFO</span>
+            Consensus achieved: view 1, sequence 12847
+          </div>
+          <div class="log-entry">
+            <span class="log-time">04:30:22</span>
+            <span class="log-level warn">WARN</span>
+            High load detected on node-0j1k2l (67%)
+          </div>
+          <div class="log-entry">
+            <span class="log-time">04:30:25</span>
+            <span class="log-level info">INFO</span>
+            Auto-optimization: rebalanced 3 tasks
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>🔥 Performance Heatmap</h2>
+        <div class="heat-map" id="heat-map"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Topology data
+    let nodes = [
+      { id: 'primary', name: 'veralattice-main', group: 1, status: 'healthy', load: 0.25, region: 'us-east-1' },
+      { id: 'node1', name: 'node-1a2b3c', group: 2, status: 'healthy', load: 0.18, region: 'us-east-1' },
+      { id: 'node2', name: 'node-4d5e6f', group: 2, status: 'healthy', load: 0.32, region: 'eu-west-1' },
+      { id: 'node3', name: 'node-7g8h9i', group: 2, status: 'healthy', load: 0.21, region: 'ap-south-1' },
+      { id: 'node4', name: 'node-0j1k2l', group: 2, status: 'degraded', load: 0.67, region: 'us-west-2' }
+    ];
+
+    let links = [
+      { source: 'primary', target: 'node1', active: true },
+      { source: 'primary', target: 'node2', active: true },
+      { source: 'primary', target: 'node3', active: true },
+      { source: 'primary', target: 'node4', active: true },
+      { source: 'node1', target: 'node2', active: false },
+      { source: 'node2', target: 'node3', active: false },
+      { source: 'node3', target: 'node4', active: false }
+    ];
+
+    let animationEnabled = true;
+    let simulation;
+    let svg, g;
+
+    // Initialize topology
+    function initTopology() {
+      const container = document.getElementById('topology-svg');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      svg = d3.select('#topology-svg')
+        .attr('viewBox', [0, 0, width, height]);
+
+      // Add zoom behavior
+      const zoom = d3.zoom()
+        .scaleExtent([0.5, 4])
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
+        });
+
+      svg.call(zoom);
+
+      g = svg.append('g');
+
+      // Create force simulation
+      simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(50));
+
+      renderTopology();
+      generateHeatmap();
+
+      // Update loop
+      setInterval(updateTopology, 5000);
+    }
+
+    function renderTopology() {
+      // Clear existing
+      g.selectAll('*').remove();
+
+      // Draw links
+      const link = g.append('g')
+        .selectAll('line')
+        .data(links)
+        .join('line')
+        .attr('class', d => `link ${d.active ? 'active' : ''}`);
+
+      // Draw animated data flow on active links
+      if (animationEnabled) {
+        const flow = g.append('g')
+          .selectAll('circle')
+          .data(links.filter(l => l.active))
+          .join('circle')
+          .attr('r', 3)
+          .attr('class', 'data-flow')
+          .attr('fill', '#00d4aa');
+
+        simulation.on('tick', () => {
+          flow.attr('cx', d => {
+            const t = (Date.now() / 1000) % 1;
+            return d.source.x + (d.target.x - d.source.x) * t;
+          })
+          .attr('cy', d => {
+            const t = (Date.now() / 1000) % 1;
+            return d.source.y + (d.target.y - d.source.y) * t;
+          });
+        });
+      }
+
+      // Draw nodes
+      const node = g.append('g')
+        .selectAll('.node')
+        .data(nodes)
+        .join('g')
+        .attr('class', 'node')
+        .call(d3.drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended));
+
+      // Node circles
+      node.append('circle')
+        .attr('r', d => d.id === 'primary' ? 30 : 20)
+        .attr('fill', d => {
+          if (d.status === 'offline') return '#ff4757';
+          if (d.status === 'degraded') return '#ffa502';
+          return d.id === 'primary' ? '#3498db' : '#00d4aa';
+        })
+        .attr('stroke', d => {
+          if (d.status === 'offline') return '#cc3333';
+          if (d.status === 'degraded') return '#cc8400';
+          return d.id === 'primary' ? '#2980b9' : '#00aa88';
+        });
+
+      // Status indicator
+      node.append('circle')
+        .attr('r', 6)
+        .attr('cx', d => d.id === 'primary' ? 20 : 13)
+        .attr('cy', d => d.id === 'primary' ? -20 : -13)
+        .attr('fill', d => d.status === 'healthy' ? '#00d4aa' : d.status === 'degraded' ? '#ffa502' : '#ff4757')
+        .attr('stroke', '#0a0a0f')
+        .attr('stroke-width', 2);
+
+      // Labels
+      node.append('text')
+        .attr('dy', d => d.id === 'primary' ? 45 : 35)
+        .attr('text-anchor', 'middle')
+        .text(d => d.name);
+
+      // Load indicator
+      node.append('text')
+        .attr('dy', d => d.id === 'primary' ? 58 : 48)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#7f8fa4')
+        .style('font-size', '10px')
+        .text(d => `${(d.load * 100).toFixed(0)}%`);
+
+      // Tooltip events
+      node
+        .on('mouseover', (event, d) => {
+          showTooltip(event, d);
+        })
+        .on('mouseout', hideTooltip);
+
+      // Update positions on tick
+      simulation.on('tick', () => {
+        link
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+
+        node
+          .attr('transform', d => `translate(${d.x},${d.y})`);
+      });
+    }
+
+    function showTooltip(event, d) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <strong style="color: var(--accent-green);">${d.name}</strong><br>
+        <span style="color: var(--text-secondary);">ID:</span> ${d.id}<br>
+        <span style="color: var(--text-secondary);">Status:</span> <span style="color: ${d.status === 'healthy' ? 'var(--accent-green)' : d.status === 'degraded' ? 'var(--accent-yellow)' : 'var(--accent-red)'}">${d.status}</span><br>
+        <span style="color: var(--text-secondary);">Region:</span> ${d.region}<br>
+        <span style="color: var(--text-secondary);">Load:</span> ${(d.load * 100).toFixed(1)}%<br>
+        <span style="color: var(--text-secondary);">HCS Topic:</span> 0.0.${Math.floor(Math.random() * 10000000)}
+      `;
+      tooltip.classList.add('visible');
+      tooltip.style.left = event.pageX + 10 + 'px';
+      tooltip.style.top = event.pageY - 10 + 'px';
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip').classList.remove('visible');
+    }
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+    function updateTopology() {
+      // Simulate dynamic updates
+      nodes.forEach(node => {
+        node.load = Math.max(0.1, Math.min(0.9, node.load + (Math.random() - 0.5) * 0.1));
+      });
+
+      // Update load indicators
+      d3.selectAll('.node text:nth-child(4)')
+        .text(d => `${(d.load * 100).toFixed(0)}%`);
+
+      // Update stats
+      const avgLoad = nodes.reduce((a, b) => a + b.load, 0) / nodes.length;
+      document.getElementById('stat-load').textContent = (avgLoad * 100).toFixed(0) + '%';
+      
+      const messages = parseInt(document.getElementById('stat-messages').textContent.replace(',', ''));
+      document.getElementById('stat-messages').textContent = (messages + Math.floor(Math.random() * 10)).toLocaleString();
+    }
+
+    function generateHeatmap() {
+      const container = document.getElementById('heat-map');
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 48; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'heat-cell';
+        
+        // Generate heat value
+        const intensity = Math.random();
+        let color;
+        if (intensity < 0.3) {
+          color = `rgba(0, 212, 170, ${intensity})`;
+        } else if (intensity < 0.7) {
+          color = `rgba(52, 152, 219, ${intensity})`;
+        } else {
+          color = `rgba(255, 71, 87, ${intensity})`;
+        }
+        
+        cell.style.background = color;
+        cell.style.gridColumn = (i % 12) + 1;
+        cell.style.gridRow = Math.floor(i / 12) + 1;
+        cell.title = `Load: ${(intensity * 100).toFixed(0)}%`;
+        
+        container.appendChild(cell);
+      }
+    }
+
+    function refreshTopology() {
+      simulation.alpha(1).restart();
+      generateHeatmap();
+    }
+
+    function resetZoom() {
+      svg.transition().duration(750).call(
+        d3.zoom().transform,
+        d3.zoomIdentity
+      );
+    }
+
+    function toggleAnimation() {
+      animationEnabled = !animationEnabled;
+      renderTopology();
+    }
+
+    function addNode() {
+      const newNode = {
+        id: `node-${Date.now().toString(36)}`,
+        name: `node-${nodes.length}`,
+        group: 2,
+        status: 'healthy',
+        load: Math.random() * 0.5,
+        region: ['us-east-1', 'eu-west-1', 'ap-south-1'][Math.floor(Math.random() * 3)]
+      };
+      
+      nodes.push(newNode);
+      links.push({ source: 'primary', target: newNode.id, active: true });
+      
+      simulation.nodes(nodes);
+      simulation.force('link').links(links);
+      simulation.alpha(1).restart();
+      
+      document.getElementById('stat-nodes').textContent = nodes.length;
+      
+      // Add log entry
+      const logContainer = document.getElementById('log-container');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `
+        <span class="log-time">${new Date().toLocaleTimeString()}</span>
+        <span class="log-level info">INFO</span>
+        Node ${newNode.name} joined lattice
+      `;
+      logContainer.insertBefore(entry, logContainer.firstChild);
+    }
+
+    function showView(view) {
+      // Update active nav item
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      // In real implementation, would show different views
+      console.log('Showing view:', view);
+    }
+
+    // Initialize on load
+    window.addEventListener('load', initTopology);
+    window.addEventListener('resize', () => {
+      const container = document.getElementById('topology-svg');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      svg.attr('viewBox', [0, 0, width, height]);
+      simulation.force('center', d3.forceCenter(width / 2, height / 2));
+      simulation.alpha(0.3).restart();
+    });
+  </script>
+</body>
+</html>

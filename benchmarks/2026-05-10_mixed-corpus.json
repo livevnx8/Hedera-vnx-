@@ -1,0 +1,53 @@
+{
+  "run_id": "2026-05-10_mixed-corpus",
+  "timestamp": "2026-05-10T12:37:24.122942",
+  "configuration": {
+    "run_name": "mixed-corpus",
+    "model": {
+      "architecture": "BitLattice",
+      "lattice_size": 120,
+      "vocabulary_size": 128,
+      "num_features": 20,
+      "num_classes": 10
+    },
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "batch_size": 32,
+      "epochs": 20,
+      "use_quantization": false,
+      "use_learning_retention": false,
+      "loss_type": "cross_entropy",
+      "lr_scheduler_type": "cosine"
+    },
+    "dataset": {
+      "type": "mixed",
+      "real_samples": 100,
+      "synthetic_samples": 9000,
+      "total_samples": 9100
+    },
+    "hardware": {
+      "device": "cuda",
+      "gpu": "RTX 4060 Ti"
+    }
+  },
+  "results": {
+    "final_loss": 0.85,
+    "final_accuracy": 0.4545,
+    "best_accuracy": 0.4574,
+    "best_loss": 0.85,
+    "training_time_seconds": 120
+  },
+  "findings": [
+    "Real data improved accuracy from 33% to 45%",
+    "Loss decreased from 1.58 to 0.85",
+    "Training completed without errors",
+    "Class imbalance present in real data"
+  ],
+  "comparison": {
+    "baseline_run": "2026-05-10_synthetic-only",
+    "baseline_accuracy": 0.34,
+    "accuracy_improvement": 0.1145,
+    "relative_improvement": 0.3368
+  }
+}

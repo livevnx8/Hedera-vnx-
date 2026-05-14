@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Vera
+Comment=Open Vera in a dedicated app window on this rig
+Exec=/usr/bin/python3 /home/vera-live-0-1/hedera-llm-api/scripts/vera_hq_app.py
+Icon=/home/vera-live-0-1/hedera-llm-api/assets/vera-hq.svg
+Terminal=false
+Categories=Utility;Development;AI;
+StartupNotify=true
+StartupWMClass=ai.vera.headquarters

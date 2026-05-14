@@ -128,3 +128,4 @@ qvx-cold-storage/
 !docs/
 !.github/
 !scripts/
+src/agents/__pycache__

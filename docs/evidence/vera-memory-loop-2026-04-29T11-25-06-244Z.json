@@ -1,0 +1,478 @@
+{
+  "generatedAt": "2026-04-29T11:25:06.254Z",
+  "status": "proved_locally",
+  "run": {
+    "runId": "proof-run-1777461906244-04e7f691-0",
+    "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+    "status": "proof_complete",
+    "productionLabel": "prototype",
+    "task": {
+      "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+      "description": "Publish a proof-backed Vera memory packet for a Hedera AI task",
+      "serviceType": "proof-publisher",
+      "payload": {
+        "proofGoal": "full_loop_memory_packet",
+        "requestedBy": "prove-vera-memory-loop.ts"
+      },
+      "budgetHbar": 1,
+      "requiredConfidence": 0.7,
+      "priority": "normal",
+      "createdAt": 1777461906244,
+      "metadata": {
+        "evidenceRun": true,
+        "generatedAt": "2026-04-29T11:25:06.244Z"
+      }
+    },
+    "selectedAgent": {
+      "agentId": "proof-publisher",
+      "name": "Proof Publisher",
+      "serviceTypes": [
+        "proof-publisher",
+        "proof-publishing",
+        "hcs-proof",
+        "receipt"
+      ],
+      "capabilities": [
+        "HCS proof packet shaping",
+        "HashScan reference packaging",
+        "receipt completeness checks"
+      ],
+      "keywords": [
+        "proof",
+        "hcs",
+        "receipt",
+        "hashscan",
+        "publish",
+        "topic",
+        "transaction",
+        "audit"
+      ],
+      "proofRequirements": [
+        "proofHash",
+        "hcsTopicId or localProofHash",
+        "receiptSummary"
+      ],
+      "defaultFeeHbar": 0.05,
+      "reputationSeed": 0.94
+    },
+    "selection": {
+      "scores": [
+        {
+          "agentId": "proof-publisher",
+          "score": 1,
+          "matched": [
+            "service:proof-publisher",
+            "keyword:proof",
+            "keyword:publish",
+            "budget"
+          ],
+          "reason": "Matched service:proof-publisher, keyword:proof, keyword:publish, budget"
+        },
+        {
+          "agentId": "hedera-transaction-assistant",
+          "score": 0.3678,
+          "matched": [
+            "keyword:hedera",
+            "budget"
+          ],
+          "reason": "Matched keyword:hedera, budget"
+        },
+        {
+          "agentId": "marketplace-quality-scorer",
+          "score": 0.3244,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        },
+        {
+          "agentId": "hcs-auditor",
+          "score": 0.3236,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        },
+        {
+          "agentId": "operator-harmony",
+          "score": 0.3236,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        },
+        {
+          "agentId": "agent-builder",
+          "score": 0.322,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        },
+        {
+          "agentId": "carbon-verifier",
+          "score": 0.322,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        },
+        {
+          "agentId": "compliance-reviewer",
+          "score": 0.3212,
+          "matched": [
+            "budget"
+          ],
+          "reason": "Matched budget"
+        }
+      ],
+      "meridian": {
+        "status": "disabled"
+      }
+    },
+    "execution": {
+      "agentId": "proof-publisher",
+      "serviceType": "proof-publisher",
+      "confidence": 0.97,
+      "durationMs": 1,
+      "result": {
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "serviceType": "proof-publisher",
+        "agentId": "proof-publisher",
+        "handledBy": "Proof Publisher",
+        "proofHash": "Pz3uMCxdo8eluMS3r2R4BAsLP2jJswa69+DUU1YzM7A=",
+        "hcsTopicId": "local-dry-run-topic",
+        "hcsSequence": 0,
+        "receiptSummary": "Proof packet prepared for proof-publisher"
+      },
+      "proofHash": "SSdi2EA+xMb0jbmsJPTmQHYmW4IYg/+BaCseTPHJX60="
+    },
+    "verification": {
+      "outcome": "accepted",
+      "score": 1,
+      "details": [
+        "Schema valid",
+        "Confidence 0.970 >= threshold 0.7",
+        "Proof hash present and valid",
+        "Proof publisher verifier requires HCS, transaction, hash, or HashScan evidence",
+        "Service verifier passed for proof-publisher"
+      ]
+    },
+    "settlement": {
+      "state": "simulated",
+      "amountHbar": 0.05,
+      "reason": "First-party dry-run settlement record; no funds moved"
+    },
+    "reputation": {
+      "agentId": "proof-publisher",
+      "delta": 0.01,
+      "scoreAfter": 0.95,
+      "basis": "Verification outcome: accepted"
+    },
+    "events": [
+      {
+        "eventId": "proof-event-1777461906245-2a884edf-3",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "task_created",
+        "summary": "Verifiable AI task created for proof-publisher",
+        "timestamp": 1777461906245,
+        "metadata": {
+          "description": "Publish a proof-backed Vera memory packet for a Hedera AI task",
+          "budgetHbar": 1,
+          "requiredConfidence": 0.7
+        },
+        "hash": "x3rzV5hu1rIHV3w9kibMh+HqKF45lKKYaP9upIdUHEE="
+      },
+      {
+        "eventId": "proof-event-1777461906250-0103bd6b-0",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "escalation_auto_resolved",
+        "summary": "Auto-resolved escalation via lower_temperature",
+        "timestamp": 1777461906250,
+        "previousHash": "x3rzV5hu1rIHV3w9kibMh+HqKF45lKKYaP9upIdUHEE=",
+        "metadata": {
+          "escalationId": "esc-1777461906250-vera-ai-",
+          "strategy": "lower_temperature"
+        },
+        "hash": "aj8aKg9eGZgGs7M7VOn/qUtJA/lyDbsaXTWLWRn1QYs="
+      },
+      {
+        "eventId": "proof-event-1777461906250-9f1c2d9f-2",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "agent_selected",
+        "summary": "Selected first-party Vera agent proof-publisher",
+        "timestamp": 1777461906250,
+        "previousHash": "aj8aKg9eGZgGs7M7VOn/qUtJA/lyDbsaXTWLWRn1QYs=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "scores": [
+            {
+              "agentId": "proof-publisher",
+              "score": 1,
+              "matched": [
+                "service:proof-publisher",
+                "keyword:proof",
+                "keyword:publish",
+                "budget"
+              ],
+              "reason": "Matched service:proof-publisher, keyword:proof, keyword:publish, budget"
+            },
+            {
+              "agentId": "hedera-transaction-assistant",
+              "score": 0.3678,
+              "matched": [
+                "keyword:hedera",
+                "budget"
+              ],
+              "reason": "Matched keyword:hedera, budget"
+            },
+            {
+              "agentId": "marketplace-quality-scorer",
+              "score": 0.3244,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            },
+            {
+              "agentId": "hcs-auditor",
+              "score": 0.3236,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            },
+            {
+              "agentId": "operator-harmony",
+              "score": 0.3236,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            },
+            {
+              "agentId": "agent-builder",
+              "score": 0.322,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            },
+            {
+              "agentId": "carbon-verifier",
+              "score": 0.322,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            },
+            {
+              "agentId": "compliance-reviewer",
+              "score": 0.3212,
+              "matched": [
+                "budget"
+              ],
+              "reason": "Matched budget"
+            }
+          ],
+          "meridian": {
+            "status": "disabled"
+          },
+          "selectionPolicy": "deterministic-first-party-meridian-shadow"
+        },
+        "hash": "4rdPhMyPZN3/CLmw/ku2J5/xXzAJrGH0ntHNin5MmMA="
+      },
+      {
+        "eventId": "proof-event-1777461906250-9f6465a6-9",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "execution_started",
+        "summary": "proof-publisher started execution",
+        "timestamp": 1777461906250,
+        "previousHash": "4rdPhMyPZN3/CLmw/ku2J5/xXzAJrGH0ntHNin5MmMA=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "capabilities": [
+            "HCS proof packet shaping",
+            "HashScan reference packaging",
+            "receipt completeness checks"
+          ],
+          "proofRequirements": [
+            "proofHash",
+            "hcsTopicId or localProofHash",
+            "receiptSummary"
+          ]
+        },
+        "hash": "RTuhAGrKJCMO84mDg7iTqfHNXKaRZlhnb1tasIHN/ic="
+      },
+      {
+        "eventId": "proof-event-1777461906250-0f82262b-5",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "result_submitted",
+        "summary": "proof-publisher submitted a proof-hashed result",
+        "timestamp": 1777461906250,
+        "previousHash": "RTuhAGrKJCMO84mDg7iTqfHNXKaRZlhnb1tasIHN/ic=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "resultHash": "SSdi2EA+xMb0jbmsJPTmQHYmW4IYg/+BaCseTPHJX60=",
+          "confidence": 0.97,
+          "durationMs": 1
+        },
+        "hash": "kxCiTwwrja29zCPt7e1NHv3YtZT9WiorVc7+m9b6r24="
+      },
+      {
+        "eventId": "proof-event-1777461906251-d0cc2ed8-b",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "verification_passed",
+        "summary": "Verification accepted with score 1",
+        "timestamp": 1777461906251,
+        "previousHash": "kxCiTwwrja29zCPt7e1NHv3YtZT9WiorVc7+m9b6r24=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "score": 1,
+          "details": [
+            "Schema valid",
+            "Confidence 0.970 >= threshold 0.7",
+            "Proof hash present and valid",
+            "Proof publisher verifier requires HCS, transaction, hash, or HashScan evidence",
+            "Service verifier passed for proof-publisher"
+          ],
+          "schemaValid": true,
+          "proofValid": true,
+          "serviceValid": true
+        },
+        "hash": "BMHr3dz5vf3t0vLoOkCVe5E61B8XE4tLhLukXm2sFYY="
+      },
+      {
+        "eventId": "proof-event-1777461906251-11bbcdfa-0",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "settlement_recorded",
+        "summary": "Settlement simulated for proof-publisher",
+        "timestamp": 1777461906251,
+        "previousHash": "BMHr3dz5vf3t0vLoOkCVe5E61B8XE4tLhLukXm2sFYY=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "state": "simulated",
+          "amountHbar": 0.05,
+          "reason": "First-party dry-run settlement record; no funds moved"
+        },
+        "hash": "x32snMBzD8LMNDYaYIi0R2lKHFhdWdDRkgGHPEp9EqQ="
+      },
+      {
+        "eventId": "proof-event-1777461906251-6ece75ff-5",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "reputation_updated",
+        "summary": "Reputation updated for proof-publisher",
+        "timestamp": 1777461906251,
+        "previousHash": "x32snMBzD8LMNDYaYIi0R2lKHFhdWdDRkgGHPEp9EqQ=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "agentId": "proof-publisher",
+          "delta": 0.01,
+          "scoreAfter": 0.95,
+          "basis": "Verification outcome: accepted"
+        },
+        "hash": "I3bZio3oXXnAw1LIYF/JGR9yaO7dR+7R0BKOg+Nfr0o="
+      },
+      {
+        "eventId": "proof-event-1777461906251-d2fbe740-1",
+        "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+        "type": "hcs_proof_emitted",
+        "summary": "Local HCS-ready proof receipt emitted",
+        "timestamp": 1777461906251,
+        "previousHash": "I3bZio3oXXnAw1LIYF/JGR9yaO7dR+7R0BKOg+Nfr0o=",
+        "agentId": "proof-publisher",
+        "metadata": {
+          "localProofHash": "ivy4iGoXd7mqrftyQZPxKjQgmHu0LNrPpAGNSjMji0Y=",
+          "hcsWriteMode": "skipped",
+          "hcsWriteReason": "Mainnet operations disabled",
+          "productionBoundary": "prototype until live HCS receipt, settlement record, and rollback story are attached"
+        },
+        "hash": "btWSHKIOvbwZwysdPm6/TRvBaJs9EnLii+CddFHZGMc="
+      }
+    ],
+    "receipt": {
+      "localProofHash": "ivy4iGoXd7mqrftyQZPxKjQgmHu0LNrPpAGNSjMji0Y="
+    },
+    "createdAt": 1777461906244,
+    "updatedAt": 1777461906251,
+    "memoryPacket": {
+      "eventId": "evt-proof-run-1777461906244-04e7f691-0",
+      "eventType": "task.proof_complete",
+      "packetHash": "nALA086Tb6EAFoHz4CQdZ9fSQ9SPK8vHKiMDZozLHeU=",
+      "schema": "vera.memory.packet.v1",
+      "hcsWriteMode": "skipped",
+      "hcsWriteReason": "Mainnet operations disabled",
+      "hcsTopicId": "0.0.10416185"
+    }
+  },
+  "memoryPacket": {
+    "_vera": {
+      "schema": "vera.memory.packet.v1",
+      "eventType": "task.proof_complete",
+      "eventId": "evt-proof-run-1777461906244-04e7f691-0",
+      "network": "mainnet",
+      "source": "vera-proof-kernel",
+      "createdAt": "2026-04-29T11:25:06.244Z",
+      "taskId": "vera-ai-task-1777461906244-337cadc6-b",
+      "agentId": "proof-publisher",
+      "runId": "proof-run-1777461906244-04e7f691-0",
+      "correlationId": "proof-run-1777461906244-04e7f691-0",
+      "learnable": false,
+      "privacy": "public_summary"
+    },
+    "_hip993": {
+      "type": "VERA_MEMORY_PACKET",
+      "version": "1.0.0",
+      "max_chunk_size": 4096,
+      "features": [
+        "chunking",
+        "sequence_tracking",
+        "integrity_hash",
+        "mirror_replay"
+      ]
+    },
+    "proof": {
+      "payloadHash": "6GEi5KZpy2go6uGxb9bIdta9hxRgc9ASRwQk92vBMu8=",
+      "resultHash": "SSdi2EA+xMb0jbmsJPTmQHYmW4IYg/+BaCseTPHJX60=",
+      "settlementHash": "HpoERnc6gdVzDJcPDhTXio+c6S76WbslpU1A2SQ+VHE=",
+      "reputationHash": "dr3qob+XHR6ScNRNjYbTFXInR/jsjoIKq3sAqOMiHC4=",
+      "eventChainHash": "m5fEtWEXkKY3RFijGeOJmfe/WXQzwMA9oFaI6tBMT08=",
+      "packetHash": "nALA086Tb6EAFoHz4CQdZ9fSQ9SPK8vHKiMDZozLHeU="
+    },
+    "summary": {
+      "status": "proof_complete",
+      "confidence": 0.97,
+      "shortText": "Verifiable AI task vera-ai-task-1777461906244-337cadc6-b closed with accepted verification and simulated settlement."
+    },
+    "refs": {
+      "localRecordId": "proof-run-1777461906244-04e7f691-0",
+      "dashboardPath": "/api/vera/verifiable-ai/runs/proof-run-1777461906244-04e7f691-0",
+      "blockStreamRef": null
+    }
+  },
+  "packetIssues": [],
+  "replay": {
+    "indexedPackets": 1,
+    "packetHashFound": true,
+    "taskRecords": 1,
+    "agentRecords": 1,
+    "stats": {
+      "packets": 1,
+      "invalidPackets": 0,
+      "pendingChunkGroups": 0,
+      "taskIds": 1,
+      "agentIds": 1,
+      "eventTypes": 1
+    },
+    "storedRecords": 1,
+    "storeSummary": {
+      "records": 2,
+      "current": 2,
+      "superseded": 0,
+      "taskIds": 2,
+      "agentIds": 1,
+      "eventTypes": 1,
+      "lastIndexedAt": "2026-04-29T11:25:06.252Z"
+    }
+  }
+}

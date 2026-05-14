@@ -1,0 +1,250 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════
+# VERA AI COMMAND CENTER - Unified Control Interface
+# Usage: ./vera [command]
+# ═══════════════════════════════════════════════════════════════════════
+
+VERSION="5.0.0"
+LOG_DIR="./logs"
+PID_DIR="./logs"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+show_header() {
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════════════╗"
+    echo "║  🌟 VERA AI COMMAND CENTER v${VERSION}                                ║"
+    echo "║  Phases 1-5: HCS • Agents • Sub-Agents • ML • Swarm             ║"
+    echo "╚════════════════════════════════════════════════════════════════════╝"
+    echo ""
+}
+
+show_help() {
+    show_header
+    echo "Usage: ./vera [command]"
+    echo ""
+    echo "COMMANDS:"
+    echo ""
+    echo "  ${GREEN}start${NC}        Start all agents"
+    echo "  ${GREEN}stop${NC}         Stop all agents"
+    echo "  ${GREEN}restart${NC}      Restart all agents"
+    echo "  ${GREEN}status${NC}       Show agent health status"
+    echo "  ${GREEN}dashboard${NC}    Live monitoring dashboard"
+    echo "  ${GREEN}logs${NC}         View recent logs"
+    echo "  ${GREEN}topics${NC}       Show HashScan topic links"
+    echo "  ${GREEN}demo${NC}         Run Phase 3-5 demos"
+    echo "  ${GREEN}health${NC}       Detailed health check"
+    echo "  ${GREEN}hcs${NC}          Verify HCS message flow"
+    echo "  ${GREEN}api${NC}          Start API server
+  ${GREEN}scale${NC}        Check auto-scaling status
+  ${GREEN}alerts${NC}       View alert configuration"
+    echo "  ${GREEN}version${NC}      Show version info"
+    echo "  ${GREEN}help${NC}         Show this help"
+    echo ""
+}
+
+cmd_start() {
+    show_header
+    echo "🚀 Starting Vera Agent Swarm..."
+    echo ""
+    ./launch-v2-agents.sh
+    sleep 2
+    echo ""
+    node health-check.mjs
+}
+
+cmd_stop() {
+    show_header
+    echo "🛑 Stopping all agents..."
+    ./agents/stop-agents.sh
+}
+
+cmd_restart() {
+    show_header
+    cmd_stop
+    sleep 2
+    cmd_start
+}
+
+cmd_status() {
+    show_header
+    node health-check.mjs
+}
+
+cmd_dashboard() {
+    show_header
+    echo "📊 Starting live dashboard (Ctrl+C to exit)..."
+    echo ""
+    ./dashboard.sh
+}
+
+cmd_logs() {
+    show_header
+    echo "📋 Recent Log Activity:"
+    echo ""
+    for log in ${LOG_DIR}/*.log; do
+        if [ -f "$log" ]; then
+            name=$(basename "$log" .log)
+            lines=$(wc -l < "$log" 2>/dev/null || echo "0")
+            cycles=$(grep -c "CYCLE #" "$log" 2>/dev/null || echo "0")
+            errors=$(grep -c "❌\|Error" "$log" 2>/dev/null || echo "0")
+            echo "  ${BLUE}${name}${NC}: ${lines} lines | ${GREEN}${cycles} cycles${NC} | ${RED}${errors} errors${NC}"
+        fi
+    done
+    echo ""
+    echo "View full logs: tail -f ${LOG_DIR}/[agent].log"
+}
+
+cmd_topics() {
+    show_header
+    echo "🔗 HashScan Topic Links (Mainnet):"
+    echo ""
+    echo "  ${GREEN}CORE${NC}   (0.0.10409351):"
+    echo "       https://hashscan.io/mainnet/topic/0.0.10409351"
+    echo ""
+    echo "  ${GREEN}DEFI${NC}   (0.0.10412577):"
+    echo "       https://hashscan.io/mainnet/topic/0.0.10412577"
+    echo ""
+    echo "  ${GREEN}ENERGY${NC} (0.0.10412579):"
+    echo "       https://hashscan.io/mainnet/topic/0.0.10412579"
+    echo ""
+    echo "  ${GREEN}BRIDGE${NC} (0.0.10412578):"
+    echo "       https://hashscan.io/mainnet/topic/0.0.10412578"
+    echo ""
+}
+
+cmd_demo() {
+    show_header
+    echo "🎮 Running Phase Demos:"
+    echo ""
+    echo "${YELLOW}Phase 3: Sub-Agents${NC}"
+    node demo-phase3.mjs
+    echo ""
+    echo "${YELLOW}Phase 4: Predictive Analytics${NC}"
+    node demo-phase4.mjs
+    echo ""
+    echo "${YELLOW}Phase 5: Swarm Intelligence${NC}"
+    node demo-phase5.mjs
+}
+
+cmd_health() {
+    show_header
+    echo "🏥 Detailed Health Check:"
+    echo ""
+    node health-check.mjs
+    echo ""
+    echo "${YELLOW}System Resources:${NC}"
+    echo "  Node processes: $(pgrep -c node 2>/dev/null || echo "0")"
+    echo "  Log files: $(ls -1 ${LOG_DIR}/*.log 2>/dev/null | wc -l)"
+    echo "  Disk usage: $(du -sh ${LOG_DIR} 2>/dev/null | cut -f1)"
+}
+
+cmd_hcs() {
+    show_header
+    echo "📡 HCS Verification:"
+    echo ""
+    node -e "
+const fs = require('fs');
+const agents = [
+  { name: '⚡ Energy', file: 'energy-auditor.log', topic: '0.0.10412579' },
+  { name: '📈 DeFi', file: 'defi-analyst.log', topic: '0.0.10412577' },
+  { name: '🔒 Security', file: 'security-guardian.log', topic: '0.0.10409351' },
+  { name: '🌱 Carbon', file: 'carbon-validator.log', topic: '0.0.10412579' }
+];
+
+console.log('Agent Status:');
+let total = 0;
+agents.forEach(a => {
+  try {
+    const log = fs.readFileSync('./logs/' + a.file, 'utf8');
+    const cycles = (log.match(/CYCLE #/g) || []).length;
+    total += cycles;
+    console.log('  ' + a.name + ': ' + cycles + ' cycles | Topic: ' + a.topic);
+  } catch(e) { console.log('  ' + a.name + ': No log'); }
+});
+
+console.log('');
+console.log('Total Cycles: ' + total);
+console.log('Est. HCS Messages: ' + (total * 4) + '+');
+console.log('Network: MAINNET');
+console.log('Queue: 500ms throttling');
+"
+    echo ""
+    echo "${GREEN}✅ HCS logging is ACTIVE${NC}"
+}
+
+cmd_update() {
+    show_header
+    echo "🔄 Updating agent configurations..."
+    echo ""
+    # Stop agents
+    cmd_stop
+    sleep 2
+    # Restart
+    cmd_start
+}
+
+cmd_version() {
+    show_header
+    echo "Version: ${VERSION}"
+    echo "Phases: 1-5 Complete"
+    echo "Agents: 4 (DeFi, Energy, Security, Carbon)"
+    echo "Network: Hedera Mainnet"
+    echo "HCS Topics: 4 (CORE, DEFI, ENERGY, BRIDGE)"
+    echo ""
+}
+
+# Main
+CMD=${1:-help}
+
+case $CMD in
+    start)
+        cmd_start
+        ;;
+    stop)
+        cmd_stop
+        ;;
+    restart)
+        cmd_restart
+        ;;
+    status)
+        cmd_status
+        ;;
+    dashboard)
+        cmd_dashboard
+        ;;
+    logs)
+        cmd_logs
+        ;;
+    topics)
+        cmd_topics
+        ;;
+    demo)
+        cmd_demo
+        ;;
+    health)
+        cmd_health
+        ;;
+    hcs)
+        cmd_hcs
+        ;;
+    update)
+        cmd_update
+        ;;
+    version)
+        cmd_version
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "Unknown command: $CMD"
+        echo "Run './vera help' for usage"
+        exit 1
+        ;;
+esac

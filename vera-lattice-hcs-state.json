@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-03-28T04:16:43.719Z",
+  "topics": {
+    "defi": {
+      "id": "0.0.10409351",
+      "name": "Vera_DeFi_Research",
+      "purpose": "DeFi protocol analysis & research",
+      "shard": "alpha",
+      "sequences": [
+        "808",
+        "810",
+        "812",
+        "814"
+      ],
+      "messages": 4
+    },
+    "dovu": {
+      "id": "0.0.10409351",
+      "name": "Vera_DOVU_Validation",
+      "purpose": "Carbon credit validations",
+      "shard": "beta",
+      "sequences": [
+        "807",
+        "809",
+        "811",
+        "813"
+      ],
+      "messages": 4
+    },
+    "memory": {
+      "id": "0.0.10409351",
+      "name": "Vera_Memory_Index",
+      "purpose": "Cross-topic memory coordination",
+      "shard": "gamma",
+      "sequences": [
+        "806"
+      ],
+      "messages": 1
+    },
+    "metrics": {
+      "id": "0.0.10409351",
+      "name": "Vera_System_Metrics",
+      "purpose": "Performance & health monitoring",
+      "shard": "delta",
+      "sequences": [
+        "805"
+      ],
+      "messages": 1
+    }
+  },
+  "latticeState": {
+    "coherence": 1,
+    "shards": {},
+    "crossReferences": [],
+    "timestamp": 1774671403719
+  },
+  "performance": {
+    "duration": 21967,
+    "throughput": 0.455228296990941,
+    "messages": 10,
+    "multiTopicTPS": 1.820913187963764
+  }
+}

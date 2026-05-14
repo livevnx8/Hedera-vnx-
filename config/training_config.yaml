@@ -1,0 +1,156 @@
+# Starlit Training Configuration
+
+# Hardware Configuration
+hardware:
+  # Number of GPUs to use
+  num_gpus: 8
+  # GPU IDs to use
+  gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+  # Batch size per GPU
+  batch_size_per_gpu: 32
+  # Mixed precision training
+  mixed_precision: true
+
+# Distributed Training Configuration
+distributed:
+  # Backend: nccl (GPU) or gloo (CPU)
+  backend: nccl
+  # Master address
+  master_addr: localhost
+  # Master port
+  master_port: 12355
+  # World size (number of processes)
+  world_size: 8
+
+# Training Configuration
+training:
+  # Number of epochs
+  epochs: 100
+  # Learning rate
+  learning_rate: 0.01
+  # Learning rate schedule
+  lr_schedule: cosine
+  # Warmup epochs
+  warmup_epochs: 10
+  # Weight decay
+  weight_decay: 0.0001
+  # Gradient clipping
+  grad_clip: 1.0
+
+# Specialist Configuration
+specialists:
+  # Domain specialists
+  domain:
+    count: 40
+    lattice_size: 120
+    vocabulary_size: 128
+    training_epochs: 100
+  # Concept specialists
+  concept:
+    count: 200
+    lattice_size: 30
+    vocabulary_size: 256
+    training_epochs: 100
+  # Pattern specialists
+  pattern:
+    count: 500
+    lattice_size: 15
+    vocabulary_size: 128
+    training_epochs: 100
+
+# Curriculum Learning Configuration
+curriculum:
+  # Enable curriculum learning
+  enabled: true
+  # Transfer learning from parent layers
+  transfer_learning: true
+  # Knowledge distillation
+  knowledge_distillation: true
+  # Distillation temperature
+  distillation_temperature: 3.0
+  # Alpha for distillation loss
+  distillation_alpha: 0.5
+
+# Quantization Configuration
+quantization:
+  # Quantization-aware training
+  qat_enabled: true
+  # Straight-through estimator
+  ste_enabled: true
+  # Ternary projection
+  ternary_projection: true
+  # Projection frequency (every N steps)
+  projection_frequency: 1
+
+# Optimization Configuration
+optimization:
+  # Optimizer: adam, sgd, ternary_adam
+  optimizer: ternary_adam
+  # Beta1 (for Adam)
+  beta1: 0.9
+  # Beta2 (for Adam)
+  beta2: 0.999
+  # Epsilon (for Adam)
+  epsilon: 1e-8
+
+# Data Configuration
+data:
+  # Corpus directory
+  corpus_dir: data/corpora
+  # Cache directory
+  cache_dir: data/cache
+  # Num workers for data loading
+  num_workers: 4
+  # Pin memory (for GPU)
+  pin_memory: true
+
+# Checkpoint Configuration
+checkpointing:
+  # Checkpoint directory
+  checkpoint_dir: checkpoints
+  # Save frequency (every N epochs)
+  save_frequency: 10
+  # Keep last N checkpoints
+  keep_last_n: 3
+  # Save best model
+  save_best: true
+
+# Logging Configuration
+logging:
+  # Log directory
+  log_dir: logs
+  # TensorBoard logging
+  tensorboard: true
+  # Weights & Biases logging
+  wandb: false
+  # Log frequency (every N steps)
+  log_frequency: 100
+  # Project name (for W&B)
+  project_name: starlit-training
+
+# Validation Configuration
+validation:
+  # Validation frequency (every N epochs)
+  val_frequency: 5
+  # Validation batch size
+  val_batch_size: 32
+  # Validation split
+  val_split: 0.1
+
+# Artifact Configuration
+artifacts:
+  # Artifact directory
+  artifact_dir: starlit-artifacts
+  # Artifact format: vnx
+  artifact_format: vnx
+  # Compression enabled
+  compression: true
+
+# Memory Configuration
+memory:
+  # Gradient checkpointing
+  gradient_checkpointing: true
+  # Offload parameters to CPU
+  offload_params: false
+  # Maximum memory per GPU (GB)
+  max_memory_per_gpu: 40

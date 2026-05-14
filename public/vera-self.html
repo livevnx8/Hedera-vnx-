@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vera — Self Portrait</title>
+<style>
+  :root {
+    --bg: #0a0e14;
+    --panel: #0f1520;
+    --panel-2: #131b28;
+    --border: #1f2a3c;
+    --text: #e4ecf7;
+    --muted: #6c7a93;
+    --accent: #7dd3fc;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --err: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'Monaco', 'Menlo', Consolas, monospace;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+  h1 .dot {
+    display: inline-block; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--ok); margin-right: 8px;
+    box-shadow: 0 0 12px var(--ok);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .card h2 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .row:last-child { border-bottom: 0; }
+  .row .k { color: var(--muted); }
+  .row .v { font-variant-numeric: tabular-nums; }
+  .v.ok { color: var(--ok); }
+  .v.warn { color: var(--warn); }
+  .v.err { color: var(--err); }
+  .hash { font-size: 11px; color: var(--muted); word-break: break-all; }
+  .bar {
+    height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden;
+    margin-top: 4px;
+  }
+  .bar > span { display: block; height: 100%; background: var(--accent); }
+  .tool {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 8px;
+    padding: 6px 0; font-size: 12px; border-bottom: 1px dashed var(--border);
+  }
+  .tool:last-child { border-bottom: 0; }
+  .tool .name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tool .calls { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tool .weight { font-variant-numeric: tabular-nums; }
+  .warning {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid var(--warn);
+    color: var(--warn);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin: 12px 0 20px;
+  }
+  .refresh {
+    font-size: 11px; color: var(--muted); margin-top: 16px;
+  }
+  code { background: var(--panel-2); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <h1><span class="dot"></span>Vera — Self Portrait</h1>
+  <div class="sub" id="subtitle">Loading…</div>
+  <div id="warning-slot"></div>
+  <div class="grid" id="grid"></div>
+  <div class="refresh">Auto-refresh every 10s · <a href="#" id="refresh-now">refresh now</a> · <a href="/api/vera/self" target="_blank">raw JSON</a></div>
+
+<script>
+async function load() {
+  try {
+    const res = await fetch('/api/vera/self');
+    const d = await res.json();
+    render(d);
+  } catch (e) {
+    document.getElementById('subtitle').textContent = 'Fetch failed: ' + e.message;
+  }
+}
+
+function row(k, v, cls) {
+  const safeV = v === null || v === undefined ? '—' : v;
+  return `<div class="row"><span class="k">${k}</span><span class="v ${cls || ''}">${safeV}</span></div>`;
+}
+
+function render(d) {
+  const { identity, learning, adaptation, lattice, verification } = d;
+
+  document.getElementById('subtitle').textContent =
+    `${identity.name} on ${identity.network} · operator ${identity.operator} · manifest ${identity.manifestHash.substring(0, 16)}…`;
+
+  // Warning banner if balance low
+  const warnSlot = document.getElementById('warning-slot');
+  if (identity.balance?.warning) {
+    warnSlot.innerHTML = `<div class="warning">⚠️ ${identity.balance.warning}</div>`;
+  } else {
+    warnSlot.innerHTML = '';
+  }
+
+  const cards = [
+    {
+      title: 'Identity',
+      rows: [
+        row('Network', identity.network),
+        row('Operator', identity.operator),
+        row('Capabilities', identity.capabilityCount),
+        row('Manifest', `<span class="hash">${identity.manifestHash.substring(0, 20)}…</span>`),
+        identity.balance
+          ? row('Balance',
+              `${identity.balance.hbar.toFixed(4)} HBAR`,
+              identity.balance.fundingOk ? 'ok' : 'warn')
+          : '',
+      ],
+    },
+    {
+      title: 'Learning',
+      rows: [
+        row('Agents tracked', learning.agentCount),
+        row('Total calls', learning.totalCalls),
+        ...(learning.agents[0] ? [
+          row('Success rate',
+            (learning.agents[0].successRate * 100).toFixed(1) + '%',
+            learning.agents[0].successRate > 0.9 ? 'ok' : 'warn'),
+          row('Avg latency', Math.round(learning.agents[0].avgLatency) + 'ms'),
+          row('Progress',
+            learning.agents[0].learningProgress + '%'),
+        ] : []),
+      ],
+    },
+    {
+      title: 'Adaptation',
+      rows: [
+        row('Tools tracked', adaptation.toolsTracked),
+        row('Healthy', adaptation.healthy, 'ok'),
+        row('Penalized', adaptation.penalized,
+          adaptation.penalized > 0 ? 'warn' : 'ok'),
+        adaptation.problemTools.length > 0
+          ? '<div style="font-size:11px;color:var(--muted);margin-top:8px;">Problem tools:</div>' +
+            adaptation.problemTools.map(t =>
+              `<div class="tool"><span class="name">${t.tool}</span><span class="weight err">${t.weight.toFixed(2)}</span><span class="calls">${t.reason}</span></div>`
+            ).join('')
+          : '',
+      ],
+    },
+    {
+      title: 'Top Tools (by use)',
+      rows: adaptation.topHealthy.map(t =>
+        `<div class="tool"><span class="name">${t.tool}</span><span class="calls">${t.calls} calls</span><span class="weight ok">1.00</span></div>`
+      ),
+    },
+    {
+      title: 'Lattice Growth',
+      rows: [
+        row('Skill nodes', lattice.skillNodes),
+        row('Skill edges', lattice.skillEdges),
+        row('Clusters', lattice.clusters.length),
+        ...lattice.clusters.map(c =>
+          row('&nbsp;&nbsp;' + c.cluster, c.count + ' nodes')),
+      ],
+    },
+    {
+      title: 'Verification',
+      rows: [
+        row('Proofs generated', verification.proofsGenerated),
+        row('Proofs on-ledger', verification.proofsOnLedger,
+          verification.proofsOnLedger > 0 ? 'ok' : 'warn'),
+        row('Self-verify ticks', verification.selfVerifyTicks),
+        row('Self-verify publishes', verification.selfVerifyPublishes),
+        row('Last hash',
+          verification.lastSelfVerifyHash
+            ? `<span class="hash">${verification.lastSelfVerifyHash.substring(0, 20)}…</span>`
+            : '—'),
+        row('Audit topic',
+          `<a href="https://hashscan.io/${identity.network}/topic/${verification.auditTopic}" target="_blank">${verification.auditTopic}</a>`),
+      ],
+    },
+  ];
+
+  document.getElementById('grid').innerHTML = cards.map(c =>
+    `<div class="card"><h2>${c.title}</h2>${c.rows.join('')}</div>`
+  ).join('');
+}
+
+document.getElementById('refresh-now').addEventListener('click', (e) => { e.preventDefault(); load(); });
+load();
+setInterval(load, 10000);
+</script>
+</body>
+</html>

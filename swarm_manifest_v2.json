@@ -1,0 +1,50 @@
+{
+  "individual_specialists": {
+    "CRYPTOTRANSFER": {
+      "accuracy": 0.9950690269470215
+    },
+    "CONTRACTCALL": {
+      "accuracy": 0.9871794581413269
+    },
+    "CONSENSUSSUBMITMESSAGE": {
+      "accuracy": 0.9940828680992126
+    },
+    "TOKENMINT": {
+      "accuracy": 1.0
+    },
+    "TOKENBURN": {
+      "accuracy": 1.0
+    },
+    "ETHEREUMTRANSACTION": {
+      "accuracy": 0.9960552453994751
+    },
+    "SCHEDULECREATE": {
+      "accuracy": 1.0
+    },
+    "SCHEDULESIGN": {
+      "accuracy": 1.0
+    },
+    "CRYPTOAPPROVEALLOWANCE": {
+      "accuracy": 0.990138053894043
+    },
+    "CRYPTOCREATEACCOUNT": {
+      "accuracy": 1.0
+    },
+    "CRYPTOUPDATEACCOUNT": {
+      "accuracy": 1.0
+    },
+    "FILECREATE": {
+      "accuracy": 0.9980276226997375
+    },
+    "FILEUPDATE": {
+      "accuracy": 0.9970414042472839
+    },
+    "FREEZE": {
+      "accuracy": 1.0
+    }
+  },
+  "ensemble_accuracy": 0.980276134122288,
+  "single_model_accuracy": 0.976331353187561,
+  "best_approach": "ensemble",
+  "num_specialists": 14
+}

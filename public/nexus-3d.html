@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vera Nexus 3D | Flower of Life Lattice</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+    
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .overlay {
+      position: fixed;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .header {
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .title {
+      font-size: 1.5rem;
+      font-weight: 300;
+      background: linear-gradient(135deg, #00d4ff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 0.25rem;
+    }
+    
+    .controls {
+      top: 80px;
+      left: 20px;
+      padding: 1rem;
+      border-radius: 12px;
+      min-width: 250px;
+    }
+    
+    .control-group {
+      margin-bottom: 1rem;
+    }
+    
+    .control-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: #00d4ff;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .btn:hover {
+      background: rgba(0, 212, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    .btn.active {
+      background: rgba(0, 212, 255, 0.3);
+    }
+    
+    .info-panel {
+      bottom: 20px;
+      right: 20px;
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-width: 350px;
+      display: none;
+    }
+    
+    .info-panel.visible {
+      display: block;
+    }
+    
+    .stats {
+      top: 80px;
+      right: 20px;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      color: #00d4ff;
+      font-weight: 600;
+    }
+    
+    .layer-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .layer-core { background: #ff6b6b; }
+    .layer-1 { background: #4ecdc4; }
+    .layer-2 { background: #9d4edd; }
+    .layer-3 { background: #00d4ff; }
+    
+    .search-box {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .search-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: #00d4ff;
+      z-index: 100;
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <div class="overlay header">
+    <div>
+      <div class="title">Nexus 3D</div>
+      <div class="subtitle">Flower of Life Lattice Visualization</div>
+    </div>
+    <div>
+      <span class="layer-indicator layer-core"></span> Core
+      <span class="layer-indicator layer-1"></span> Layer 1
+      <span class="layer-indicator layer-2"></span> Layer 2
+      <span class="layer-indicator layer-3"></span> Layer 3
+    </div>
+  </div>
+  
+  <div class="overlay controls">
+    <div class="control-group">
+      <div class="control-label">Visualization</div>
+      <button class="btn" id="btn-rotate">Auto Rotate</button>
+      <button class="btn" id="btn-pulse">Trigger Pulse</button>
+    </div>
+    
+    <div class="control-group">
+      <div class="control-label">Sacred Geometry</div>
+      <button class="btn" id="btn-geometry">Flower of Life</button>
+      <button class="btn" id="btn-merkaba">Merkaba</button>
+      <button class="btn" id="btn-torus">Torus</button>
+      <button class="btn" id="btn-metatron">Metatron</button>
+    </div>
+    
+    <div class="control-group">
+      <div class="control-label">Layers</div>
+      <button class="btn active" id="btn-all">All</button>
+      <button class="btn" id="btn-core">Core</button>
+      <button class="btn" id="btn-l1">Layer 1</button>
+      <button class="btn" id="btn-l2">Layer 2</button>
+      <button class="btn" id="btn-l3">Layer 3</button>
+    </div>
+    
+    <div class="control-group">
+      <div class="control-label">Query</div>
+      <div class="search-box">
+        <input type="text" class="search-input" id="search-input" placeholder="Find node...">
+        <button class="btn" id="btn-search">Go</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="overlay stats">
+    <div class="stat-item">
+      <span>Nodes:</span>
+      <span class="stat-value" id="stat-nodes">0</span>
+    </div>
+    <div class="stat-item">
+      <span>Edges:</span>
+      <span class="stat-value" id="stat-edges">0</span>
+    </div>
+    <div class="stat-item">
+      <span>Active:</span>
+      <span class="stat-value" id="stat-active">0</span>
+    </div>
+    <div class="stat-item">
+      <span>FPS:</span>
+      <span class="stat-value" id="stat-fps">0</span>
+    </div>
+  </div>
+  
+  <div class="overlay info-panel" id="info-panel">
+    <h3 id="node-name">Node Name</h3>
+    <p id="node-layer">Layer: <span></span></p>
+    <p id="node-freq">Frequency: <span></span> Hz</p>
+    <p id="node-activation">Activation: <span></span>%</p>
+    <p id="node-connections">Connections: <span></span></p>
+    <div id="node-details"></div>
+  </div>
+  
+  <div class="loading pulse" id="loading">Initializing 3D Engine...</div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+    // Sacred frequencies for Flower of Life
+    const SACRED_FREQUENCIES = {
+      'core': 528,      // Love/Transformation
+      'layer1': 432,    // Grounding
+      'layer2': 444,    // Ascension
+      'layer3': 963,    // Divine
+    };
+
+    // Layer colors
+    const LAYER_COLORS = {
+      0: 0xff6b6b,  // Core - red
+      1: 0x4ecdc4,  // Layer 1 - teal
+      2: 0x9d4edd,  // Layer 2 - purple
+      3: 0x00d4ff,  // Layer 3 - cyan
+    };
+
+    class Nexus3D {
+      constructor() {
+        this.canvas = document.getElementById('canvas');
+        this.nodes = [];
+        this.edges = [];
+        this.nodeMeshes = [];
+        this.edgeLines = [];
+        this.selectedNode = null;
+        this.geometryMode = 'flower';
+        this.autoRotate = true;
+        this.pulseActive = false;
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+
+        try {
+          this.scene = new THREE.Scene();
+          this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+          this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+          this.init();
+        } catch (err) {
+          document.getElementById('loading').textContent = 'Error: ' + err.message;
+          document.getElementById('loading').classList.add('error');
+          console.error('Nexus 3D init failed:', err);
+        }
+      }
+
+      init() {
+        // Setup renderer
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setClearColor(0x000000, 0);
+
+        // Setup camera
+        this.camera.position.set(0, 15, 25);
+        this.camera.lookAt(0, 0, 0);
+
+        // Setup controls
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.maxDistance = 50;
+        this.controls.minDistance = 5;
+
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        this.scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x00d4ff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        this.scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0x9d4edd, 1, 100);
+        pointLight2.position.set(-10, -10, -10);
+        this.scene.add(pointLight2);
+
+        // Create lattice
+        this.createFlowerOfLife();
+
+        // Setup interaction
+        this.setupInteraction();
+        this.setupUI();
+
+        // Start loop
+        this.animate();
+
+        // Hide loading
+        document.getElementById('loading').style.display = 'none';
+
+        // Handle resize
+        window.addEventListener('resize', () => this.onResize());
+      }
+
+      createFlowerOfLife() {
+        // Core node (center)
+        this.addNode('core', 0, 0, 0, 0, 'Core Resonator', SACRED_FREQUENCIES.core, 1.0);
+
+        // Layer 1: 6 nodes in hexagon
+        const r1 = 3;
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2;
+          const x = Math.cos(angle) * r1;
+          const z = Math.sin(angle) * r1;
+          const y = Math.sin(i * 0.5) * 0.5; // Slight wave
+          this.addNode(`l1-${i}`, x, y, z, 1, `Layer 1-${i}`, SACRED_FREQUENCIES.layer1, 0.8);
+          this.addEdge('core', `l1-${i}`, 0x4ecdc4, 1);
+        }
+
+        // Layer 2: 6 nodes offset
+        const r2 = 6;
+        for (let i = 0; i < 6; i++) {
+          const angle = ((i + 0.5) / 6) * Math.PI * 2;
+          const x = Math.cos(angle) * r2;
+          const z = Math.sin(angle) * r2;
+          const y = Math.sin(i * 0.7 + 1) * 1;
+          this.addNode(`l2-${i}`, x, y, z, 2, `Layer 2-${i}`, SACRED_FREQUENCIES.layer2, 0.6);
+          
+          // Connect to layer 1
+          const l1Index = i;
+          const l1Next = (i + 1) % 6;
+          this.addEdge(`l1-${l1Index}`, `l2-${i}`, 0x9d4edd, 2);
+          this.addEdge(`l1-${l1Next}`, `l2-${i}`, 0x9d4edd, 2);
+          
+          // Connect to neighbors
+          const next = (i + 1) % 6;
+          this.addEdge(`l2-${i}`, `l2-${next}`, 0x9d4edd, 1);
+        }
+
+        // Layer 3: 6 nodes outer ring
+        const r3 = 10;
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2;
+          const x = Math.cos(angle) * r3;
+          const z = Math.sin(angle) * r3;
+          const y = Math.sin(i * 0.9 + 2) * 1.5;
+          this.addNode(`l3-${i}`, x, y, z, 3, `Layer 3-${i}`, SACRED_FREQUENCIES.layer3, 0.4);
+          
+          // Connect to layer 2
+          this.addEdge(`l2-${i}`, `l3-${i}`, 0x00d4ff, 3);
+          
+          // Cross-connections
+          const next = (i + 1) % 6;
+          this.addEdge(`l3-${i}`, `l3-${next}`, 0x00d4ff, 1);
+        }
+
+        // Update stats
+        this.updateStats();
+      }
+
+      addNode(id, x, y, z, layer, name, frequency, activation) {
+        const geometry = new THREE.SphereGeometry(layer === 0 ? 0.8 : 0.5, 32, 32);
+        const material = new THREE.MeshPhongMaterial({
+          color: LAYER_COLORS[layer],
+          emissive: LAYER_COLORS[layer],
+          emissiveIntensity: 0.3,
+          shininess: 100,
+          transparent: true,
+          opacity: 0.9,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.userData = { id, layer, name, frequency, activation };
+        
+        // Add glow effect
+        const glowGeometry = new THREE.SphereGeometry(layer === 0 ? 1.2 : 0.8, 32, 32);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+          color: LAYER_COLORS[layer],
+          transparent: true,
+          opacity: 0.2,
+        });
+        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+        mesh.add(glow);
+
+        this.scene.add(mesh);
+        this.nodeMeshes.push(mesh);
+        this.nodes.push({ id, x, y, z, layer, name, frequency, activation, mesh });
+      }
+
+      addEdge(fromId, toId, color, layer) {
+        const from = this.nodes.find(n => n.id === fromId);
+        const to = this.nodes.find(n => n.id === toId);
+        if (!from || !to) return;
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array([
+          from.x, from.y, from.z,
+          to.x, to.y, to.z,
+        ]);
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.LineBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.3,
+        });
+
+        const line = new THREE.Line(geometry, material);
+        line.userData = { from, to, layer };
+        
+        this.scene.add(line);
+        this.edgeLines.push(line);
+        this.edges.push({ from, to, layer, line });
+      }
+
+      triggerPulse() {
+        if (this.pulseActive) return;
+        this.pulseActive = true;
+
+        const startTime = Date.now();
+        const duration = 3000;
+
+        const animatePulse = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = elapsed / duration;
+
+          if (progress >= 1) {
+            this.pulseActive = false;
+            // Reset all
+            this.nodeMeshes.forEach(mesh => {
+              mesh.material.emissiveIntensity = 0.3;
+              mesh.scale.set(1, 1, 1);
+            });
+            return;
+          }
+
+          // Pulse wave from center
+          this.nodeMeshes.forEach(mesh => {
+            const dist = mesh.position.length();
+            const wavePos = progress * 15;
+            const diff = Math.abs(dist - wavePos);
+            
+            if (diff < 2) {
+              const intensity = 1 - (diff / 2);
+              mesh.material.emissiveIntensity = 0.3 + intensity * 0.7;
+              const scale = 1 + intensity * 0.5;
+              mesh.scale.set(scale, scale, scale);
+            } else {
+              mesh.material.emissiveIntensity = 0.3;
+              mesh.scale.set(1, 1, 1);
+            }
+          });
+
+          requestAnimationFrame(animatePulse);
+        };
+
+        animatePulse();
+      }
+
+      setupInteraction() {
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        this.canvas.addEventListener('click', (event) => {
+          mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+          raycaster.setFromCamera(mouse, this.camera);
+          const intersects = raycaster.intersectObjects(this.nodeMeshes);
+
+          if (intersects.length > 0) {
+            const node = intersects[0].object;
+            this.selectNode(node);
+          } else {
+            this.deselectNode();
+          }
+        });
+      }
+
+      selectNode(mesh) {
+        // Reset previous
+        if (this.selectedNode) {
+          this.selectedNode.material.emissiveIntensity = 0.3;
+        }
+
+        this.selectedNode = mesh;
+        mesh.material.emissiveIntensity = 1;
+
+        const data = mesh.userData;
+        const panel = document.getElementById('info-panel');
+        
+        document.getElementById('node-name').textContent = data.name;
+        document.getElementById('node-layer').querySelector('span').textContent = 
+          data.layer === 0 ? 'Core' : `Layer ${data.layer}`;
+        document.getElementById('node-freq').querySelector('span').textContent = 
+          `${data.frequency} Hz (${this.getFrequencyName(data.frequency)})`;
+        document.getElementById('node-activation').querySelector('span').textContent = 
+          `${(data.activation * 100).toFixed(0)}%`;
+        
+        const connections = this.edges.filter(e => 
+          e.from.id === data.id || e.to.id === data.id
+        ).length;
+        document.getElementById('node-connections').querySelector('span').textContent = connections;
+
+        panel.classList.add('visible');
+      }
+
+      deselectNode() {
+        if (this.selectedNode) {
+          this.selectedNode.material.emissiveIntensity = 0.3;
+          this.selectedNode = null;
+        }
+        document.getElementById('info-panel').classList.remove('visible');
+      }
+
+      getFrequencyName(freq) {
+        if (freq === 528) return 'Love/Transformation';
+        if (freq === 432) return 'Grounding/Healing';
+        if (freq === 444) return 'Ascension';
+        if (freq === 963) return 'Divine Connection';
+        return 'Unknown';
+      }
+
+      setupUI() {
+        document.getElementById('btn-rotate').addEventListener('click', (e) => {
+          this.autoRotate = !this.autoRotate;
+          e.target.classList.toggle('active');
+        });
+
+        document.getElementById('btn-pulse').addEventListener('click', () => {
+          this.triggerPulse();
+        });
+
+        const layerButtons = ['all', 'core', 'l1', 'l2', 'l3'];
+        layerButtons.forEach(btn => {
+          document.getElementById(`btn-${btn}`).addEventListener('click', (e) => {
+            this.setLayerVisibility(btn);
+            layerButtons.forEach(b => {
+              document.getElementById(`btn-${b}`).classList.remove('active');
+            });
+            e.target.classList.add('active');
+          });
+        });
+
+        document.getElementById('btn-search').addEventListener('click', () => {
+          this.searchNode();
+        });
+
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.searchNode();
+        });
+
+        // Sacred geometry buttons
+        document.getElementById('btn-geometry').addEventListener('click', (e) => {
+          this.setGeometryMode('flower');
+          this.updateGeometryButtons(e.target);
+        });
+
+        document.getElementById('btn-merkaba').addEventListener('click', (e) => {
+          this.setGeometryMode('merkaba');
+          this.updateGeometryButtons(e.target);
+        });
+
+        document.getElementById('btn-torus').addEventListener('click', (e) => {
+          this.setGeometryMode('torus');
+          this.updateGeometryButtons(e.target);
+        });
+
+        document.getElementById('btn-metatron').addEventListener('click', (e) => {
+          this.setGeometryMode('metatron');
+          this.updateGeometryButtons(e.target);
+        });
+      }
+
+      updateGeometryButtons(activeBtn) {
+        ['btn-geometry', 'btn-merkaba', 'btn-torus', 'btn-metatron'].forEach(id => {
+          document.getElementById(id).classList.remove('active');
+        });
+        activeBtn.classList.add('active');
+      }
+
+      setGeometryMode(mode) {
+        this.geometryMode = mode;
+        this.clearSacredGeometry();
+        
+        switch(mode) {
+          case 'flower':
+            this.createFlowerOfLife();
+            break;
+          case 'merkaba':
+            this.createMerkaba();
+            break;
+          case 'torus':
+            this.createTorus();
+            break;
+          case 'metatron':
+            this.createMetatron();
+            break;
+        }
+      }
+
+      clearSacredGeometry() {
+        // Remove all existing nodes and edges
+        this.nodeMeshes.forEach(mesh => this.scene.remove(mesh));
+        this.edgeLines.forEach(line => this.scene.remove(line));
+        this.nodes = [];
+        this.edges = [];
+        this.nodeMeshes = [];
+        this.edgeLines = [];
+      }
+
+      createMerkaba() {
+        // Merkaba = two interlocking tetrahedrons (Star Tetrahedron)
+        const size = 8;
+        
+        // Upward pointing tetrahedron
+        const upTetra = [
+          { id: 'u1', x: 0, y: size, z: 0 },
+          { id: 'u2', x: size * 0.816, y: -size * 0.5, z: size * 0.577 },
+          { id: 'u3', x: -size * 0.816, y: -size * 0.5, z: size * 0.577 },
+          { id: 'u4', x: 0, y: -size * 0.5, z: -size * 1.155 },
+        ];
+
+        // Downward pointing tetrahedron
+        const downTetra = [
+          { id: 'd1', x: 0, y: -size, z: 0 },
+          { id: 'd2', x: size * 0.816, y: size * 0.5, z: -size * 0.577 },
+          { id: 'd3', x: -size * 0.816, y: size * 0.5, z: -size * 0.577 },
+          { id: 'd4', x: 0, y: size * 0.5, z: size * 1.155 },
+        ];
+
+        // Add all nodes
+        [...upTetra, ...downTetra].forEach((node, i) => {
+          this.addNode(node.id, node.x, node.y, node.z, i < 4 ? 1 : 2, 
+            `Merkaba ${i < 4 ? 'Up' : 'Down'} ${i % 4 + 1}`, 
+            i < 4 ? 444 : 963, 0.8);
+        });
+
+        // Connect tetrahedrons
+        for (let i = 0; i < 4; i++) {
+          for (let j = i + 1; j < 4; j++) {
+            this.addEdge(upTetra[i].id, upTetra[j].id, 0x9d4edd, 1);
+            this.addEdge(downTetra[i].id, downTetra[j].id, 0x00d4ff, 2);
+          }
+        }
+
+        // Add interlocking connections
+        upTetra.forEach((u, ui) => {
+          downTetra.forEach((d, di) => {
+            if (ui !== di) {
+              this.addEdge(u.id, d.id, 0xff6b6b, 3);
+            }
+          });
+        });
+
+        this.updateStats();
+      }
+
+      createTorus() {
+        // Torus field around the lattice
+        const majorRadius = 10;
+        const minorRadius = 3;
+        const segments = 16;
+        
+        // Create major ring nodes
+        for (let i = 0; i < segments; i++) {
+          const theta = (i / segments) * Math.PI * 2;
+          const x = Math.cos(theta) * majorRadius;
+          const z = Math.sin(theta) * majorRadius;
+          const y = 0;
+          
+          this.addNode(`torus-${i}`, x, y, z, 2, `Torus ${i}`, 432, 0.6);
+          
+          // Connect to neighbors
+          const next = (i + 1) % segments;
+          this.addEdge(`torus-${i}`, `torus-${next}`, 0x9d4edd, 2);
+        }
+
+        // Add cross-connections (minor rings)
+        for (let i = 0; i < segments; i++) {
+          const skip = 4;
+          const cross = (i + skip) % segments;
+          this.addEdge(`torus-${i}`, `torus-${cross}`, 0x00d4ff, 3);
+        }
+
+        // Core node
+        this.addNode('torus-core', 0, 0, 0, 0, 'Torus Core', 528, 1.0);
+        for (let i = 0; i < segments; i++) {
+          this.addEdge('torus-core', `torus-${i}`, 0xff6b6b, 0);
+        }
+
+        this.updateStats();
+      }
+
+      createMetatron() {
+        // Metatron's Cube - 13 spheres, all Platonic solids implied
+        const positions = [
+          { id: 'center', x: 0, y: 0, z: 0, layer: 0 },
+          // Inner ring (6)
+          ...Array.from({ length: 6 }, (_, i) => ({
+            id: `inner-${i}`,
+            x: Math.cos(i * Math.PI / 3) * 4,
+            y: 0,
+            z: Math.sin(i * Math.PI / 3) * 4,
+            layer: 1
+          })),
+          // Outer ring (6)
+          ...Array.from({ length: 6 }, (_, i) => ({
+            id: `outer-${i}`,
+            x: Math.cos(i * Math.PI / 3 + Math.PI / 6) * 7,
+            y: Math.sin(i * 0.5) * 2,
+            z: Math.sin(i * Math.PI / 3 + Math.PI / 6) * 7,
+            layer: 2
+          })),
+        ];
+
+        positions.forEach(pos => {
+          const freq = pos.layer === 0 ? 528 : pos.layer === 1 ? 444 : 963;
+          this.addNode(pos.id, pos.x, pos.y, pos.z, pos.layer, 
+            `Metatron ${pos.id}`, freq, pos.layer === 0 ? 1.0 : 0.7);
+        });
+
+        // Connect center to all
+        for (let i = 0; i < 6; i++) {
+          this.addEdge('center', `inner-${i}`, 0xff6b6b, 0);
+          this.addEdge(`inner-${i}`, `outer-${i}`, 0x4ecdc4, 1);
+          this.addEdge(`inner-${i}`, `outer-${(i + 5) % 6}`, 0x4ecdc4, 1);
+        }
+
+        // Connect inner ring
+        for (let i = 0; i < 6; i++) {
+          const next = (i + 1) % 6;
+          this.addEdge(`inner-${i}`, `inner-${next}`, 0x9d4edd, 1);
+        }
+
+        // Connect outer ring
+        for (let i = 0; i < 6; i++) {
+          const next = (i + 1) % 6;
+          this.addEdge(`outer-${i}`, `outer-${next}`, 0x00d4ff, 2);
+        }
+
+        this.updateStats();
+      }
+
+      setLayerVisibility(layer) {
+        if (layer === 'all') {
+          this.visibleLayers = new Set([0, 1, 2, 3]);
+        } else if (layer === 'core') {
+          this.visibleLayers = new Set([0]);
+        } else if (layer === 'l1') {
+          this.visibleLayers = new Set([1]);
+        } else if (layer === 'l2') {
+          this.visibleLayers = new Set([2]);
+        } else if (layer === 'l3') {
+          this.visibleLayers = new Set([3]);
+        }
+
+        this.nodeMeshes.forEach(mesh => {
+          const layer = mesh.userData.layer;
+          mesh.visible = this.visibleLayers.has(layer);
+        });
+
+        this.edgeLines.forEach(line => {
+          const layer = line.userData.layer;
+          line.visible = this.visibleLayers.has(layer) && 
+                        this.visibleLayers.has(this.getConnectedLayer(line));
+        });
+      }
+
+      getConnectedLayer(line) {
+        const fromLayer = line.userData.from.layer;
+        const toLayer = line.userData.to.layer;
+        return fromLayer === toLayer ? fromLayer : Math.max(fromLayer, toLayer);
+      }
+
+      searchNode() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        if (!query) return;
+
+        const node = this.nodeMeshes.find(mesh => 
+          mesh.userData.name.toLowerCase().includes(query) ||
+          mesh.userData.id.toLowerCase().includes(query)
+        );
+
+        if (node) {
+          // Focus camera on node
+          const target = node.position.clone();
+          this.controls.target.copy(target);
+          
+          // Animate camera
+          const start = this.camera.position.clone();
+          const end = target.clone().add(new THREE.Vector3(5, 5, 5));
+          
+          let progress = 0;
+          const animate = () => {
+            progress += 0.05;
+            if (progress >= 1) {
+              this.selectNode(node);
+              return;
+            }
+            this.camera.position.lerpVectors(start, end, progress);
+            requestAnimationFrame(animate);
+          };
+          animate();
+        }
+      }
+
+      updateStats() {
+        document.getElementById('stat-nodes').textContent = this.nodes.length;
+        document.getElementById('stat-edges').textContent = this.edges.length;
+        
+        const active = this.nodes.filter(n => n.activation > 0.5).length;
+        document.getElementById('stat-active').textContent = active;
+      }
+
+      onResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (this.autoRotate) {
+          this.scene.rotation.y += 0.002;
+        }
+
+        // Animate nodes (gentle float)
+        const time = Date.now() * 0.001;
+        this.nodeMeshes.forEach((mesh, i) => {
+          if (!this.pulseActive) {
+            mesh.position.y += Math.sin(time + i) * 0.002;
+          }
+        });
+
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+
+        // Update FPS (simple)
+        if (!this.lastTime) this.lastTime = Date.now();
+        const now = Date.now();
+        const fps = Math.round(1000 / (now - this.lastTime));
+        this.lastTime = now;
+        if (Math.random() < 0.1) { // Update occasionally
+          document.getElementById('stat-fps').textContent = fps;
+        }
+      }
+    }
+
+    // Initialize
+    new Nexus3D();
+  </script>
+</body>
+</html>

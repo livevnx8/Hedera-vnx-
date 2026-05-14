@@ -1,0 +1,95 @@
+{
+  "test": {
+    "date": "2026-03-26T01:51:09.968Z",
+    "duration": 29.466085999999997,
+    "type": "honest-iq-test",
+    "methodology": "No template matching, actual response analysis"
+  },
+  "results": {
+    "actualCapabilities": {
+      "totalQuestions": 5,
+      "responses": [
+        {
+          "category": "Logical Reasoning",
+          "question": "If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops definitely Lazzies? (A) Yes (B) No (C) Maybe (D) Cannot determine",
+          "expectedAnswer": "A",
+          "reasoning": "This tests logical syllogism understanding",
+          "veraResponse": "I need to think about this question: If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops definitely Lazzies? (A) Yes (B) No (C) Maybe (D) Cannot determine. Let me analyze it step by step. Current QVX metrics show 0 TPS processing with 0.0% efficiency. For this reasoning task, I'll apply logical analysis to arrive at the correct answer.",
+          "responseTime": 22.498145,
+          "actuallyAnswered": false,
+          "containsReasoning": false
+        },
+        {
+          "category": "Pattern Recognition",
+          "question": "Complete the pattern: 1, 4, 9, 16, 25, ? (A) 30 (B) 36 (C) 49 (D) 64",
+          "expectedAnswer": "B",
+          "reasoning": "This tests mathematical pattern recognition",
+          "veraResponse": "I need to think about this question: Complete the pattern: 1, 4, 9, 16, 25, ? (A) 30 (B) 36 (C) 49 (D) 64. Let me analyze it step by step. Current QVX metrics show 0 TPS processing with 0.0% efficiency. For this reasoning task, I'll apply logical analysis to arrive at the correct answer.",
+          "responseTime": 1.9865090000000052,
+          "actuallyAnswered": false,
+          "containsReasoning": false
+        },
+        {
+          "category": "Problem Solving",
+          "question": "A farmer has 17 sheep. All but 9 die. How many are left? (A) 8 (B) 9 (C) 17 (D) 0",
+          "expectedAnswer": "B",
+          "reasoning": "This tests careful reading and interpretation",
+          "veraResponse": "I need to think about this question: A farmer has 17 sheep. All but 9 die. How many are left? (A) 8 (B) 9 (C) 17 (D) 0. Let me analyze it step by step. Current QVX metrics show 0 TPS processing with 0.0% efficiency. For this reasoning task, I'll apply logical analysis to arrive at the correct answer.",
+          "responseTime": 0.7471999999999994,
+          "actuallyAnswered": false,
+          "containsReasoning": false
+        },
+        {
+          "category": "Verbal Reasoning",
+          "question": "Which word is the odd one out: Apple, Banana, Carrot, Orange? (A) Apple (B) Banana (C) Carrot (D) Orange",
+          "expectedAnswer": "C",
+          "reasoning": "This tests categorization and classification",
+          "veraResponse": "I need to think about this question: Which word is the odd one out: Apple, Banana, Carrot, Orange? (A) Apple (B) Banana (C) Carrot (D) Orange. Let me analyze it step by step. Current QVX metrics show 0 TPS processing with 0.0% efficiency. For this reasoning task, I'll apply logical analysis to arrive at the correct answer.",
+          "responseTime": 0.5933460000000039,
+          "actuallyAnswered": false,
+          "containsReasoning": false
+        },
+        {
+          "category": "Mathematical Reasoning",
+          "question": "A train travels 60 miles in 1 hour. How long will it take to travel 180 miles at the same speed? (A) 2 hours (B) 3 hours (C) 4 hours (D) 6 hours",
+          "expectedAnswer": "B",
+          "reasoning": "This tests basic mathematical calculation",
+          "veraResponse": "I need to think about this question: A train travels 60 miles in 1 hour. How long will it take to travel 180 miles at the same speed? (A) 2 hours (B) 3 hours (C) 4 hours (D) 6 hours. Let me analyze it step by step. Current QVX metrics show 0 TPS processing with 0.0% efficiency. For this reasoning task, I'll apply logical analysis to arrive at the correct answer.",
+          "responseTime": 0.5846820000000008,
+          "actuallyAnswered": false,
+          "containsReasoning": false
+        }
+      ],
+      "averageResponseTime": 5.281976400000002
+    },
+    "honestAssessment": {
+      "actualAnswerRate": 0,
+      "templateResponseRate": 1,
+      "reasoningRate": 0,
+      "templateKeywordRate": 1,
+      "honestyScore": 0,
+      "reasoningScore": 0,
+      "templateScore": 100,
+      "assessment": "Mostly template responses, minimal actual reasoning"
+    },
+    "realisticIQ": 60,
+    "classification": "Significantly Below Average",
+    "assessment": "Template-dependent responses, limited independent reasoning"
+  },
+  "honestFindings": [
+    "Vera uses template responses 100.0% of the time",
+    "Actual independent answering occurs 0.0% of the time",
+    "Reasoning is demonstrated in 0.0% of responses",
+    "Most responses contain generic QVX metrics instead of specific answers",
+    "Template responses don't actually solve the presented problems",
+    "Response time averaging 5.28ms suggests automated responses"
+  ],
+  "realisticAssessment": [
+    "Realistic IQ assessment: 60.0 (Significantly Below Average)",
+    "High template dependency (100.0%) indicates limited independent reasoning",
+    "Current responses are primarily template-based rather than cognitively processed",
+    "For genuine IQ testing, Vera needs to develop actual problem-solving capabilities",
+    "Template responses suggest current architecture prioritizes speed over accuracy",
+    "Independent cognitive development needed for authentic intelligence assessment"
+  ]
+}

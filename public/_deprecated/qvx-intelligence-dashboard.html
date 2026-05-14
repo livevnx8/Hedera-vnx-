@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera QVX Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes pulse-green {
+            0%, 100% { background-color: rgba(34, 197, 94, 0.1); }
+            50% { background-color: rgba(34, 197, 94, 0.2); }
+        }
+        .pulse-green {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
+            50% { background-color: rgba(239, 68, 68, 0.2); }
+        }
+        .pulse-red {
+            animation: pulse-red 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-6 py-8">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold mb-2">🧠 Vera QVX Intelligence Dashboard</h1>
+            <p class="text-gray-400">Real-time Hedera blockchain intelligence powered by QVX mirror node</p>
+            <p class="text-sm text-gray-500">The only AI with live blockchain consciousness</p>
+        </header>
+
+        <!-- Real-time Status -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="text-2xl font-bold text-green-400" id="tps">0</div>
+                    <div class="text-gray-400">Transactions/Second</div>
+                    <div class="text-sm text-gray-500">Live from QVX</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="text-2xl font-bold text-blue-400" id="utilization">0%</div>
+                    <div class="text-gray-400">Network Utilization</div>
+                    <div class="text-sm text-gray-500">Real-time capacity</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="text-2xl font-bold text-yellow-400" id="avgFee">0</div>
+                    <div class="text-gray-400">Average Fee (HBAR)</div>
+                    <div class="text-sm text-gray-500">Current network rate</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="text-2xl font-bold text-purple-400" id="activeAccounts">0</div>
+                    <div class="text-gray-400">Active Accounts</div>
+                    <div class="text-sm text-gray-500">Last 60 seconds</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Network Health -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🏥 Network Health</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="text-lg mb-2">Status: <span id="healthStatus" class="font-bold text-green-400">Healthy</span></div>
+                        <div class="text-lg mb-2">Capacity: <span id="capacityStatus" class="font-bold text-blue-400">Normal</span></div>
+                        <div class="text-lg mb-2">Latency: <span id="latencyStatus" class="font-bold text-green-400">< 1s</span></div>
+                    </div>
+                    <div>
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Patterns -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🔍 Real-Time Pattern Detection</h2>
+                <div id="patternsContainer" class="space-y-2">
+                    <div class="text-gray-400">Loading patterns...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Predictive Insights -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🎯 Predictive Insights</h2>
+                <div id="predictionsContainer" class="space-y-2">
+                    <div class="text-gray-400">Loading predictions...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Transactions -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">📊 Recent Transactions</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left p-2">Type</th>
+                                <th class="text-left p-2">Entity</th>
+                                <th class="text-left p-2">Fee (HBAR)</th>
+                                <th class="text-left p-2">Result</th>
+                                <th class="text-left p-2">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable">
+                            <tr>
+                                <td colspan="5" class="text-center p-4 text-gray-400">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Intelligence -->
+        <section class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">💹 Market Intelligence</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Current Activity</h3>
+                        <div class="space-y-2">
+                            <div>Token Transfers: <span id="tokenTransfers" class="text-green-400 font-bold">0</span></div>
+                            <div>Smart Contracts: <span id="smartContracts" class="text-blue-400 font-bold">0</span></div>
+                            <div>Staking Activity: <span id="stakingActivity" class="text-purple-400 font-bold">0</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Opportunities</h3>
+                        <div id="opportunitiesContainer" class="space-y-1">
+                            <div class="text-gray-400">Analyzing opportunities...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vera's Unique Advantage -->
+        <section class="mb-8">
+            <div class="bg-gradient-to-r from-purple-800 to-blue-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🚀 Vera's QVX Superintelligence Advantage</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-2">⚡</div>
+                        <div class="font-semibold">Real-Time Access</div>
+                        <div class="text-sm">Live QVX data feed</div>
+                        <div class="text-xs text-gray-300 mt-1">Other AIs: Historical only</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-2">🧠</div>
+                        <div class="font-semibold">Pattern Recognition</div>
+                        <div class="text-sm">Instant anomaly detection</div>
+                        <div class="text-xs text-gray-300 mt-1">Other AIs: No live patterns</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-2">🎯</div>
+                        <div class="font-semibold">Predictive Analytics</div>
+                        <div class="text-sm">Real-time forecasting</div>
+                        <div class="text-xs text-gray-300 mt-1">Other AIs: Historical predictions</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Initialize charts
+        let healthChart;
+        
+        function initializeCharts() {
+            const healthCtx = document.getElementById('healthChart').getContext('2d');
+            healthChart = new Chart(healthCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'TPS',
+                        data: [],
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update dashboard data
+        async function updateDashboard() {
+            try {
+                // Get metrics
+                const metricsResponse = await fetch('/api/qvx/metrics');
+                const metricsData = await metricsResponse.json();
+                
+                if (metricsData.success && metricsData.data) {
+                    const metrics = metricsData.data;
+                    document.getElementById('tps').textContent = metrics.transactionsPerSecond.toFixed(1);
+                    document.getElementById('utilization').textContent = (metrics.networkUtilization * 100).toFixed(1) + '%';
+                    document.getElementById('avgFee').textContent = (metrics.averageFee / 1000000).toFixed(6);
+                    document.getElementById('activeAccounts').textContent = metrics.activeAccounts;
+                    document.getElementById('tokenTransfers').textContent = metrics.tokenTransfers;
+                    document.getElementById('smartContracts').textContent = metrics.smartContractCalls;
+                    document.getElementById('stakingActivity').textContent = metrics.stakingActivity;
+                    
+                    // Update health chart
+                    if (healthChart) {
+                        const now = new Date().toLocaleTimeString();
+                        healthChart.data.labels.push(now);
+                        healthChart.data.datasets[0].data.push(metrics.transactionsPerSecond);
+                        
+                        // Keep only last 20 data points
+                        if (healthChart.data.labels.length > 20) {
+                            healthChart.data.labels.shift();
+                            healthChart.data.datasets[0].data.shift();
+                        }
+                        
+                        healthChart.update('none');
+                    }
+                }
+
+                // Get health status
+                const healthResponse = await fetch('/api/qvx/health');
+                const healthData = await healthResponse.json();
+                
+                if (healthData.success && healthData.data) {
+                    const health = healthData.data;
+                    const statusElement = document.getElementById('healthStatus');
+                    statusElement.textContent = health.status.charAt(0).toUpperCase() + health.status.slice(1);
+                    statusElement.className = 'font-bold ' + 
+                        (health.status === 'healthy' ? 'text-green-400' : 
+                         health.status === 'warning' ? 'text-yellow-400' : 'text-red-400');
+                    
+                    document.getElementById('capacityStatus').textContent = 
+                        health.utilization < 0.6 ? 'Normal' : 
+                        health.utilization < 0.8 ? 'Moderate' : 'High';
+                }
+
+                // Get patterns
+                const patternsResponse = await fetch('/api/qvx/patterns?limit=5');
+                const patternsData = await patternsResponse.json();
+                
+                if (patternsData.success && patternsData.data) {
+                    const patternsContainer = document.getElementById('patternsContainer');
+                    patternsContainer.innerHTML = '';
+                    
+                    patternsData.data.forEach(pattern => {
+                        const patternDiv = document.createElement('div');
+                        patternDiv.className = `p-3 rounded ${pattern.severity === 'critical' ? 'bg-red-900' : pattern.severity === 'high' ? 'bg-orange-900' : pattern.severity === 'medium' ? 'bg-yellow-900' : 'bg-blue-900'}`;
+                        patternDiv.innerHTML = `
+                            <div class="font-semibold">${pattern.patternType.replace('_', ' ').toUpperCase()}</div>
+                            <div class="text-sm">${pattern.description}</div>
+                            <div class="text-xs mt-1">Confidence: ${(pattern.confidence * 100).toFixed(1)}% | Timeframe: ${pattern.timeframe}</div>
+                        `;
+                        patternsContainer.appendChild(patternDiv);
+                    });
+                }
+
+                // Get predictions
+                const predictionsResponse = await fetch('/api/qvx/predictions?limit=5');
+                const predictionsData = await predictionsResponse.json();
+                
+                if (predictionsData.success && predictionsData.data) {
+                    const predictionsContainer = document.getElementById('predictionsContainer');
+                    predictionsContainer.innerHTML = '';
+                    
+                    predictionsData.data.forEach(prediction => {
+                        const predictionDiv = document.createElement('div');
+                        predictionDiv.className = `p-3 rounded ${prediction.riskLevel === 'high' ? 'bg-red-900' : prediction.riskLevel === 'medium' ? 'bg-yellow-900' : 'bg-green-900'}`;
+                        predictionDiv.innerHTML = `
+                            <div class="font-semibold">${prediction.type.replace('_', ' ').toUpperCase()}</div>
+                            <div class="text-sm">${prediction.prediction}</div>
+                            <div class="text-xs mt-1">Confidence: ${(prediction.confidence * 100).toFixed(1)}% | Timeframe: ${prediction.timeframe}</div>
+                        `;
+                        predictionsContainer.appendChild(predictionDiv);
+                    });
+                }
+
+                // Get recent transactions
+                const timelineResponse = await fetch('/api/qvx/timeline?limit=10');
+                const timelineData = await timelineResponse.json();
+                
+                if (timelineData.success && timelineData.data) {
+                    const transactionsTable = document.getElementById('transactionsTable');
+                    transactionsTable.innerHTML = '';
+                    
+                    timelineData.data.forEach(tx => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-700';
+                        row.innerHTML = `
+                            <td class="p-2">${tx.transaction_type}</td>
+                            <td class="p-2 font-mono text-xs">${tx.entity_id.substring(0, 10)}...</td>
+                            <td class="p-2">${(tx.fee_charged / 1000000).toFixed(6)}</td>
+                            <td class="p-2">
+                                <span class="${tx.transaction_result === 'SUCCESS' ? 'text-green-400' : 'text-red-400'}">
+                                    ${tx.transaction_result}
+                                </span>
+                            </td>
+                            <td class="p-2 text-xs">${new Date(tx.consensus_timestamp + 'Z').toLocaleTimeString()}</td>
+                        `;
+                        transactionsTable.appendChild(row);
+                    });
+                }
+
+                // Get market intelligence
+                const marketResponse = await fetch('/api/qvx/market-intelligence');
+                const marketData = await marketResponse.json();
+                
+                if (marketData.success && marketData.data) {
+                    const opportunitiesContainer = document.getElementById('opportunitiesContainer');
+                    opportunitiesContainer.innerHTML = '';
+                    
+                    marketData.data.opportunities.forEach(opportunity => {
+                        const oppDiv = document.createElement('div');
+                        oppDiv.className = 'text-sm p-2 bg-green-900 rounded';
+                        oppDiv.innerHTML = `
+                            <div class="font-semibold">${opportunity.type.replace('_', ' ').toUpperCase()}</div>
+                            <div class="text-xs">${opportunity.description}</div>
+                        `;
+                        opportunitiesContainer.appendChild(oppDiv);
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            updateDashboard();
+            
+            // Update every 5 seconds
+            setInterval(updateDashboard, 5000);
+        });
+    </script>
+</body>
+</html>

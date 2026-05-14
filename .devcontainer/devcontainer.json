@@ -1,0 +1,78 @@
+{
+  "name": "Vera Sandbox",
+  "dockerComposeFile": "../docker-compose.sandbox.yml",
+  "service": "vera-sandbox",
+  "workspaceFolder": "/app",
+  "shutdownAction": "stopCompose",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "redhat.vscode-yaml",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "ms-azuretools.vscode-containers",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "forwardPorts": [
+    8080,
+    3000,
+    3001,
+    5101,
+    6379,
+    5432,
+    9090,
+    9229
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "Vera API",
+      "onAutoForward": "openPreview"
+    },
+    "3000": {
+      "label": "Dashboard",
+      "onAutoForward": "openBrowser"
+    },
+    "3001": {
+      "label": "Grafana",
+      "onAutoForward": "notify"
+    },
+    "9229": {
+      "label": "Node Debug",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "echo 'Vera Sandbox ready! Run: vera-sandbox status'",
+
+  "remoteUser": "root",
+  "remoteEnv": {
+    "HEDERA_NETWORK": "testnet",
+    "SANDBOX_MODE": "true"
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ]
+}

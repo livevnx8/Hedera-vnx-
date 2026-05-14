@@ -1,0 +1,32 @@
+{
+  "run_id": "2026-05-10_linear-baseline",
+  "timestamp": "2026-05-10T12:38:08.115996",
+  "configuration": {
+    "run_name": "linear-baseline",
+    "model": {
+      "architecture": "Linear",
+      "num_features": 20,
+      "num_classes": 10
+    },
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "batch_size": 32,
+      "epochs": 10
+    },
+    "dataset": {
+      "type": "synthetic",
+      "samples": 10000,
+      "domain": "staking_rewards"
+    }
+  },
+  "results": {
+    "final_loss": 1.1,
+    "final_accuracy": 0.33
+  },
+  "findings": [
+    "Simple linear model achieves 33% accuracy",
+    "Data and features are valid (model learns)",
+    "BitLattice issues are architecture-specific, not data-related"
+  ]
+}

@@ -1,0 +1,22 @@
+VNX-LM-PROOF-1 standard proof packet generated
+proof hash sha256:abc123 created at 2024-01-15T10:30:00.000Z
+model hash sha256:def456 corpus hash sha256:ghi789
+prompt hash sha256:jkl012 output hash sha256:mno345
+trace hash sha256:pqr678 unique vertices 15 of 20
+runtime tier forge-browser topology dodecahedron
+publish to HCS topic 0.0.987654 sequence 42 tx 0.0.123@1715000000
+proof receipt verified by mirror node consensus timestamp confirmed
+privacy mode hash_only_prompt_output standard compliance verified
+standard VNX-LM-PROOF-1 type vnx.inference.proof
+model architecture dodecahedron-lattice-bitnet-b1.58-char
+tokenizer family char-level context size 4 vertex count 20
+generated tokens 96 trace entries normalized canonical json
+inference summary prompt length 32 output length 96
+perplexity 12.45 cross entropy 2.52 bits per character
+proof kernel integrity check passed all hashes match
+verifiable ai proof run memory packet packet hash sha256:xyz789
+schema version 1.0.0 protocol vera-oasis-proof-2
+hash chain linked previous proof sha256:uvw456
+attestation signed by operator account 0.0.123456
+consensus receipt topic sequence 789 transaction id recorded
+proof lifecycle status pending published verified expired

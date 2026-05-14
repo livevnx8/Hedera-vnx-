@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Vera Swarm Command</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --secondary: #764ba2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Mobile-first navigation */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 1000;
+      backdrop-filter: blur(20px);
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+    }
+    
+    .nav-icon {
+      font-size: 24px;
+    }
+    
+    /* Main content */
+    .content {
+      padding: 20px 16px 100px;
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .header-title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--success);
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Quick Actions Grid */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .action-btn {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:active {
+      transform: scale(0.95);
+      background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .action-icon {
+      font-size: 32px;
+    }
+    
+    .action-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* Stats Cards */
+    .stats-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 0 16px;
+      margin-bottom: 24px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    
+    .stats-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      min-width: 140px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Agent List */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .agent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .agent-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .agent-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .agent-info {
+      flex: 1;
+    }
+    
+    .agent-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .agent-type {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--success);
+    }
+    
+    /* Bridge Section */
+    .bridge-card {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+    
+    .bridge-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .bridge-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .input-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-field {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+    
+    .bridge-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .bridge-btn:active {
+      transform: translateY(2px);
+    }
+    
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2000;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .toast-icon {
+      font-size: 24px;
+    }
+    
+    .toast-message {
+      font-size: 14px;
+    }
+    
+    /* Pull to refresh indicator */
+    .ptr-indicator {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    
+    .ptr-indicator.visible {
+      opacity: 1;
+    }
+    
+    .ptr-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Desktop optimization */
+    @media (min-width: 768px) {
+      .content {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      
+      .quick-actions {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ptr-indicator" id="ptrIndicator">
+    <div class="ptr-spinner"></div>
+    Pull to refresh
+  </div>
+  
+  <div class="content" id="mainContent">
+    <header class="header">
+      <h1 class="header-title">Vera Swarm</h1>
+      <div class="header-status">
+        <div class="status-dot"></div>
+        <span>Online</span>
+      </div>
+    </header>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a href="#agents" class="action-btn">
+        <span class="action-icon">🤖</span>
+        <span class="action-label">Agents</span>
+      </a>
+      <a href="#bridge" class="action-btn">
+        <span class="action-icon">🌉</span>
+        <span class="action-label">Bridge</span>
+      </a>
+      <a href="#chat" class="action-btn">
+        <span class="action-icon">✨</span>
+        <span class="action-label">AI Chat</span>
+      </a>
+      <a href="#settings" class="action-btn">
+        <span class="action-icon">⚙️</span>
+        <span class="action-label">Settings</span>
+      </a>
+    </div>
+    
+    <!-- Stats -->
+    <div class="stats-scroll">
+      <div class="stat-card">
+        <div class="stat-value" id="agentCount">39</div>
+        <div class="stat-label">Agents</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="bridgeCount">4</div>
+        <div class="stat-label">Chains</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="falconCount">1.2K</div>
+        <div class="stat-label">Signatures</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="uptime">99.8%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+    </div>
+    
+    <!-- Agent List -->
+    <h2 class="section-title">
+      Active Agents
+      <span style="color: var(--text-secondary); font-size: 14px; font-weight: 400;">View All →</span>
+    </h2>
+    
+    <div class="agent-list" id="agentList">
+      <div class="agent-card">
+        <div class="agent-avatar">🏥</div>
+        <div class="agent-info">
+          <div class="agent-name">Healthcare Suite</div>
+          <div class="agent-type">5 agents monitoring</div>
+        </div>
+        <div class="agent-status">
+          <div class="status-dot"></div>
+          Active
+        </div>
+      </div>
+      
+      <div class="agent-card">
+        <div class="agent-avatar">💰</div>
+        <div class="agent-info">
+          <div class="agent-name">Finance Suite</div>
+          <div class="agent-type">8 agents analyzing</div>
+        </div>
+        <div class="agent-status">
+          <div class="status-dot"></div>
+          Active
+        </div>
+      </div>
+      
+      <div class="agent-card">
+        <div class="agent-avatar">🚛</div>
+        <div class="agent-info">
+          <div class="agent-name">Logistics Suite</div>
+          <div class="agent-type">6 agents tracking</div>
+        </div>
+        <div class="agent-status">
+          <div class="status-dot"></div>
+          Active
+        </div>
+      </div>
+      
+      <div class="agent-card">
+        <div class="agent-avatar">🌉</div>
+        <div class="agent-info">
+          <div class="agent-name">EVM Bridge</div>
+          <div class="agent-type">5 validators online</div>
+        </div>
+        <div class="agent-status">
+          <div class="status-dot"></div>
+          Active
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bridge Card -->
+    <div class="bridge-card" id="bridgeSection">
+      <div class="bridge-title">
+        🌉 Quick Bridge
+      </div>
+      <form class="bridge-form" id="bridgeForm">
+        <div class="input-group">
+          <label class="input-label">Amount</label>
+          <input type="number" class="input-field" placeholder="1000" id="bridgeAmount">
+        </div>
+        <div class="input-group">
+          <label class="input-label">From → To</label>
+          <select class="input-field" id="bridgeRoute">
+            <option value="hedera-ethereum">Hedera → Ethereum</option>
+            <option value="hedera-polygon">Hedera → Polygon</option>
+            <option value="ethereum-hedera">Ethereum → Hedera</option>
+            <option value="polygon-hedera">Polygon → Hedera</option>
+          </select>
+        </div>
+        <button type="submit" class="bridge-btn">Initiate Transfer</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <nav class="nav-bar">
+    <a href="#home" class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#agents" class="nav-item">
+      <span class="nav-icon">🤖</span>
+      <span>Agents</span>
+    </a>
+    <a href="#bridge" class="nav-item">
+      <span class="nav-icon">🌉</span>
+      <span>Bridge</span>
+    </a>
+    <a href="#profile" class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span class="toast-message" id="toastMessage">Action completed</span>
+  </div>
+  
+  <script>
+    // Pull to refresh
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const ptrIndicator = document.getElementById('ptrIndicator');
+    const mainContent = document.getElementById('mainContent');
+    
+    document.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', e => {
+      if (window.scrollY === 0) {
+        touchEndY = e.touches[0].clientY;
+        const diff = touchEndY - touchStartY;
+        if (diff > 0 && diff < 100) {
+          ptrIndicator.classList.add('visible');
+        }
+      }
+    }, { passive: true });
+    
+    document.addEventListener('touchend', () => {
+      const diff = touchEndY - touchStartY;
+      if (diff > 80 && window.scrollY === 0) {
+        refreshData();
+      }
+      ptrIndicator.classList.remove('visible');
+    });
+    
+    async function refreshData() {
+      showToast('Refreshing...', '🔄');
+      // Simulate refresh
+      await new Promise(r => setTimeout(r, 1000));
+      showToast('Data updated', '✅');
+    }
+    
+    // Toast
+    function showToast(message, icon = '✅') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.querySelector('.toast-icon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // Bridge form
+    document.getElementById('bridgeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const amount = document.getElementById('bridgeAmount').value;
+      const route = document.getElementById('bridgeRoute').value;
+      
+      if (!amount) {
+        showToast('Please enter an amount', '⚠️');
+        return;
+      }
+      
+      showToast('Initiating transfer...', '🌉');
+      // Simulate bridge
+      await new Promise(r => setTimeout(r, 2000));
+      showToast(`Transfer ${amount} ${route.split('-')[0].toUpperCase()} initiated!`, '✅');
+    });
+    
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+    
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    }
+  </script>
+</body>
+</html>

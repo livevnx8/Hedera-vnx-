@@ -1,0 +1,17 @@
+{
+  "network": "mainnet",
+  "operatorId": "0.0.10294360",
+  "topics": {
+    "REGISTRY": "0.0.10415925",
+    "TASK": "0.0.10415926",
+    "RESULT": "0.0.10415927",
+    "AUDIT": "0.0.10415928"
+  },
+  "createdAt": "2026-03-31T23:32:34.658Z",
+  "hashscanUrls": {
+    "registry": "https://hashscan.io/mainnet/topic/0.0.10415925",
+    "task": "https://hashscan.io/mainnet/topic/0.0.10415926",
+    "result": "https://hashscan.io/mainnet/topic/0.0.10415927",
+    "audit": "https://hashscan.io/mainnet/topic/0.0.10415928"
+  }
+}

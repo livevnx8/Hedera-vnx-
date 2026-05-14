@@ -1,0 +1,390 @@
+{
+  "templates": [
+    {
+      "id": "token-launch-assistant",
+      "name": "Token Launch Assistant",
+      "description": "Complete token launch workflow: Create HTS token → Mint supply → Airdrop to community → Add liquidity on SaucerSwap",
+      "category": "DeFi",
+      "difficulty": "intermediate",
+      "tools": [
+        "hts_create_token",
+        "hts_mint_token",
+        "hts_airdrop",
+        "saucerswap_add_liquidity",
+        "hedera_get_balance"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Create HTS Token",
+            "tool": "hts_create_token",
+            "prompt": "Create a new Hedera token with name '{tokenName}', symbol '{tokenSymbol}', initial supply of {initialSupply}, and {decimals} decimals",
+            "required_params": ["tokenName", "tokenSymbol", "initialSupply", "decimals"]
+          },
+          {
+            "step": 2,
+            "action": "Mint Additional Supply (Optional)",
+            "tool": "hts_mint_token",
+            "prompt": "Mint {mintAmount} additional tokens if needed for airdrops/liquidity",
+            "optional": true
+          },
+          {
+            "step": 3,
+            "action": "Airdrop to Community",
+            "tool": "hts_airdrop",
+            "prompt": "Airdrop tokens to community members: {recipients}",
+            "required_params": ["recipients"]
+          },
+          {
+            "step": 4,
+            "action": "Add Liquidity",
+            "tool": "saucerswap_add_liquidity",
+            "prompt": "Add {tokenAmount} tokens and {hbarAmount} HBAR as liquidity on SaucerSwap",
+            "required_params": ["tokenAmount", "hbarAmount"]
+          }
+        ]
+      },
+      "example_prompts": [
+        "Launch a new token called 'MyToken' with symbol 'MTK', 1 billion supply, and airdrop 100 tokens each to 5 community members",
+        "Create a governance token with 8 decimals, mint 10M supply, and add liquidity with 100k tokens and 1000 HBAR"
+      ]
+    },
+    {
+      "id": "nft-collection-manager",
+      "name": "NFT Collection Manager",
+      "description": "End-to-end NFT collection management: Create collection → Mint NFTs with metadata → Transfer to buyers → List on marketplace",
+      "category": "NFT",
+      "difficulty": "intermediate",
+      "tools": [
+        "hts_create_nft",
+        "hts_mint_nft",
+        "hedera_transfer_nft",
+        "hedera_get_tokens"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Create NFT Collection",
+            "tool": "hts_create_nft",
+            "prompt": "Create an NFT collection named '{collectionName}' with symbol '{symbol}' and max supply of {maxSupply}",
+            "required_params": ["collectionName", "symbol", "maxSupply"]
+          },
+          {
+            "step": 2,
+            "action": "Mint NFTs",
+            "tool": "hts_mint_nft",
+            "prompt": "Mint NFTs with metadata: {metadataList}",
+            "required_params": ["metadataList"],
+            "batch": true
+          },
+          {
+            "step": 3,
+            "action": "Transfer to Buyers",
+            "tool": "hedera_transfer_nft",
+            "prompt": "Transfer NFT serial {serialNumber} to account {buyerAccount}",
+            "required_params": ["serialNumber", "buyerAccount"]
+          }
+        ]
+      },
+      "example_prompts": [
+        "Create a 1000-piece NFT collection called 'CryptoPunks HBAR' and mint the first 10 with IPFS metadata",
+        "Launch an exclusive art collection with max 100 NFTs, mint 5 pieces and transfer them to collectors"
+      ]
+    },
+    {
+      "id": "treasury-automation",
+      "name": "Treasury Automation",
+      "description": "Multi-sig treasury with scheduled payments, spending controls, and automated reporting via HCS",
+      "category": "Treasury",
+      "difficulty": "advanced",
+      "tools": [
+        "hcs_create_topic",
+        "hcs_submit_message",
+        "hbar_transfer",
+        "hedera_get_balance",
+        "kit_create_account"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Create Treasury Account",
+            "tool": "kit_create_account",
+            "prompt": "Create a treasury account with initial balance of {initialBalance} HBAR",
+            "required_params": ["initialBalance"]
+          },
+          {
+            "step": 2,
+            "action": "Create Audit Topic",
+            "tool": "hcs_create_topic",
+            "prompt": "Create an HCS topic for treasury audit logs with memo '{auditMemo}'",
+            "required_params": ["auditMemo"]
+          },
+          {
+            "step": 3,
+            "action": "Schedule Payment",
+            "tool": "hbar_transfer",
+            "prompt": "Schedule recurring payment of {amount} HBAR to {recipient} on {schedule}",
+            "required_params": ["amount", "recipient", "schedule"]
+          },
+          {
+            "step": 4,
+            "action": "Log Transaction",
+            "tool": "hcs_submit_message",
+            "prompt": "Log treasury transaction to audit topic: {transactionDetails}",
+            "required_params": ["topicId", "transactionDetails"]
+          }
+        ]
+      },
+      "example_prompts": [
+        "Set up a DAO treasury with 10000 HBAR, create audit logs on HCS, and schedule monthly payments to contributors",
+        "Create a corporate treasury account with spending controls and automated daily balance reporting"
+      ]
+    },
+    {
+      "id": "defi-analyst",
+      "name": "DeFi Analyst",
+      "description": "Automated DeFi analysis: Monitor token prices → Generate trading signals → Execute swaps → Track P&L",
+      "category": "DeFi",
+      "difficulty": "advanced",
+      "tools": [
+        "saucerswap_get_token_price",
+        "get_price_chart",
+        "saucerswap_swap_hbar_for_token",
+        "saucerswap_swap_token_for_hbar",
+        "hedera_get_balance",
+        "qvx_get_signals",
+        "qvx_get_pnl"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Get Token Price",
+            "tool": "saucerswap_get_token_price",
+            "prompt": "Get current price of token {tokenId} on SaucerSwap",
+            "required_params": ["tokenId"]
+          },
+          {
+            "step": 2,
+            "action": "Analyze Price Chart",
+            "tool": "get_price_chart",
+            "prompt": "Show {period} price chart for {token} with technical analysis",
+            "required_params": ["token", "period"]
+          },
+          {
+            "step": 3,
+            "action": "Get Trading Signals",
+            "tool": "qvx_get_signals",
+            "prompt": "Get latest trading signals from Veda bot for market {market}",
+            "optional": true
+          },
+          {
+            "step": 4,
+            "action": "Execute Swap",
+            "tool": "saucerswap_swap_hbar_for_token",
+            "prompt": "Swap {hbarAmount} HBAR for {tokenId} with max slippage of {slippage}%",
+            "required_params": ["hbarAmount", "tokenId"],
+            "conditional": "based on signal analysis"
+          },
+          {
+            "step": 5,
+            "action": "Track Performance",
+            "tool": "qvx_get_pnl",
+            "prompt": "Get P&L report for period {period}",
+            "optional": true
+          }
+        ]
+      },
+      "example_prompts": [
+        "Analyze HBARX price trends, check Veda's signals, and execute a swap if conditions are favorable",
+        "Monitor SAUCE token price hourly, generate buy signals when RSI is oversold, track all trades"
+      ]
+    },
+    {
+      "id": "multi-agent-workflow",
+      "name": "Multi-Agent Workflow",
+      "description": "Vera orchestrates parallel sub-agents: Researcher → Analyst → Coder → Critic for comprehensive project development",
+      "category": "Advanced",
+      "difficulty": "expert",
+      "tools": [
+        "vera_spawn_agent",
+        "vera_memory_save",
+        "vera_memory_recall"
+      ],
+      "workflow": {
+        "parallel_agents": [
+          {
+            "role": "researcher",
+            "task": "Research {topic} and provide current market data, trends, and competitor analysis",
+            "required_params": ["topic"]
+          },
+          {
+            "role": "analyst",
+            "task": "Analyze on-chain data for {tokenId} including price, volume, holder distribution",
+            "required_params": ["tokenId"]
+          },
+          {
+            "role": "coder",
+            "task": "Write {contractType} smart contract for {projectName} with {requirements}",
+            "required_params": ["contractType", "projectName", "requirements"]
+          }
+        ],
+        "sequential_review": {
+          "role": "critic",
+          "task": "Review outputs from researcher, analyst, and coder. Identify risks, gaps, and provide recommendations",
+          "depends_on": ["researcher", "analyst", "coder"]
+        },
+        "final_synthesis": {
+          "role": "planner",
+          "task": "Create comprehensive project plan incorporating all sub-agent outputs and critic feedback",
+          "save_to_memory": true
+        }
+      },
+      "example_prompts": [
+        "Launch a new DeFi protocol: Research the market, analyze competitors' tokens, write the staking contract, and create a full project plan",
+        "Build an NFT marketplace: Research successful marketplaces, analyze HBAR NFT trends, write the exchange contract, review for security"
+      ]
+    },
+    {
+      "id": "hcs10-agent-network",
+      "name": "HCS-10 Agent Network",
+      "description": "Register Vera as an HCS-10 agent and participate in decentralized agent communication and task delegation",
+      "category": "Advanced",
+      "difficulty": "expert",
+      "tools": [
+        "hcs_register_agent",
+        "hcs_send_message",
+        "hcs_get_messages",
+        "vera_spawn_agent"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Register as HCS-10 Agent",
+            "tool": "hcs_register_agent",
+            "prompt": "Register Vera with name '{agentName}', description '{description}', and capabilities: {capabilities}",
+            "required_params": ["agentName", "description", "capabilities"]
+          },
+          {
+            "step": 2,
+            "action": "Start Message Listener",
+            "prompt": "Begin listening for incoming HCS-10 messages from other agents",
+            "automatic": true
+          },
+          {
+            "step": 3,
+            "action": "Handle Delegation Requests",
+            "tool": "vera_spawn_agent",
+            "prompt": "When receiving DELEGATION message, spawn appropriate sub-agent to handle the task",
+            "automatic": true
+          },
+          {
+            "step": 4,
+            "action": "Send Response",
+            "tool": "hcs_send_message",
+            "prompt": "Send result back to requesting agent via HCS-10",
+            "automatic": true
+          }
+        ]
+      },
+      "example_prompts": [
+        "Register Vera as an HCS-10 agent with research and coding capabilities and start accepting delegation requests",
+        "Set up a multi-agent network where Vera coordinates with other Hedera agents for complex tasks"
+      ]
+    },
+    {
+      "id": "smart-contract-deployer",
+      "name": "Smart Contract Deployer",
+      "description": "Complete contract deployment workflow: Write Solidity → Compile → Deploy → Verify → Interact",
+      "category": "Developer",
+      "difficulty": "advanced",
+      "tools": [
+        "vera_compile_contract",
+        "vera_deploy_contract",
+        "vera_call_contract"
+      ],
+      "workflow": {
+        "steps": [
+          {
+            "step": 1,
+            "action": "Generate Contract Code",
+            "prompt": "Write a {contractType} contract for {purpose} with features: {features}",
+            "required_params": ["contractType", "purpose", "features"]
+          },
+          {
+            "step": 2,
+            "action": "Compile Contract",
+            "tool": "vera_compile_contract",
+            "prompt": "Compile the {contractName} contract",
+            "required_params": ["source_code", "contract_name"]
+          },
+          {
+            "step": 3,
+            "action": "Deploy to Hedera",
+            "tool": "vera_deploy_contract",
+            "prompt": "Deploy compiled contract with constructor args: {constructorArgs}",
+            "required_params": ["bytecode", "abi", "constructorArgs"]
+          },
+          {
+            "step": 4,
+            "action": "Verify Deployment",
+            "tool": "vera_call_contract",
+            "prompt": "Call view function to verify contract state",
+            "read_only": true
+          }
+        ]
+      },
+      "example_prompts": [
+        "Deploy an ERC-20 token contract with minting and burning capabilities",
+        "Create and deploy a simple storage contract that can store and retrieve a string value"
+      ]
+    },
+    {
+      "id": "token-research-analyst",
+      "name": "Token Research Analyst",
+      "description": "Comprehensive token analysis: Research background → Analyze on-chain metrics → Evaluate tokenomics → Generate report",
+      "category": "Research",
+      "difficulty": "intermediate",
+      "tools": [
+        "web_search",
+        "hedera_search_tokens",
+        "hedera_get_tokens",
+        "saucerswap_get_token_price",
+        "get_price_chart",
+        "vera_spawn_agent"
+      ],
+      "workflow": {
+        "agents": [
+          {
+            "role": "researcher",
+            "task": "Research {tokenName} project background, team, and recent news"
+          },
+          {
+            "role": "analyst",
+            "task": "Analyze {tokenId} on-chain metrics: holders, transfers, price history, liquidity"
+          }
+        ],
+        "synthesis": {
+          "prompt": "Generate comprehensive token research report combining web research and on-chain analysis",
+          "save": true
+        }
+      },
+      "example_prompts": [
+        "Research the SAUCE token - find project info, analyze price trends, check holder distribution, generate a full report",
+        "Analyze HBARX tokenomics, compare yields, check liquidity pools, and provide investment insights"
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2026-03-26",
+    "author": "VeraLattice",
+    "description": "Hedera Agent Lab templates for Vera - Pre-built workflows for common Hedera operations",
+    "total_templates": 8,
+    "categories": ["DeFi", "NFT", "Treasury", "Advanced", "Developer", "Research"]
+  }
+}

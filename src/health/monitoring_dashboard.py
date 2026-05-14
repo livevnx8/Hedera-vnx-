@@ -49,7 +49,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <body>
 <div class="header">
   <h1><span>Vera OS</span> Monitoring</h1>
-  <div id="overall-status"><span class="status-dot"></span>Loading...</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="/predictions/dashboard" style="color:#6366f1;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #6366f1;border-radius:8px;">HBAR Predictions</a>
+    <div id="overall-status"><span class="status-dot"></span>Loading...</div>
+  </div>
 </div>
 <div class="refresh-bar">Auto-refresh: <span id="countdown">10</span>s | Last: <span id="last-update">—</span></div>
 

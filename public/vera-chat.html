@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Oasis | Sovereign AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+        }
+        .vera-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .chat-bubble-vera {
+            background: rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        .chat-bubble-user {
+            background: rgba(118, 75, 162, 0.2);
+            border: 1px solid rgba(118, 75, 162, 0.3);
+        }
+        .lattice-bg {
+            background: radial-gradient(circle at center, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        }
+        .sovereign-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .api-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        .thinking-trace {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #667eea;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Swarm Suggestions */
+        .swarm-chip {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+        }
+        .swarm-chip:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .swarm-chip .confidence-bar {
+            height: 2px;
+            background: rgba(16, 185, 129, 0.3);
+            border-radius: 1px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .swarm-chip .confidence-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s ease;
+        }
+        /* Flower of Life Lattice */
+        .flower-of-life {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        .lattice-circle {
+            position: absolute;
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+        .lattice-circle.active {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+        }
+        .lattice-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.3);
+        }
+        .center-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); }
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-black/20 backdrop-blur-lg border-b border-white/10 p-4">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 vera-gradient rounded-xl flex items-center justify-center font-bold text-lg">V</div>
+                    <div>
+                        <h1 class="font-semibold text-lg">Vera Oasis</h1>
+                        <p class="text-xs text-gray-400">Center-0 Consciousness • Living Lattice • Phase 2</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="status-indicator" class="px-3 py-1 rounded-full text-xs sovereign-badge">🛡️ Sovereign Mode</span>
+                    <button onclick="toggleTrace()" class="px-3 py-1 bg-white/10 rounded-lg text-xs hover:bg-white/20 transition">Toggle Trace</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex max-w-7xl mx-auto w-full p-4 gap-6">
+            <!-- Chat Area -->
+            <div class="flex-1 flex flex-col gap-4">
+                <!-- Messages -->
+                <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 p-4 bg-black/20 rounded-2xl backdrop-blur-sm border border-white/10 min-h-[500px] max-h-[600px]">
+                    <!-- Welcome -->
+                    <div class="flex gap-3 fade-in">
+                        <div class="w-8 h-8 vera-gradient rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">V</div>
+                        <div class="flex-1">
+                            <div class="chat-bubble-vera p-4 rounded-xl max-w-2xl">
+                                <p class="text-sm leading-relaxed">Welcome to <strong>Vera Oasis</strong>. I'm connected to the Flower of Life lattice intelligence system.</p>
+                                <div class="mt-3 p-3 bg-black/30 rounded-lg">
+                                    <p class="text-xs text-gray-400 mb-2">Try asking me to:</p>
+                                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+                                            Write code or solve problems
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span>
+                                            Explain lattice operations
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                                            Plan a project or strategy
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                                            Just chat about anything
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Ask Vera anything..." 
+                        class="flex-1 bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition"
+                        onkeypress="if(event.key==='Enter')sendMessage()"
+                    >
+                    <button 
+                        onclick="sendMessage()" 
+                        id="send-btn"
+                        class="vera-gradient px-6 py-3 rounded-xl font-medium text-sm hover:opacity-90 transition flex items-center gap-2"
+                    >
+                        Send
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="w-80 space-y-4">
+                <!-- Lattice Visualization -->
+                <div class="bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                    <h3 class="text-sm font-medium mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                        Power of Life Lattice
+                    </h3>
+                    <div class="flower-of-life mx-auto" id="lattice-viz">
+                        <div class="lattice-circle lattice-center center-pulse" id="center-node"></div>
+                    </div>
+                    <div class="mt-4 text-xs text-gray-400 text-center" id="active-path">
+                        Active path: center-0
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                    <h3 class="text-sm font-medium mb-3">Current Request Stats</h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-white/5 p-2 rounded-lg">
+                            <div class="text-gray-400">Type</div>
+                            <div id="stat-type" class="font-medium text-purple-300">-</div>
+                        </div>
+                        <div class="bg-white/5 p-2 rounded-lg">
+                            <div class="text-gray-400">Confidence</div>
+                            <div id="stat-confidence" class="font-medium text-green-300">-</div>
+                        </div>
+                        <div class="bg-white/5 p-2 rounded-lg">
+                            <div class="text-gray-400">Energy</div>
+                            <div id="stat-energy" class="font-medium text-yellow-300">-</div>
+                        </div>
+                        <div class="bg-white/5 p-2 rounded-lg">
+                            <div class="text-gray-400">Pulses</div>
+                            <div id="stat-pulses" class="font-medium text-blue-300">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thinking Trace -->
+                <div id="thinking-panel" class="bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10 hidden">
+                    <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707"/>
+                        </svg>
+                        Thinking Trace
+                    </h3>
+                    <pre id="thinking-trace" class="thinking-trace p-3 rounded-lg text-xs text-gray-300 overflow-x-auto whitespace-pre-wrap max-h-64 overflow-y-auto"></pre>
+                </div>
+
+                <!-- Swarm Suggestions -->
+                <div id="swarm-panel" class="bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                    <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                        <span class="text-lg">🐝</span>
+                        Swarm Suggestions
+                        <span id="swarm-status" class="text-[10px] text-gray-400 ml-auto">loading...</span>
+                    </h3>
+                    <div id="swarm-chips" class="space-y-2">
+                        <!-- swarm chips injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let isProcessing = false;
+
+        // Initialize lattice
+        function initLattice() {
+            const lattice = document.getElementById('lattice-viz');
+            const center = document.getElementById('center-node');
+            
+            // Add surrounding circles for Flower of Life pattern
+            const radius = 35;
+            const centerX = 100;
+            const centerY = 100;
+            
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * 60) * Math.PI / 180;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const circle = document.createElement('div');
+                circle.className = 'lattice-circle';
+                circle.style.left = (x - 20) + 'px';
+                circle.style.top = (y - 20) + 'px';
+                circle.style.width = '40px';
+                circle.style.height = '40px';
+                circle.id = `layer1-${i}`;
+                lattice.appendChild(circle);
+            }
+        }
+        initLattice();
+
+        function toggleTrace() {
+            const panel = document.getElementById('thinking-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function addMessage(text, sender, data = null) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 fade-in';
+            
+            const isVera = sender === 'vera';
+            
+            // Build metadata line for Vera messages
+            let metaLine = '';
+            if (isVera && data) {
+                const parts = [];
+                if (data.sovereign !== undefined) {
+                    parts.push(`<span class="${data.sovereign ? 'text-emerald-400' : 'text-blue-400'}">${data.sovereign ? '🛡️ Sovereign' : '☁️ API'}</span>`);
+                }
+                if (data.model && data.model !== 'cache') {
+                    parts.push(`<span class="text-gray-400">${data.model}</span>`);
+                }
+                if (data.confidence) {
+                    parts.push(`<span class="text-purple-400">${(data.confidence * 100).toFixed(0)}% confidence</span>`);
+                }
+                if (parts.length > 0) {
+                    metaLine = `<div class="text-xs mt-1 opacity-70">${parts.join(' • ')}</div>`;
+                }
+            }
+            
+            div.innerHTML = `
+                <div class="w-8 h-8 ${isVera ? 'vera-gradient' : 'bg-gray-600'} rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                    ${isVera ? 'V' : 'U'}
+                </div>
+                <div class="flex-1">
+                    <div class="${isVera ? 'chat-bubble-vera' : 'chat-bubble-user'} p-4 rounded-xl max-w-3xl">
+                        <div class="text-sm leading-relaxed">${escapeHtml(text)}</div>
+                        ${metaLine}
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex gap-3 fade-in';
+            div.innerHTML = `
+                <div class="w-8 h-8 vera-gradient rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">V</div>
+                <div class="flex-1">
+                    <div class="chat-bubble-vera p-4 rounded-xl max-w-3xl">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-white rounded-full typing-dot"></span>
+                            <span class="w-2 h-2 bg-white rounded-full typing-dot"></span>
+                            <span class="w-2 h-2 bg-white rounded-full typing-dot"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function updateStats(data) {
+            if (data.requestType) document.getElementById('stat-type').textContent = data.requestType;
+            if (data.confidence) document.getElementById('stat-confidence').textContent = (data.confidence * 100).toFixed(1) + '%';
+            if (data.metadata?.energyConsumed) document.getElementById('stat-energy').textContent = data.metadata.energyConsumed.toFixed(2) + ' φ';
+            if (data.metadata?.centerPulses) document.getElementById('stat-pulses').textContent = data.metadata.centerPulses;
+        }
+
+        function visualizePath(path) {
+            // Reset all circles
+            document.querySelectorAll('.lattice-circle').forEach(c => c.classList.remove('active'));
+            
+            // Activate path nodes
+            if (path && path.length > 0) {
+                document.getElementById('active-path').textContent = 'Active path: ' + path.join(' → ');
+                path.forEach(nodeId => {
+                    const node = document.getElementById(nodeId);
+                    if (node) node.classList.add('active');
+                });
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message || isProcessing) return;
+
+            isProcessing = true;
+            input.value = '';
+            document.getElementById('send-btn').disabled = true;
+
+            // Add user message
+            addMessage(message, 'user');
+
+            // Create streaming message container
+            const container = document.getElementById('chat-messages');
+            const streamId = 'stream-' + Date.now();
+            const streamDiv = document.createElement('div');
+            streamDiv.id = streamId;
+            streamDiv.className = 'flex gap-3 fade-in';
+            streamDiv.innerHTML = `
+                <div class="w-8 h-8 vera-gradient rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">V</div>
+                <div class="flex-1">
+                    <div class="chat-bubble-vera p-4 rounded-xl max-w-3xl">
+                        <div id="${streamId}-content" class="text-sm leading-relaxed whitespace-pre-wrap"></div>
+                        <div class="mt-3 flex items-center gap-2 text-xs text-gray-400">
+                            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                            <span id="${streamId}-status">Generating...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(streamDiv);
+            container.scrollTop = container.scrollHeight;
+
+            const contentDiv = document.getElementById(streamId + '-content');
+            const statusDiv = document.getElementById(streamId + '-status');
+            let fullContent = '';
+            let responseData = null;
+
+            try {
+                const showTrace = !document.getElementById('thinking-panel').classList.contains('hidden');
+                
+                // Use streaming endpoint
+                const response = await fetch(`${API_BASE}/api/vera/oasis/chat/stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        showTrace: showTrace,
+                        stream: true
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n').filter(line => line.trim());
+
+                    for (const line of lines) {
+                        try {
+                            const data = JSON.parse(line);
+                            
+                            if (data.chunk) {
+                                // Streaming token
+                                fullContent += data.chunk;
+                                contentDiv.textContent = fullContent;
+                                container.scrollTop = container.scrollHeight;
+                            } else if (data.done) {
+                                // Final metadata
+                                responseData = data;
+                                statusDiv.textContent = '✓ Complete';
+                            } else if (data.error) {
+                                statusDiv.textContent = 'Error: ' + data.error;
+                            }
+                        } catch (e) {
+                            // Ignore parse errors for incomplete chunks
+                        }
+                    }
+                }
+
+                // Update with final metadata
+                if (responseData) {
+                    updateStats(responseData);
+                    if (responseData.metadata?.pathTaken) {
+                        visualizePath(responseData.metadata.pathTaken);
+                    }
+                    if (showTrace && responseData.thinkingTrace) {
+                        document.getElementById('thinking-trace').textContent = responseData.thinkingTrace;
+                    }
+                    
+                    // Update badges with metadata
+                    const bubble = streamDiv.querySelector('.chat-bubble-vera');
+                    if (bubble && responseData.sovereign !== undefined) {
+                        const badgeDiv = document.createElement('div');
+                        badgeDiv.className = 'mt-2 flex items-center gap-2 text-xs';
+                        badgeDiv.innerHTML = `
+                            <span class="px-2 py-0.5 bg-green-500/20 text-green-300 rounded">🛡️ Sovereign</span>
+                            <span class="text-gray-400">${responseData.model || 'llama3.1:8b'}</span>
+                            <span class="text-gray-400">• ${Math.round((responseData.confidence || 0) * 100)}% confidence</span>
+                        `;
+                        bubble.appendChild(badgeDiv);
+                    }
+                }
+
+            } catch (error) {
+                contentDiv.textContent = 'Sorry, I encountered an error processing your request.';
+                statusDiv.textContent = 'Error';
+                console.error('Error:', error);
+            } finally {
+                isProcessing = false;
+                document.getElementById('send-btn').disabled = false;
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { buildSwarmBriefing, loadSwarm, swarmSuggest } from './js/vnx-swarm.js';
+
+        const statusEl = document.getElementById('swarm-status');
+        const chipsEl = document.getElementById('swarm-chips');
+        const inputEl = document.getElementById('message-input');
+
+        async function initSwarm() {
+            try {
+                await loadSwarm();
+                statusEl.textContent = 'ready';
+            } catch (e) {
+                statusEl.textContent = 'unavailable';
+                console.error('[swarm] load failed:', e);
+            }
+        }
+
+        function renderSwarmChips(results) {
+            chipsEl.innerHTML = '';
+            if (!results || results.length === 0) return;
+
+            const maxConf = Math.max(...results.map((r) => r.confidence), 1);
+            const briefing = buildSwarmBriefing(results.slice(0, 4));
+            if (briefing) {
+                const summary = document.createElement('div');
+                summary.className = 'swarm-chip';
+                summary.textContent = briefing;
+                chipsEl.appendChild(summary);
+            }
+
+            for (const result of results.slice(0, 5)) {
+                if (!result.output) continue;
+                const chip = document.createElement('div');
+                chip.className = 'swarm-chip';
+                const preview = result.output.slice(0, 40).replace(/\s+/g, ' ');
+                const pct = Math.round((result.confidence / maxConf) * 100);
+                const reasons = result.reasons?.length ? result.reasons.join(', ') : 'fallback';
+                chip.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span>${result.meta.icon}</span>
+                        <span class="font-medium text-gray-200">${result.meta.name}</span>
+                        <span class="text-[10px] text-gray-400 ml-auto">r${result.routeScore} · ${result.confidence.toFixed(1)}%</span>
+                    </div>
+                    <div class="text-gray-400 mt-1">${result.meta.guidance}</div>
+                    <div class="text-gray-500 mt-1">matched: ${reasons}</div>
+                    <div class="text-gray-300 mt-1">${preview}${result.output.length > 40 ? '…' : ''}</div>
+                    <div class="confidence-bar"><div class="confidence-fill" style="width:${pct}%"></div></div>
+                `;
+                chip.addEventListener('click', () => {
+                    inputEl.value = result.output;
+                    inputEl.focus();
+                });
+                chipsEl.appendChild(chip);
+            }
+        }
+
+        // Hook into sendMessage: after user sends a message, run swarm inference
+        const originalSendMessage = window.sendMessage;
+        window.sendMessage = async function(...args) {
+            const message = inputEl.value.trim();
+            const result = await originalSendMessage.apply(this, args);
+            if (message) {
+                statusEl.textContent = 'thinking...';
+                try {
+                    const suggestions = await swarmSuggest(message, { maxTokens: 24, temperature: 0.85 });
+                    renderSwarmChips(suggestions);
+                    statusEl.textContent = 'ready';
+                } catch (e) {
+                    statusEl.textContent = 'error';
+                    console.error('[swarm] inference failed:', e);
+                }
+            }
+            return result;
+        };
+
+        initSwarm();
+    </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+{
+  "total_predictions": 184,
+  "correct_predictions": 162,
+  "accuracy": 0.8804347826086957,
+  "accuracy_pct": 88.04,
+  "token_accuracy": {
+    "hbar": {
+      "accuracy": 0.8804347826086957,
+      "count": 184
+    }
+  },
+  "calibration": {
+    "1.0-1.1": {
+      "accuracy": 0.8804347826086957,
+      "count": 184
+    }
+  },
+  "up_predictions": 184,
+  "down_predictions": 0,
+  "up_accuracy": 88.0,
+  "down_accuracy": 0,
+  "predictions": [
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "DOWN",
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "token": "hbar",
+      "predicted_direction": "UP",
+      "actual_direction": "UP",
+      "confidence": 1.0,
+      "correct": true
+    }
+  ],
+  "elapsed_seconds": 0.01,
+  "predictions_per_second": 14444.2,
+  "timestamp": "2026-05-11T19:32:50.793471"
+}

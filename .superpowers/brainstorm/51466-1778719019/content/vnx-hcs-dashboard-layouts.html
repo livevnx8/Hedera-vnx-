@@ -1,0 +1,73 @@
+<h2>VNX Hedera Live Proof Demo</h2>
+<p class="subtitle">Pick the browser setup that makes the realtime polling, prediction, and HCS verification story easiest to demo.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Live Feed First</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:12px;">
+            <div>
+              <div class="placeholder" style="height:96px;">HBAR realtime price + prediction</div>
+              <div class="placeholder" style="height:96px;margin-top:10px;">Confidence trend</div>
+            </div>
+            <div>
+              <div class="placeholder" style="height:42px;">HCS mode badge</div>
+              <div class="placeholder" style="height:150px;margin-top:10px;">Receipt stream</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Live Feed First</h3>
+      <p>Best for proving the system is running now: poll, predict, emit, verify, repeat.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Command Center</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <div class="placeholder" style="height:70px;">Price</div>
+            <div class="placeholder" style="height:70px;">Prediction</div>
+            <div class="placeholder" style="height:70px;">HCS verified</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+            <div class="placeholder" style="height:130px;">Charts</div>
+            <div class="placeholder" style="height:130px;">Proof details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Command Center</h3>
+      <p>Balanced and polished: strong for dashboards, but less instantly narrative.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Guided Demo</div>
+        <div class="mockup-body">
+          <div class="mock-nav">1 Poll data | 2 Predict | 3 Publish HCS | 4 Verify</div>
+          <div class="placeholder" style="height:154px;margin-top:12px;">Current step detail</div>
+          <button class="mock-button" style="margin-top:10px;">Run one proof cycle</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Guided Demo</h3>
+      <p>Best for walkthroughs, but it feels less like a live autonomous dashboard.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Recommendation</h3>
+  <p>Use A as the main screen, with one manual "Run proof cycle" button from C tucked into the toolbar. That keeps it simple, live, and presentable.</p>
+</div>
