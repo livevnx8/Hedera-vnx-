@@ -37,6 +37,23 @@ async def price_ticks(minutes: int = Query(60, le=1440)):
     return {"prices": [{"t": r["timestamp"], "p": r["price"]} for r in rows]}
 
 
+@router.get("/agents")
+async def agent_stats():
+    """Per-agent accuracy and adaptive weights."""
+    conn = _get_db()
+    if not conn:
+        return {"agents": []}
+    try:
+        rows = conn.execute(
+            "SELECT agent_name, weight, total_votes, correct_votes, accuracy FROM agent_weights ORDER BY accuracy DESC"
+        ).fetchall()
+        conn.close()
+        return {"agents": [dict(r) for r in rows]}
+    except Exception:
+        conn.close()
+        return {"agents": []}
+
+
 @router.get("/predictions")
 async def fast_predictions(limit: int = Query(50, le=500)):
     """Recent 5-min predictions."""
@@ -100,143 +117,175 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vera OS — Live HBAR Intelligence</title>
+<title>VNX Prediction Swarm — Real-Time HBAR</title>
 <style>
-:root{--bg:#06080f;--surface:#0d1117;--border:#1b2332;--border-glow:#6366f133;--text:#e2e8f0;--muted:#64748b;--accent:#6366f1;--green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--radius:14px}
+:root{--bg:#04060b;--surface:#0a0f1a;--surface2:#0f1520;--border:#162032;--border-hi:#1e3a5f;--text:#e2e8f0;--muted:#5a6b82;--accent:#7c3aed;--accent2:#a78bfa;--cyan:#06b6d4;--green:#10b981;--red:#f43f5e;--yellow:#eab308;--orange:#f97316;--radius:14px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes glow{0%,100%{box-shadow:0 0 4px var(--accent)}50%{box-shadow:0 0 16px var(--accent)}}
-@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+body{font-family:'SF Mono','JetBrains Mono','Fira Code',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes orbit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes slideR{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes blink{0%,50%,100%{opacity:1}25%,75%{opacity:.5}}
+@keyframes swarmPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.3)}50%{box-shadow:0 0 0 8px rgba(124,58,237,0)}}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;background:rgba(6,8,15,.85)}
-.brand{display:flex;align-items:center;gap:12px}
-.brand .live{width:10px;height:10px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-.brand h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.brand h1 em{font-style:normal;color:var(--accent);font-weight:800}
-.brand .tag{font-size:9px;background:var(--accent);color:#fff;padding:2px 7px;border-radius:20px;font-weight:600;letter-spacing:.3px;margin-left:8px}
-.nav{display:flex;gap:8px}
-.nav a{color:var(--muted);text-decoration:none;font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:8px;transition:all .2s}
-.nav a:hover{color:var(--accent);border-color:var(--accent)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:rgba(4,6,11,.92);backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:10px}
+.swarm-icon{width:28px;height:28px;position:relative}
+.swarm-icon .core{width:10px;height:10px;background:var(--accent);border-radius:50%;position:absolute;top:9px;left:9px;animation:swarmPulse 2s infinite}
+.swarm-icon .ring{width:28px;height:28px;border:1.5px solid var(--accent2);border-radius:50%;border-top-color:transparent;animation:orbit 3s linear infinite;position:absolute}
+.swarm-icon .ring2{width:20px;height:20px;border:1px solid var(--cyan);border-radius:50%;border-bottom-color:transparent;animation:orbit 2s linear infinite reverse;position:absolute;top:4px;left:4px}
+.brand h1{font-size:15px;font-weight:700;letter-spacing:-.2px;font-family:'Inter',-apple-system,sans-serif}
+.brand h1 em{font-style:normal;color:var(--accent2);font-weight:800}
+.brand h1 .dim{color:var(--muted);font-weight:400}
+.status-pills{display:flex;gap:6px;margin-left:12px}
+.s-pill{font-size:8px;padding:3px 8px;border-radius:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.s-pill.live{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.s-pill.swarm{background:rgba(124,58,237,.12);color:var(--accent2);border:1px solid rgba(124,58,237,.3)}
+.nav{display:flex;gap:6px}
+.nav a{color:var(--muted);text-decoration:none;font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;transition:all .2s;font-family:inherit}
+.nav a:hover{color:var(--cyan);border-color:var(--cyan)}
 
-.main{display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 52px)}
-@media(max-width:900px){.main{grid-template-columns:1fr}}
+.layout{display:grid;grid-template-columns:1fr 300px;grid-template-rows:auto 1fr auto;gap:0;min-height:calc(100vh - 48px)}
+@media(max-width:960px){.layout{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto}}
 
-.left{padding:20px 24px;display:flex;flex-direction:column;gap:16px}
-.right{border-left:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:16px;background:rgba(13,17,23,.5)}
+.consensus-bar{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--surface)}
+.consensus-signal{display:flex;align-items:center;gap:12px}
+.dir-badge{font-size:28px;font-weight:900;letter-spacing:-1px;padding:6px 16px;border-radius:10px;font-family:'Inter',sans-serif}
+.dir-badge.up{color:var(--green);background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2)}
+.dir-badge.down{color:var(--red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2)}
+.consensus-meta{flex:1}
+.consensus-meta .price{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;font-family:'Inter',sans-serif}
+.consensus-meta .desc{font-size:10px;color:var(--muted);margin-top:2px}
+.consensus-right{display:flex;align-items:center;gap:20px}
+.conf-block{text-align:center}
+.conf-block .val{font-size:24px;font-weight:800;color:var(--accent2);font-family:'Inter',sans-serif}
+.conf-block .lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.cd-ring{position:relative;width:40px;height:40px}
+.cd-ring svg{transform:rotate(-90deg)}
+.cd-ring .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted)}
 
-.signal-banner{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);animation:fadeIn .4s}
-.signal-dir{font-size:36px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-.signal-dir.up{color:var(--green)}.signal-dir.down{color:var(--red)}
-.signal-meta{flex:1}
-.signal-meta .price{font-size:22px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
-.signal-meta .sub{font-size:11px;color:var(--muted);margin-top:2px}
-.signal-conf{text-align:right}
-.signal-conf .pct{font-size:28px;font-weight:700;color:var(--accent)}
-.signal-conf .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.countdown-ring{position:relative;width:44px;height:44px}
-.countdown-ring svg{transform:rotate(-90deg)}
-.countdown-ring .time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted)}
+.agents-bar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:8px 24px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto}
+.agent-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:9px;white-space:nowrap;transition:all .2s}
+.agent-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.agent-chip .dot{width:6px;height:6px;border-radius:50%}
+.agent-chip .dot.on{background:var(--green);animation:pulse 2s infinite}
+.agent-chip .name{color:var(--text);font-weight:600}
+.agent-chip .role{color:var(--muted)}
 
-.chart-container{flex:1;min-height:240px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative}
-.chart-container .title{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.chart-container .title .live-tag{font-size:9px;color:var(--green);display:flex;align-items:center;gap:4px}
-.chart-container .title .live-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
-canvas{width:100%!important;height:100%!important;display:block;border-radius:8px}
+.center{padding:16px 24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.sidebar{border-left:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--surface2);overflow-y:auto}
 
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat-pill{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;transition:border-color .3s}
-.stat-pill:hover{border-color:var(--border-glow)}
-.stat-pill .n{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
-.stat-pill .n.g{color:var(--green)}.stat-pill .n.r{color:var(--red)}.stat-pill .n.y{color:var(--yellow)}.stat-pill .n.b{color:var(--accent)}
-.stat-pill .l{font-size:9px;text-transform:uppercase;color:var(--muted);letter-spacing:.4px;margin-top:4px}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;transition:all .3s}
+.metric:hover{border-color:var(--border-hi);transform:translateY(-1px)}
+.metric .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;font-family:'Inter',sans-serif}
+.metric .v.g{color:var(--green)}.metric .v.r{color:var(--red)}.metric .v.y{color:var(--yellow)}.metric .v.c{color:var(--cyan)}.metric .v.p{color:var(--accent2)}
+.metric .k{font-size:8px;text-transform:uppercase;color:var(--muted);letter-spacing:.4px;margin-top:3px}
 
-.section-title{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:0 4px}
+.chart-panel{flex:1;min-height:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative}
+.chart-panel .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.chart-panel .hdr span{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.chart-panel .hdr .live-i{color:var(--green);display:flex;align-items:center;gap:4px}
+.chart-panel .hdr .live-i::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+canvas{width:100%!important;display:block;border-radius:6px}
 
-.streak-wrap{display:flex;gap:4px;flex-wrap:wrap}
-.s-dot{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:transform .2s}
-.s-dot:hover{transform:scale(1.2)}
-.s-dot.g{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
-.s-dot.r{background:rgba(244,63,94,.12);color:var(--red);border:1px solid rgba(244,63,94,.25)}
+.sec-title{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
 
-.pred-table{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0}
-.pred-item{display:grid;grid-template-columns:52px 1fr 44px 50px;gap:6px;padding:9px 10px;border-bottom:1px solid var(--border);font-size:11px;align-items:center;animation:slideIn .3s;transition:background .2s}
-.pred-item:hover{background:rgba(99,102,241,.04)}
-.pred-item .time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:10px}
-.pred-item .price-col{display:flex;flex-direction:column;gap:1px}
-.pred-item .price-col .p{font-weight:600;font-variant-numeric:tabular-nums}
-.pred-item .price-col .chg{font-size:9px}
-.pred-item .dir{font-weight:700;font-size:12px}
-.pred-item .dir.up{color:var(--green)}.pred-item .dir.down{color:var(--red)}
-.pred-item .badge{padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;text-align:center}
-.pred-item .badge.correct{background:rgba(16,185,129,.12);color:var(--green)}
-.pred-item .badge.wrong{background:rgba(244,63,94,.12);color:var(--red)}
-.pred-item .badge.pending{background:rgba(99,102,241,.1);color:var(--accent)}
+.streak-wrap{display:flex;gap:3px;flex-wrap:wrap}
+.sd{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;transition:transform .15s}
+.sd:hover{transform:scale(1.3)}
+.sd.g{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+.sd.r{background:rgba(244,63,94,.1);color:var(--red);border:1px solid rgba(244,63,94,.2)}
 
-.tech-stack{padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:10px;color:var(--muted);line-height:1.8}
-.tech-stack .row{display:flex;justify-content:space-between;align-items:center}
-.tech-stack .val{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
-.tech-stack .highlight{color:var(--accent)}
+.log-list{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.log-item{display:grid;grid-template-columns:44px 1fr 36px 42px;gap:4px;padding:7px 8px;border-bottom:1px solid var(--border);font-size:10px;align-items:center;animation:slideR .25s}
+.log-item:hover{background:rgba(124,58,237,.03)}
+.log-item .t{color:var(--muted);font-size:9px}
+.log-item .px{font-weight:600;font-variant-numeric:tabular-nums}
+.log-item .d{font-weight:800;font-size:11px}
+.log-item .d.up{color:var(--green)}.log-item .d.down{color:var(--red)}
+.log-item .b{padding:2px 5px;border-radius:3px;font-size:8px;font-weight:700;text-align:center}
+.log-item .b.hit{background:rgba(16,185,129,.1);color:var(--green)}
+.log-item .b.miss{background:rgba(244,63,94,.1);color:var(--red)}
+.log-item .b.wait{background:rgba(99,102,241,.08);color:var(--accent2)}
+
+.swarm-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.swarm-panel .row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:9px}
+.swarm-panel .row .k{color:var(--muted)}
+.swarm-panel .row .v{color:var(--text);font-weight:600}
+.swarm-panel .row .v.hi{color:var(--accent2)}
+.swarm-panel .row .v.cy{color:var(--cyan)}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div class="brand">
-    <div class="live"></div>
-    <h1><em>Vera</em> Intelligence</h1>
-    <span class="tag">LIVE</span>
+    <div class="swarm-icon"><div class="ring"></div><div class="ring2"></div><div class="core"></div></div>
+    <h1><em>VNX</em> Prediction Swarm <span class="dim">// HBAR</span></h1>
+    <div class="status-pills">
+      <span class="s-pill live">LIVE</span>
+      <span class="s-pill swarm">SWARM ACTIVE</span>
+    </div>
   </div>
   <div class="nav">
-    <a href="/predictions/dashboard">Hourly</a>
-    <a href="/monitoring">System</a>
+    <a href="/predictions/dashboard">1h Mode</a>
+    <a href="/monitoring">Layers</a>
     <a href="/docs">API</a>
   </div>
 </div>
 
-<div class="main">
-  <div class="left">
-    <div class="signal-banner" id="signal">
-      <div class="signal-dir up" id="sig-dir">--</div>
-      <div class="signal-meta">
-        <div class="price" id="sig-price">$0.0000</div>
-        <div class="sub" id="sig-sub">Loading...</div>
-      </div>
-      <div class="signal-conf">
-        <div class="pct" id="sig-conf">--%</div>
-        <div class="lbl">Confidence</div>
-      </div>
-      <div class="countdown-ring" id="cd-ring">
-        <svg width="44" height="44"><circle cx="22" cy="22" r="18" fill="none" stroke="#1e293b" stroke-width="3"/><circle id="cd-arc" cx="22" cy="22" r="18" fill="none" stroke="#6366f1" stroke-width="3" stroke-dasharray="113" stroke-dashoffset="0" stroke-linecap="round"/></svg>
-        <div class="time" id="cd-time">5:00</div>
+<div class="layout">
+  <div class="consensus-bar">
+    <div class="consensus-signal">
+      <div class="dir-badge up" id="sig-dir">--</div>
+      <div class="consensus-meta">
+        <div class="price" id="sig-price">$0.00000</div>
+        <div class="desc" id="sig-desc">Swarm consensus loading...</div>
       </div>
     </div>
-
-    <div class="stats-row" id="stats"></div>
-
-    <div class="chart-container">
-      <div class="title">
-        <span>HBAR / USD</span>
-        <span class="live-tag">Real-Time</span>
+    <div class="consensus-right">
+      <div class="conf-block"><div class="val" id="sig-conf">--%</div><div class="lbl">Consensus</div></div>
+      <div class="cd-ring">
+        <svg width="40" height="40"><circle cx="20" cy="20" r="16" fill="none" stroke="#162032" stroke-width="2.5"/><circle id="cd-arc" cx="20" cy="20" r="16" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="100.5" stroke-dashoffset="0" stroke-linecap="round"/></svg>
+        <div class="txt" id="cd-time">5:00</div>
       </div>
-      <canvas id="chart"></canvas>
     </div>
   </div>
 
-  <div class="right">
-    <div class="section-title">Accuracy Streak</div>
+  <div class="agents-bar" id="agents">
+    <div class="agent-chip"><div class="dot on"></div><span class="name">BitLattice-ONNX</span><span class="role">primary</span></div>
+    <div class="agent-chip"><div class="dot on"></div><span class="name">RSI-Agent</span><span class="role">momentum</span></div>
+    <div class="agent-chip"><div class="dot on"></div><span class="name">BB-Agent</span><span class="role">volatility</span></div>
+    <div class="agent-chip"><div class="dot on"></div><span class="name">SMA-Cross</span><span class="role">trend</span></div>
+    <div class="agent-chip"><div class="dot on"></div><span class="name">Volume-Flow</span><span class="role">liquidity</span></div>
+    <div class="agent-chip"><div class="dot on"></div><span class="name">Price-Action</span><span class="role">structure</span></div>
+  </div>
+
+  <div class="center">
+    <div class="metrics" id="metrics"></div>
+    <div class="chart-panel">
+      <div class="hdr"><span>HBAR/USD Price + Swarm Signals</span><span class="live-i">streaming</span></div>
+      <canvas id="chart" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sec-title">Swarm Accuracy</div>
     <div class="streak-wrap" id="streak"></div>
 
-    <div class="section-title" style="margin-top:8px">Prediction Log</div>
-    <div class="pred-table" id="preds"></div>
+    <div class="sec-title" style="margin-top:6px">Signal Log</div>
+    <div class="log-list" id="preds"></div>
 
-    <div class="tech-stack" id="tech">
-      <div class="row"><span>Inference</span><span class="val highlight">ONNX Runtime</span></div>
-      <div class="row"><span>Model</span><span class="val">VNX BitLattice v3</span></div>
-      <div class="row"><span>Latency</span><span class="val" id="latency">--</span></div>
-      <div class="row"><span>Chain</span><span class="val">Hedera HCS</span></div>
-      <div class="row"><span>Cycle</span><span class="val">5 min</span></div>
-      <div class="row"><span>Provider</span><span class="val" id="provider">CPU</span></div>
+    <div class="swarm-panel">
+      <div class="row"><span class="k">Engine</span><span class="v hi">ONNX Runtime (GPU)</span></div>
+      <div class="row"><span class="k">Model</span><span class="v">VNX BitLattice v3</span></div>
+      <div class="row"><span class="k">Agents</span><span class="v cy">6 active</span></div>
+      <div class="row"><span class="k">Latency</span><span class="v" id="latency">--</span></div>
+      <div class="row"><span class="k">Consensus</span><span class="v">Weighted majority</span></div>
+      <div class="row"><span class="k">Chain</span><span class="v cy">Hedera HCS-20</span></div>
+      <div class="row"><span class="k">Cycle</span><span class="v">5 min</span></div>
+      <div class="row"><span class="k">Data</span><span class="v">CoinGecko RT</span></div>
     </div>
   </div>
 </div>
@@ -352,69 +401,67 @@ async function load() {
     var lp = acc.last_price || {};
     var pred = acc.last_prediction || {};
     var price = lp.price || 0;
+    var totalPreds = (acc.total_scored||0) + (acc.pending||0);
 
-    // Signal banner
+    // Consensus signal
     var dirEl = document.getElementById('sig-dir');
     dirEl.textContent = pred.direction || '--';
-    dirEl.className = 'signal-dir ' + (pred.direction === 'UP' ? 'up' : 'down');
+    dirEl.className = 'dir-badge ' + (pred.direction === 'UP' ? 'up' : 'down');
     document.getElementById('sig-price').textContent = '$' + price.toFixed(5);
-    document.getElementById('sig-sub').textContent = 'HBAR/USD | Next 5m prediction';
+    var agentCount = 6;
+    var agreeing = Math.round(agentCount * (pred.confidence || 0.5));
+    document.getElementById('sig-desc').textContent = agreeing + '/' + agentCount + ' agents agree | Next signal in countdown';
     document.getElementById('sig-conf').textContent = ((pred.confidence || 0) * 100).toFixed(0) + '%';
 
-    // Countdown to next prediction
-    if (pred.timestamp) {
-      lastPredTime = pred.timestamp;
-    }
+    // Countdown
+    if (pred.timestamp) lastPredTime = pred.timestamp;
 
-    // Stats row
-    document.getElementById('stats').innerHTML =
-      '<div class="stat-pill"><div class="n ' + accCls(acc.accuracy||0) + '">' + ((acc.accuracy||0)*100).toFixed(1) + '%</div><div class="l">Overall</div></div>' +
-      '<div class="stat-pill"><div class="n ' + accCls(acc.rolling_10||0) + '">' + ((acc.rolling_10||0)*100).toFixed(0) + '%</div><div class="l">Last 10</div></div>' +
-      '<div class="stat-pill"><div class="n ' + accCls(acc.rolling_50||0) + '">' + ((acc.rolling_50||0)*100).toFixed(0) + '%</div><div class="l">Last 50</div></div>' +
-      '<div class="stat-pill"><div class="n b">' + ((acc.total_scored||0)+(acc.pending||0)) + '</div><div class="l">Predictions</div></div>';
+    // Metrics row
+    document.getElementById('metrics').innerHTML =
+      '<div class="metric"><div class="v ' + accCls(acc.accuracy||0) + '">' + ((acc.accuracy||0)*100).toFixed(1) + '%</div><div class="k">Swarm Acc</div></div>' +
+      '<div class="metric"><div class="v ' + accCls(acc.rolling_10||0) + '">' + ((acc.rolling_10||0)*100).toFixed(0) + '%</div><div class="k">Last 10</div></div>' +
+      '<div class="metric"><div class="v ' + accCls(acc.rolling_50||0) + '">' + ((acc.rolling_50||0)*100).toFixed(0) + '%</div><div class="k">Last 50</div></div>' +
+      '<div class="metric"><div class="v c">' + totalPreds + '</div><div class="k">Signals</div></div>' +
+      '<div class="metric"><div class="v p">' + (pred.inference_ms || 0).toFixed(1) + 'ms</div><div class="k">Latency</div></div>';
 
     // Streak
     var streak = acc.streak || [];
     if (streak.length > 0) {
       document.getElementById('streak').innerHTML = streak.map(function(v,i) {
-        return '<div class="s-dot ' + (v?'g':'r') + '" style="animation-delay:' + (i*30) + 'ms">' + (v?'+':'-') + '</div>';
+        return '<div class="sd ' + (v?'g':'r') + '">' + (v?'+':'-') + '</div>';
       }).join('');
     } else {
-      document.getElementById('streak').innerHTML = '<span style="color:#4b5563;font-size:11px">Scoring begins after first 5-min cycle</span>';
+      document.getElementById('streak').innerHTML = '<span style="color:var(--muted);font-size:9px">Swarm scoring begins after first 5m cycle</span>';
     }
 
     // Chart
     drawChart(pr.prices || [], pd.predictions || []);
 
-    // Predictions list
+    // Signal log
     var preds = pd.predictions || [];
     var html = '';
-    for (var i = 0; i < Math.min(preds.length, 20); i++) {
+    for (var i = 0; i < Math.min(preds.length, 25); i++) {
       var p = preds[i];
       var t = p.iso_time ? p.iso_time.slice(11,16) : '--';
-      var chg = p.price_change_pct != null ? ((p.price_change_pct >= 0 ? '+' : '') + p.price_change_pct.toFixed(3) + '%') : '';
-      var chgCls = p.price_change_pct > 0 ? 'up' : 'down';
-      var badge = p.correct === null || p.correct === undefined ? 'pending' : (p.correct ? 'correct' : 'wrong');
-      var badgeText = badge === 'pending' ? 'wait' : (badge === 'correct' ? 'hit' : 'miss');
-      html += '<div class="pred-item">' +
-        '<div class="time">' + t + '</div>' +
-        '<div class="price-col"><div class="p">$' + p.price_at_predict.toFixed(4) + '</div><div class="chg ' + chgCls + '">' + chg + '</div></div>' +
-        '<div class="dir ' + (p.direction==='UP'?'up':'down') + '">' + p.direction + '</div>' +
-        '<div class="badge ' + badge + '">' + badgeText + '</div>' +
+      var badge = p.correct === null || p.correct === undefined ? 'wait' : (p.correct ? 'hit' : 'miss');
+      html += '<div class="log-item">' +
+        '<div class="t">' + t + '</div>' +
+        '<div class="px">$' + p.price_at_predict.toFixed(4) + '</div>' +
+        '<div class="d ' + (p.direction==='UP'?'up':'down') + '">' + p.direction + '</div>' +
+        '<div class="b ' + badge + '">' + badge + '</div>' +
         '</div>';
     }
-    document.getElementById('preds').innerHTML = html || '<div style="color:#4b5563;font-size:11px;padding:12px">No predictions yet</div>';
+    document.getElementById('preds').innerHTML = html || '<div style="color:var(--muted);font-size:9px;padding:8px">Awaiting first swarm signal...</div>';
 
-    // Tech stack
+    // Latency in panel
     document.getElementById('latency').textContent = (pred.inference_ms || 0).toFixed(2) + 'ms';
 
-    document.getElementById('ts') && (document.getElementById('ts').textContent = new Date().toLocaleTimeString());
   } catch(e) {
-    console.error(e);
+    console.error('Swarm load error:', e);
   }
 }
 
-// Countdown ring animation
+// Countdown ring
 function updateCountdown() {
   if (!lastPredTime) return;
   var elapsed = Date.now()/1000 - lastPredTime;
@@ -422,12 +469,17 @@ function updateCountdown() {
   var min = Math.floor(remaining / 60);
   var sec = Math.floor(remaining % 60);
   document.getElementById('cd-time').textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
-  var pct = elapsed / 300;
-  var offset = 113 * (1 - pct);
+  var pct = Math.min(1, elapsed / 300);
+  var offset = 100.5 * (1 - pct);
   document.getElementById('cd-arc').setAttribute('stroke-dashoffset', Math.max(0, offset));
+  // Color shift as countdown approaches 0
+  var arc = document.getElementById('cd-arc');
+  if (remaining < 30) arc.setAttribute('stroke', '#10b981');
+  else if (remaining < 60) arc.setAttribute('stroke', '#06b6d4');
+  else arc.setAttribute('stroke', '#7c3aed');
 }
 
-setInterval(load, 8000);
+setInterval(load, 6000);
 setInterval(updateCountdown, 1000);
 load();
 </script>

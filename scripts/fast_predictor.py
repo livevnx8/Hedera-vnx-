@@ -77,6 +77,24 @@ CREATE TABLE IF NOT EXISTS accuracy_log (
     total_correct   INTEGER,
     total_predictions INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS agent_votes (
+    prediction_id   INTEGER NOT NULL,
+    agent_name      TEXT NOT NULL,
+    score           REAL NOT NULL,
+    vote_direction  TEXT NOT NULL,
+    correct         INTEGER,
+    PRIMARY KEY (prediction_id, agent_name)
+);
+
+CREATE TABLE IF NOT EXISTS agent_weights (
+    agent_name      TEXT PRIMARY KEY,
+    weight          REAL NOT NULL DEFAULT 1.0,
+    total_votes     INTEGER NOT NULL DEFAULT 0,
+    correct_votes   INTEGER NOT NULL DEFAULT 0,
+    accuracy        REAL NOT NULL DEFAULT 0.5,
+    last_updated    REAL
+);
 """
 
 
@@ -118,12 +136,24 @@ def fetch_price() -> Optional[Dict]:
 class FastPredictor:
     """5-minute prediction engine with learning feedback."""
 
+    # Default starting weights for each agent
+    DEFAULT_WEIGHTS = {
+        "onnx": 1.0,
+        "rsi_revert": 1.5,
+        "momentum": 1.2,
+        "bb_bounce": 1.3,
+        "sma_cross": 1.0,
+        "vol_price": 0.8,
+    }
+
     def __init__(self):
         self.db = get_db()
         self._init_model()
         self.price_history = []
         self.volume_history = []
+        self.agent_weights = dict(self.DEFAULT_WEIGHTS)
         self._load_recent_prices()
+        self._load_agent_weights()
 
     def _init_model(self):
         """Load ONNX model for fast inference."""
@@ -140,6 +170,67 @@ class FastPredictor:
             self.price_history = [r["price"] for r in reversed(rows)]
             self.volume_history = [r["volume_24h"] or 50000000 for r in reversed(rows)]
             logger.info(f"Loaded {len(self.price_history)} historical prices")
+
+    def _load_agent_weights(self):
+        """Load learned agent weights from DB."""
+        rows = self.db.execute(
+            "SELECT agent_name, weight, accuracy FROM agent_weights WHERE total_votes >= 5"
+        ).fetchall()
+        for row in rows:
+            if row["agent_name"] in self.agent_weights:
+                self.agent_weights[row["agent_name"]] = row["weight"]
+        if rows:
+            logger.info(f"Loaded adaptive weights: {dict((r['agent_name'], round(r['weight'], 2)) for r in rows)}")
+
+    def _save_agent_votes(self, prediction_id: int, votes):
+        """Store individual agent votes for later scoring."""
+        for name, score, weight in votes:
+            direction = "UP" if score > 0 else "DOWN"
+            self.db.execute(
+                "INSERT OR REPLACE INTO agent_votes (prediction_id, agent_name, score, vote_direction) VALUES (?,?,?,?)",
+                (prediction_id, name, float(score), direction),
+            )
+        self.db.commit()
+
+    def _update_agent_weights(self, prediction_id: int, actual_up: bool):
+        """Score each agent's vote and update adaptive weights."""
+        rows = self.db.execute(
+            "SELECT agent_name, vote_direction FROM agent_votes WHERE prediction_id = ? AND correct IS NULL",
+            (prediction_id,),
+        ).fetchall()
+        
+        for row in rows:
+            agent_correct = int((row["vote_direction"] == "UP") == actual_up)
+            self.db.execute(
+                "UPDATE agent_votes SET correct = ? WHERE prediction_id = ? AND agent_name = ?",
+                (agent_correct, prediction_id, row["agent_name"]),
+            )
+            
+            # Update cumulative agent stats
+            self.db.execute("""
+                INSERT INTO agent_weights (agent_name, weight, total_votes, correct_votes, accuracy, last_updated)
+                VALUES (?, ?, 1, ?, ?, ?)
+                ON CONFLICT(agent_name) DO UPDATE SET
+                    total_votes = total_votes + 1,
+                    correct_votes = correct_votes + ?,
+                    accuracy = CAST(correct_votes + ? AS REAL) / (total_votes + 1),
+                    weight = CASE
+                        WHEN (total_votes + 1) >= 5 THEN
+                            0.5 + (CAST(correct_votes + ? AS REAL) / (total_votes + 1))
+                        ELSE weight
+                    END,
+                    last_updated = ?
+            """, (
+                row["agent_name"], self.DEFAULT_WEIGHTS.get(row["agent_name"], 1.0),
+                agent_correct, agent_correct / 1.0, time.time(),
+                agent_correct, agent_correct, agent_correct, time.time(),
+            ))
+        
+        self.db.commit()
+        
+        # Reload weights into memory
+        if rows:
+            self._load_agent_weights()
 
     def log_price(self, price_data: Dict):
         """Store price tick."""
@@ -225,16 +316,159 @@ class FastPredictor:
         return features
 
     def predict(self) -> Optional[Dict]:
-        """Run prediction for next 5-min direction."""
-        features = self.compute_features()
-        if features is None:
+        """
+        Multi-agent swarm prediction for next 5-min direction.
+        
+        Agents:
+          1. ONNX BitLattice (dampened) - neural network signal
+          2. RSI Mean-Reversion - oversold/overbought reversal
+          3. Momentum Agent - short-term price velocity
+          4. Bollinger Bounce - band-edge reversals
+          5. SMA Crossover - trend alignment
+          6. Volume-Price Divergence - smart money detection
+        
+        Each agent votes UP (+1) or DOWN (-1) with a weight.
+        Consensus = weighted sum -> direction + confidence.
+        """
+        prices = self.price_history
+        volumes = self.volume_history
+        n = len(prices)
+        if n < 30:
             return None
 
-        result = self.onnx_engine.predict("hbar", features)
-        if "error" in result:
-            logger.error(f"Prediction error: {result['error']}")
+        t0 = time.time()
+        votes = []  # (agent_name, direction_score, weight)
+        W = self.agent_weights  # adaptive weights
+
+        # ── Agent 1: ONNX BitLattice (dampened) ──
+        features = self.compute_features()
+        if features:
+            onnx_result = self.onnx_engine.predict("hbar", features)
+            if "error" not in onnx_result:
+                raw_up = onnx_result["up_probability"]
+                onnx_score = (raw_up - 0.5) * 0.6
+                votes.append(("onnx", onnx_score, W.get("onnx", 1.0)))
+
+        # ── Agent 2: RSI Mean-Reversion ──
+        # At 5-min scale, mean-reversion dominates
+        if n >= 15:
+            deltas = np.diff(prices[-15:])
+            gains = deltas[deltas > 0]
+            losses = -deltas[deltas < 0]
+            avg_gain = np.mean(gains) if len(gains) > 0 else 1e-10
+            avg_loss = np.mean(losses) if len(losses) > 0 else 1e-10
+            rsi = 100 - (100 / (1 + avg_gain / max(avg_loss, 1e-10)))
+            
+            # Mean-reversion: oversold -> UP, overbought -> DOWN
+            if rsi < 30:
+                rsi_score = 0.6  # strongly oversold -> UP
+            elif rsi < 40:
+                rsi_score = 0.3
+            elif rsi > 70:
+                rsi_score = -0.6  # strongly overbought -> DOWN
+            elif rsi > 60:
+                rsi_score = -0.3
+            else:
+                rsi_score = 0.0  # neutral
+            votes.append(("rsi_revert", rsi_score, W.get("rsi_revert", 1.5)))
+
+        # ── Agent 3: Short Momentum (3-tick) ──
+        if n >= 4:
+            mom3 = (prices[-1] - prices[-4]) / max(prices[-4], 1e-8)
+            # Momentum: trend continuation if strong, otherwise fade
+            if abs(mom3) > 0.001:  # >0.1% in 3 ticks = strong momentum
+                mom_score = np.clip(mom3 * 200, -0.5, 0.5)  # follow it
+            else:
+                # Weak momentum → mean-revert
+                mom_score = -np.clip(mom3 * 500, -0.3, 0.3)
+            votes.append(("momentum", mom_score, W.get("momentum", 1.2)))
+
+        # ── Agent 4: Bollinger Bounce ──
+        if n >= 20:
+            window = prices[-20:]
+            bb_mean = np.mean(window)
+            bb_std = np.std(window)
+            if bb_std > 0:
+                z_score = (prices[-1] - bb_mean) / bb_std
+                # Near upper band -> DOWN, near lower band -> UP
+                if z_score > 1.5:
+                    bb_score = -0.5
+                elif z_score > 1.0:
+                    bb_score = -0.25
+                elif z_score < -1.5:
+                    bb_score = 0.5
+                elif z_score < -1.0:
+                    bb_score = 0.25
+                else:
+                    bb_score = 0.0
+            else:
+                bb_score = 0.0
+            votes.append(("bb_bounce", bb_score, W.get("bb_bounce", 1.3)))
+
+        # ── Agent 5: SMA Micro-Crossover ──
+        if n >= 10:
+            sma5 = np.mean(prices[-5:])
+            sma10 = np.mean(prices[-10:])
+            cross = (sma5 - sma10) / max(sma10, 1e-8)
+            # Positive cross = bullish trend
+            sma_score = np.clip(cross * 1000, -0.4, 0.4)
+            votes.append(("sma_cross", sma_score, W.get("sma_cross", 1.0)))
+
+        # ── Agent 6: Volume-Price Divergence ──
+        if n >= 5 and len(volumes) >= 5:
+            price_chg = (prices[-1] - prices[-5]) / max(prices[-5], 1e-8)
+            vol_now = np.mean(volumes[-3:])
+            vol_prev = np.mean(volumes[-6:-3]) if len(volumes) >= 6 else vol_now
+            vol_chg = (vol_now - vol_prev) / max(vol_prev, 1)
+            
+            # Rising volume + falling price = capitulation (reversal UP)
+            # Rising volume + rising price = continuation
+            if vol_chg > 0.1 and price_chg < -0.0005:
+                vol_score = 0.3  # capitulation → UP
+            elif vol_chg > 0.1 and price_chg > 0.0005:
+                vol_score = 0.2  # volume confirms → UP
+            elif vol_chg < -0.1 and price_chg > 0.0005:
+                vol_score = -0.2  # rising on low vol → fade
+            else:
+                vol_score = 0.0
+            votes.append(("vol_price", vol_score, W.get("vol_price", 0.8)))
+
+        # ── Swarm Consensus ──
+        if not votes:
             return None
-        return result
+
+        total_weight = sum(w for _, _, w in votes)
+        weighted_sum = sum(score * weight for _, score, weight in votes)
+        consensus = weighted_sum / total_weight  # -1 to +1
+
+        direction = "UP" if consensus > 0 else "DOWN"
+        # Confidence = how strongly agents agree (0 to 1)
+        confidence = min(1.0, abs(consensus) * 2)
+        # Don't be overconfident with low agreement
+        agreeing = sum(1 for _, s, _ in votes if (s > 0) == (consensus > 0) and abs(s) > 0.05)
+        agreement_ratio = agreeing / len(votes)
+        confidence = confidence * (0.5 + 0.5 * agreement_ratio)
+
+        up_prob = 0.5 + consensus / 2
+
+        elapsed_ms = (time.time() - t0) * 1000
+
+        agent_details = {name: round(score, 3) for name, score, _ in votes}
+        logger.info(f"  Agents: {agent_details} => consensus={consensus:.3f}")
+
+        return {
+            "token": "HBAR",
+            "direction": direction,
+            "up_probability": round(max(0, min(1, up_prob)), 4),
+            "down_probability": round(max(0, min(1, 1 - up_prob)), 4),
+            "confidence": round(confidence, 4),
+            "market_odds": round(up_prob / max(1 - up_prob, 1e-8), 2),
+            "inference_time_ms": round(elapsed_ms, 3),
+            "inference_engine": "swarm",
+            "agents": agent_details,
+            "agreement": f"{agreeing}/{len(votes)}",
+            "_votes": votes,  # internal: for saving per-agent data
+        }
 
     def score_predictions(self, current_price: float):
         """Score predictions that are >= 5 min old."""
@@ -256,6 +490,9 @@ class FastPredictor:
                 "UPDATE fast_predictions SET actual_price = ?, price_change_pct = ?, correct = ?, scored_at = ? WHERE id = ?",
                 (current_price, change_pct, correct, now, row["id"]),
             )
+            # Score individual agents and update adaptive weights
+            self._update_agent_weights(row["id"], actually_up)
+            
             scored += 1
             sym = "+" if correct else "-"
             logger.info(f"  [{sym}] pred={row['direction']} actual={'UP' if actually_up else 'DOWN'} "
@@ -326,9 +563,14 @@ def run_loop():
                              result["up_probability"], result.get("inference_time_ms", 0)),
                         )
                         predictor.db.commit()
+                        # Save per-agent votes for adaptive learning
+                        pred_id = predictor.db.execute("SELECT last_insert_rowid()").fetchone()[0]
+                        if result.get("_votes"):
+                            predictor._save_agent_votes(pred_id, result["_votes"])
                         last_predict_time = now
                         logger.info(f"PREDICT: {result['direction']} (conf={result['confidence']:.1%}) "
-                                    f"price=${current_price:.6f} [{result.get('inference_time_ms', 0):.2f}ms]")
+                                    f"price=${current_price:.6f} [{result.get('inference_time_ms', 0):.2f}ms] "
+                                    f"agree={result.get('agreement', '?')}")
                     else:
                         logger.warning("Prediction skipped (insufficient data)")
                         last_predict_time = now
