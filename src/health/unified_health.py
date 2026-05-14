@@ -72,7 +72,7 @@ class UnifiedHealthCheck:
     def _check_predictions(self) -> LayerHealth:
         try:
             if self._prediction_engine:
-                tokens = self._prediction_engine.get_available_tokens()
+                tokens = list(self._prediction_engine.token_models.keys())
                 return LayerHealth("predictions", 2, "ok", {
                     "tokens": len(tokens),
                     "token_list": tokens,

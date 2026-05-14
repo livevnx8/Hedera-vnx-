@@ -105,6 +105,7 @@ from src.persistence.vera_db import VeraDB
 
 # ONNX Inference (Phase 4A)
 from src.prediction.onnx_inference import ONNXPredictionEngine
+from src.prediction.prediction_tracker_api import router as predictions_router
 
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
@@ -357,6 +358,9 @@ app.include_router(learning_router)
 # ── v2.1: Built-in Monitoring Dashboard ────────────────────────
 app.include_router(monitoring_router)
 
+# ── Hourly Prediction Tracker ──────────────────────────────────
+app.include_router(predictions_router)
+
 # ── v2 Metrics Bridges ────────────────────────────────────────
 def _metrics_bridge(event_name: str, data):
     if "proof" in event_name or event_name.startswith("marketplace."):
@@ -407,12 +411,8 @@ unified_health = UnifiedHealthCheck(
 
 @app.get("/")
 async def root():
-    return {
-        "service": "Hedera Prediction Market Engine v3",
-        "version": "3.0.0",
-        "features": ["predictions", "analytics", "graphs"],
-        "tokens": prediction_engine.get_available_tokens(),
-    }
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/monitoring")
 
 @app.get("/predict/{token}")
 async def predict_token(token: str):
