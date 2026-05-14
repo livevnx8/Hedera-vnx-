@@ -307,6 +307,57 @@ class VeraDB:
                 )
             return [dict(row) for row in cur.fetchall()]
 
+    # ── Backup & Maintenance ────────────────────────────────────
+
+    def backup(self, backup_path: Optional[str] = None) -> str:
+        """Create a hot backup of the database using SQLite backup API."""
+        import shutil
+        import time as _time
+
+        if backup_path is None:
+            ts = _time.strftime("%Y%m%d-%H%M%S")
+            backup_dir = os.path.join(os.path.dirname(self._db_path), "backups")
+            os.makedirs(backup_dir, exist_ok=True)
+            backup_path = os.path.join(backup_dir, f"vera-{ts}.db")
+
+        with self._lock:
+            dst = sqlite3.connect(backup_path)
+            self._conn.backup(dst)
+            dst.close()
+
+        logger.info(f"Database backed up to {backup_path}")
+        return backup_path
+
+    def integrity_check(self) -> Dict[str, Any]:
+        """Run SQLite integrity check and return result."""
+        with self._lock:
+            result = self._conn.execute("PRAGMA integrity_check").fetchone()[0]
+            page_count = self._conn.execute("PRAGMA page_count").fetchone()[0]
+            page_size = self._conn.execute("PRAGMA page_size").fetchone()[0]
+            wal_mode = self._conn.execute("PRAGMA journal_mode").fetchone()[0]
+
+        db_size = 0
+        try:
+            db_size = os.path.getsize(self._db_path)
+        except OSError:
+            pass
+
+        return {
+            "integrity": result,
+            "ok": result == "ok",
+            "db_size_bytes": db_size,
+            "db_size_mb": round(db_size / (1024 * 1024), 2),
+            "page_count": page_count,
+            "page_size": page_size,
+            "journal_mode": wal_mode,
+        }
+
+    def vacuum(self):
+        """Reclaim unused space. Run during low-traffic periods."""
+        with self._lock:
+            self._conn.execute("VACUUM")
+        logger.info("Database vacuumed")
+
     # ── Stats ──────────────────────────────────────────────────
 
     def stats(self) -> Dict[str, Any]:
@@ -319,9 +370,16 @@ class VeraDB:
             packages = self._conn.execute("SELECT COUNT(*) as cnt FROM upgrade_packages").fetchone()["cnt"]
             published = self._conn.execute("SELECT COUNT(*) as cnt FROM upgrade_packages WHERE published = 1").fetchone()["cnt"]
 
+        db_size = 0
+        try:
+            db_size = os.path.getsize(self._db_path)
+        except OSError:
+            pass
+
         return {
             "db_path": self._db_path,
             "schema_version": SCHEMA_VERSION,
+            "db_size_bytes": db_size,
             "proof_receipts": receipts,
             "proof_loops": loops,
             "proof_loops_closed": closed,

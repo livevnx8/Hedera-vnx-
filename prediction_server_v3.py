@@ -216,10 +216,11 @@ app = FastAPI(
     description="Predictions + Analytics + Graph Data for Hedera tokens",
 )
 
-# CORS for web frontend
+# CORS — tighten to known origins in production
+_allowed_origins = os.environ.get("VERA_CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
@@ -492,6 +493,17 @@ async def shutdown_event():
 async def prometheus_metrics():
     """Prometheus metrics endpoint."""
     return PlainTextResponse(content=metrics.export(), media_type="text/plain")
+
+@app.get("/db/stats")
+async def db_stats():
+    """Database statistics and health."""
+    return {**vera_db.stats(), **vera_db.integrity_check()}
+
+@app.post("/db/backup")
+async def db_backup():
+    """Create a hot backup of the database."""
+    path = vera_db.backup()
+    return {"status": "ok", "backup_path": path}
 
 
 # Request metrics middleware
