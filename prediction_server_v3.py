@@ -103,8 +103,12 @@ from src.health.monitoring_dashboard import router as monitoring_router
 # Persistence
 from src.persistence.vera_db import VeraDB
 
+# ONNX Inference (Phase 4A)
+from src.prediction.onnx_inference import ONNXPredictionEngine
+
 # Initialize all specialist engines
 prediction_engine = ProductionPredictionEngine()
+onnx_engine = ONNXPredictionEngine()
 analytics_engine = AnalyticsEngine()
 graph_engine = GraphDataEngine()
 feature_importance = FeatureImportanceMonitor()
@@ -505,6 +509,60 @@ async def db_backup():
     path = vera_db.backup()
     return {"status": "ok", "backup_path": path}
 
+# ── Phase 4A: ONNX Inference Endpoints ────────────────────────
+
+def _get_features_from_history(token: str):
+    """Compute features from existing price history without fetching new data."""
+    token = token.lower()
+    if token not in prediction_engine.price_history:
+        return None
+    prices = list(prediction_engine.price_history[token])
+    if len(prices) < 50:
+        return None
+    # Build a fake price_data from the latest history point to reuse compute_features
+    price_data = {
+        "price": prices[-1],
+        "volume_24h": list(prediction_engine.volume_history.get(token, [50000000]))[-1],
+    }
+    return prediction_engine.compute_features(token, price_data)
+
+@app.get("/predict/onnx/stats")
+async def predict_onnx_stats():
+    """ONNX inference engine statistics."""
+    return onnx_engine.stats()
+
+@app.get("/predict/onnx/{token}")
+async def predict_onnx(token: str):
+    """Run prediction using ONNX inference engine (faster, GPU-ready)."""
+    token = token.lower()
+    if token not in onnx_engine.token_models:
+        raise HTTPException(404, f"No ONNX model for {token}")
+
+    features = _get_features_from_history(token)
+    if features is None:
+        raise HTTPException(422, "Insufficient price history for feature computation")
+
+    return onnx_engine.predict(token, features)
+
+@app.get("/predict/onnx")
+async def predict_onnx_all():
+    """Run ONNX predictions for all available tokens."""
+    results = {}
+    for token in onnx_engine.available_tokens():
+        features = _get_features_from_history(token)
+        results[token] = onnx_engine.predict(token, features) if features else {
+            "error": "Insufficient data", "code": "INSUFFICIENT_DATA"
+        }
+    return {"predictions": results, "engine": "onnx"}
+
+@app.get("/predict/compare/{token}")
+async def predict_compare(token: str):
+    """Compare PyTorch vs ONNX predictions side-by-side."""
+    token = token.lower()
+    features = _get_features_from_history(token)
+    pytorch_result = prediction_engine.predict(token, features) if features else {"error": "no features"}
+    onnx_result = onnx_engine.predict(token, features) if features and token in onnx_engine.token_models else {"error": "no onnx model"}
+    return {"token": token, "pytorch": pytorch_result, "onnx": onnx_result}
 
 # Request metrics middleware
 @app.middleware("http")
