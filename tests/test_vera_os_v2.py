@@ -86,7 +86,7 @@ class TestHCSProofEmitter:
 
 class TestMirrorVerifier:
     def setup_method(self):
-        self.verifier = MirrorVerifier(network="testnet")
+        self.verifier = MirrorVerifier(network="testnet", mirror_url="https://testnet.mirrornode.hedera.com")
 
     def test_init(self):
         assert self.verifier._network == "testnet"

@@ -98,6 +98,7 @@ from src.learning_lane.learning_api import create_learning_router
 
 # Unified Health
 from src.health.unified_health import UnifiedHealthCheck
+from src.health.monitoring_dashboard import router as monitoring_router
 
 # Persistence
 from src.persistence.vera_db import VeraDB
@@ -347,6 +348,9 @@ learning_router = create_learning_router(
     package_builder=package_builder,
 )
 app.include_router(learning_router)
+
+# ── v2.1: Built-in Monitoring Dashboard ────────────────────────
+app.include_router(monitoring_router)
 
 # ── v2 Metrics Bridges ────────────────────────────────────────
 def _metrics_bridge(event_name: str, data):

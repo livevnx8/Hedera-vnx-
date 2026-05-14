@@ -161,18 +161,22 @@ def main():
         print("  Skipping mirror verification in DRY_RUN mode.")
         print("  (Set VERA_DRY_RUN=false with valid credentials to test live)")
     elif receipts:
-        # Wait for mirror node propagation
-        print("  Waiting 5s for mirror node propagation...")
-        time.sleep(5)
+        # Wait for mirror node propagation (mainnet ~10-20s, testnet ~5-10s)
+        wait = 15 if network == "mainnet" else 8
+        print(f"  Waiting {wait}s for mirror node propagation...")
+        time.sleep(wait)
 
         verified_count = 0
-        for receipt in receipts[:5]:  # verify first 5
+        verify_n = min(5, len(receipts))
+        for receipt in receipts[:verify_n]:
             if receipt.topic_id and receipt.sequence_number:
                 result = verifier.verify_receipt(
                     task_id=receipt.task_id,
                     local_proof_hash=receipt.proof_hash,
                     topic_id=receipt.topic_id,
                     sequence_number=receipt.sequence_number,
+                    retries=3,
+                    retry_delay=5.0,
                 )
                 collector.record_verification(result.to_dict())
                 status = "✓" if result.verified else "✗"
@@ -182,7 +186,7 @@ def main():
             else:
                 print(f"  — task={receipt.task_id[:20]}  (no sequence — skipping)")
 
-        print(f"\n  Verified: {verified_count}/{min(5, len(receipts))}")
+        print(f"\n  Verified: {verified_count}/{verify_n}")
 
     # ── Step 6: Emitter Stats ────────────────────────────────────
     banner("Step 6: Final Emitter Stats")

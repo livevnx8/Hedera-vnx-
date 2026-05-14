@@ -96,18 +96,23 @@ class MirrorVerifier:
         topic_id: str,
         limit: int = 25,
         sequence_after: int = 0,
+        sequence_exact: Optional[int] = None,
     ) -> List[OnChainMessage]:
         """Fetch recent messages from a topic via mirror node REST API."""
         url = f"{self._mirror_url}/api/v1/topics/{topic_id}/messages"
-        params = f"?limit={limit}&order=desc"
-        if sequence_after > 0:
-            params += f"&sequencenumber=gt:{sequence_after}"
+        if sequence_exact is not None:
+            # Fetch a specific sequence number directly
+            params = f"?sequencenumber={sequence_exact}&limit=1"
+        else:
+            params = f"?limit={limit}&order=desc"
+            if sequence_after > 0:
+                params += f"&sequencenumber=gt:{sequence_after}"
 
         self._total_requests += 1
 
         try:
             req = Request(url + params, headers={"Accept": "application/json"})
-            with urlopen(req, timeout=15) as resp:
+            with urlopen(req, timeout=20) as resp:
                 data = json.loads(resp.read())
 
             messages = []
@@ -140,19 +145,37 @@ class MirrorVerifier:
         local_proof_hash: str,
         topic_id: str,
         sequence_number: Optional[int] = None,
+        retries: int = 3,
+        retry_delay: float = 5.0,
     ) -> VerificationResult:
         """
         Verify a local proof hash exists on-chain.
 
-        If sequence_number is provided, checks that specific message.
-        Otherwise, searches recent messages for a matching proof hash.
+        If sequence_number is provided, checks that specific message with retries
+        to handle mirror node propagation delay. Otherwise searches recent messages.
         """
         network = self._network
         hashscan_base = f"https://hashscan.io/{network}"
 
         if sequence_number:
-            messages = self.fetch_topic_messages(topic_id, limit=1, sequence_after=sequence_number - 1)
-            target = next((m for m in messages if m.sequence_number == sequence_number), None)
+            # Retry loop for mirror node propagation delay
+            for attempt in range(retries):
+                messages = self.fetch_topic_messages(
+                    topic_id, sequence_exact=sequence_number
+                )
+                target = next(
+                    (m for m in messages if m.sequence_number == sequence_number),
+                    None,
+                )
+                if target:
+                    break
+                if attempt < retries - 1:
+                    delay = retry_delay * (2 ** attempt)  # exponential backoff
+                    logger.info(
+                        f"Sequence {sequence_number} not yet on mirror node, "
+                        f"retry {attempt+1}/{retries} in {delay:.0f}s"
+                    )
+                    time.sleep(delay)
 
             if not target:
                 result = VerificationResult(
@@ -161,7 +184,10 @@ class MirrorVerifier:
                     local_hash=local_proof_hash,
                     topic_id=topic_id,
                     sequence_number=sequence_number,
-                    mismatch_details=f"Sequence {sequence_number} not found on mirror node",
+                    mismatch_details=(
+                        f"Sequence {sequence_number} not found after "
+                        f"{retries} retries (mirror propagation)"
+                    ),
                 )
                 self._record(result)
                 return result
@@ -178,7 +204,10 @@ class MirrorVerifier:
                 sequence_number=sequence_number,
                 consensus_timestamp=target.consensus_timestamp,
                 hashscan_url=f"{hashscan_base}/topic/{topic_id}",
-                mismatch_details=None if verified else f"Hash mismatch: local={local_proof_hash[:16]}… on_chain={on_chain_hash[:16] if on_chain_hash else 'none'}…",
+                mismatch_details=None if verified else (
+                    f"Hash mismatch: local={local_proof_hash[:16]}… "
+                    f"on_chain={on_chain_hash[:16] if on_chain_hash else 'none'}…"
+                ),
             )
             self._record(result)
             return result

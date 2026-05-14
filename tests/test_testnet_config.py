@@ -12,12 +12,22 @@ from src.hedera_proof.evidence_collector import EvidenceCollector
 
 
 class TestTestnetConfig:
-    def test_default_is_dry_run(self):
+    def test_default_is_dry_run(self, monkeypatch):
+        for key in ["HEDERA_NETWORK", "HEDERA_OPERATOR_ACCOUNT_ID",
+                    "HEDERA_OPERATOR_PRIVATE_KEY", "VERA_TASK_TOPIC_ID",
+                    "VERA_AUDIT_TOPIC_ID", "VERA_LEARNING_TOPIC_ID",
+                    "VERA_DRY_RUN", "VERA_HCS_BRIDGE_URL"]:
+            monkeypatch.delenv(key, raising=False)
         cfg = TestnetConfig.from_env()
         assert cfg.dry_run is True
         assert cfg.is_testnet_ready is False
 
-    def test_validate_reports_issues(self):
+    def test_validate_reports_issues(self, monkeypatch):
+        for key in ["HEDERA_NETWORK", "HEDERA_OPERATOR_ACCOUNT_ID",
+                    "HEDERA_OPERATOR_PRIVATE_KEY", "VERA_TASK_TOPIC_ID",
+                    "VERA_AUDIT_TOPIC_ID", "VERA_LEARNING_TOPIC_ID",
+                    "VERA_DRY_RUN", "VERA_HCS_BRIDGE_URL"]:
+            monkeypatch.delenv(key, raising=False)
         cfg = TestnetConfig.from_env()
         issues = cfg.validate()
         assert any("VERA_DRY_RUN" in i for i in issues)
