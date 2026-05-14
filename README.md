@@ -1,8 +1,18 @@
+<!-- 
+  VNX — Verifiable Neural Exchange
+  Sustainable, verifiable AI agents built on Hedera Hashgraph.
+  Every prediction, execution, and settlement is cryptographically anchored to 
+  Hedera Consensus Service (HCS) for tamper-proof auditability.
+  Carbon-negative infrastructure · 0.000003 kWh per transaction · MIT Licensed
+-->
+
 <div align="center">
 
 # VNX — Verifiable Neural Exchange
 
-### Hedera-native AI agents with on-chain proof of every prediction
+### Sustainable, verifiable AI agents built on Hedera
+
+*Carbon-negative infrastructure · Cryptographic proof of every prediction · Open source*
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Hedera](https://img.shields.io/badge/Hedera-HCS%20%7C%20HTS-8259EF?logo=hedera&logoColor=white)](https://hedera.com)
@@ -52,6 +62,52 @@ emitter = HCSProofEmitter()
 emitter.emit("pred_001", "prediction.verified", result["proof_hash"])
 # → Anchored to Hedera — independently verifiable forever
 ```
+
+---
+
+## Why Hedera for AI?
+
+AI outputs are only as trustworthy as the system that records them. VNX anchors every inference to **Hedera Consensus Service** — the most energy-efficient public ledger available — so predictions are independently verifiable *and* sustainable.
+
+| Problem | How VNX + Hedera Solves It | Source |
+|---------|--------------------------|--------|
+| **AI black boxes** — no proof an output wasn't tampered with | Every prediction is hash-chained and timestamped on HCS | [Hedera HCS Docs](https://docs.hedera.com/hedera/core-concepts/hashgraph-consensus-algorithms) |
+| **Energy waste** — GPU inference + PoW chains = massive carbon | Hedera uses **0.000003 kWh/tx** — lowest of any public DLT (UCL study) | [UCL Blockchain Energy Report](https://hedera.com/ucl-blockchain-energy) |
+| **Sustainability claims without proof** — greenwashing | Hedera is **carbon-negative** via quarterly offsets verified by Terrapass | [Hedera Carbon Negative](https://hedera.com/blog/going-carbon-negative-at-hedera-hashgraph) |
+| **Front-running & ordering manipulation** | Hashgraph consensus provides **fair ordering** via median consensus timestamps | [Hashgraph Consensus](https://docs.hedera.com/hedera/core-concepts/hashgraph-consensus-algorithms) |
+| **Slow finality** — can't use predictions in real-time | Hedera achieves **3-5 second finality** with 10,000+ TPS | [Hedera Dashboard](https://hedera.com/dashboard) |
+| **Centralized AI monopolies** — one company controls the model | VNX is MIT-licensed, runs locally (63KB model), zero API dependencies | [This repo — MIT License](LICENSE) |
+
+### Sustainable AI by Design
+
+VNX's BitLattice architecture is purpose-built for minimal compute:
+
+- **63 KB model** vs 100GB+ for LLMs — runs on a Raspberry Pi
+- **14 μs inference** — no GPU required, CPU L1 cache only
+- **Zero cloud dependency** — all inference is local, no external API calls
+- **Carbon-negative chain** — every HCS proof costs less energy than a single Google search
+
+> *"Hedera uses less energy per transaction than a Visa payment."*
+> — [hedera.com](https://hedera.com)
+
+---
+
+## Project Status
+
+| Component | Status | Details |
+|-----------|--------|--------|
+| **Prediction Swarm** | ✅ Live | 6-agent ensemble, 5-min cycles, adaptive learning |
+| **BitLattice ONNX** | ✅ Production | Quantized model, 14μs inference, 63KB |
+| **HCS Proof Loop** | ✅ Active | Hash-chained proofs emitting to testnet |
+| **Agent Marketplace** | ✅ Functional | Post → Bid → Execute → Settle → Proof |
+| **Dashboard** | ✅ Live | Real-time chart + swarm signals at `/fast/dashboard` |
+| **Mainnet Proofs** | 🔶 Ready | Gated behind `VERA_ENABLE_MAINNET=true` |
+| **Multi-token Models** | 🔶 Beta | HBAR (80%), SAUCE (68%), DOVU (100%) |
+| **Learning Lane** | 🔶 Beta | Proof loops → lessons → upgrade packages |
+| **Edge Deployment** | 🟡 Planned | Browser/IoT targets via WASM export |
+| **DAO Governance** | 🟡 Planned | On-chain proposal voting for agent upgrades |
+
+**Legend:** ✅ Production &nbsp;|&nbsp; 🔶 Beta/Ready &nbsp;|&nbsp; 🟡 Planned
 
 ---
 
