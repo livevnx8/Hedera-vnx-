@@ -32,7 +32,7 @@ pip install -e .  &&  python prediction_server_v3.py
 
 <div align="center">
 
-![VNX Prediction Swarm Dashboard](assets/vnx-visuals/vnx-edge-performance-dashboard-png.png)
+![VNX Prediction Swarm Dashboard](assets/vnx-visuals/vnx-edge-performance-dashboard-png.png?v=2)
 
 *VNX Prediction Swarm — 6 agents, real-time HBAR/USD, sub-2ms inference, adaptive self-learning*
 
@@ -115,7 +115,7 @@ VNX's BitLattice architecture is purpose-built for minimal compute:
 
 <div align="center">
 
-![BitLattice Architecture](assets/vnx-visuals/vnx-bitlattice-architecture-png.png)
+![BitLattice Architecture](assets/vnx-visuals/vnx-bitlattice-architecture-png.png?v=2)
 
 *Ternary-weight lattice system: each connection is -1 (inhibitory), 0 (no connection), or +1 (excitatory)*
 
@@ -145,7 +145,7 @@ BitLattice is VNX's proprietary neural architecture — a ternary-weight system 
 
 <div align="center">
 
-![VNX Performance](assets/vnx-visuals/vnx-performance-comparison-png.png)
+![VNX Performance](assets/vnx-visuals/vnx-performance-comparison-png.png?v=2)
 
 *Real-time 5-minute HBAR/USD directional predictions with 6-agent weighted consensus*
 
@@ -217,7 +217,7 @@ VERA_DRY_RUN=false          # flip to emit real HCS proofs
 
 <div align="center">
 
-![VNX Verifiability](assets/vnx-visuals/vnx-verifiability-diagram-png.png)
+![VNX Verifiability](assets/vnx-visuals/vnx-verifiability-diagram-png.png?v=2)
 
 *Every AI output produces a hash-chained proof packet anchored to Hedera Consensus Service*
 
@@ -251,7 +251,7 @@ result = verifier.verify_receipt("task_1", proof_hash, topic_id="0.0.12345")
 
 <div align="center">
 
-![VNX Marketplace Loop](assets/vnx-visuals/vnx-architecture-diagram-png.png)
+![VNX Marketplace Loop](assets/vnx-visuals/vnx-architecture-diagram-png.png?v=2)
 
 *Complete agent lifecycle: Post → Bid → Execute → Verify → Settle → Proof*
 
@@ -304,17 +304,17 @@ All diagrams ship as both PNG (for GitHub) and SVG (for docs/print):
 
 | Visual | What it shows |
 |--------|--------------|
-| ![](assets/vnx-visuals/vnx-bitlattice-architecture-png.png) | **BitLattice Architecture** — Ternary lattice routing |
-| ![](assets/vnx-visuals/vnx-architecture-diagram-png.png) | **Marketplace Loop** — Full agent lifecycle |
-| ![](assets/vnx-visuals/vnx-verifiability-diagram-png.png) | **Proof Chains** — Hash-linked HCS verifiability |
-| ![](assets/vnx-visuals/vnx-accuracy-metrics-png.png) | **Accuracy Metrics** — Real benchmark data |
-| ![](assets/vnx-visuals/vnx-edge-performance-dashboard-png.png) | **Edge Performance** — Sub-millisecond targets |
-| ![](assets/vnx-visuals/vnx-performance-comparison-png.png) | **Performance** — BitLattice vs alternatives |
-| ![](assets/vnx-visuals/vnx-model-size-comparison-png.png) | **Model Size** — 63KB vs industry standard |
-| ![](assets/vnx-visuals/vnx-scalability-visualization-png.png) | **Scalability** — Horizontal agent scaling |
-| ![](assets/vnx-visuals/vnx-competitive-advantage-grid-png.png) | **Competitive Grid** — VNX vs market |
-| ![](assets/vnx-visuals/vnx-sustainability-infographic-png.png) | **Sustainability** — Carbon-aware operations |
-| ![](assets/vnx-visuals/vnx-research-timeline-png.png) | **Research Timeline** — Development milestones |
+| ![](assets/vnx-visuals/vnx-bitlattice-architecture-png.png?v=2) | **BitLattice Architecture** — Ternary lattice routing |
+| ![](assets/vnx-visuals/vnx-architecture-diagram-png.png?v=2) | **Marketplace Loop** — Full agent lifecycle |
+| ![](assets/vnx-visuals/vnx-verifiability-diagram-png.png?v=2) | **Proof Chains** — Hash-linked HCS verifiability |
+| ![](assets/vnx-visuals/vnx-accuracy-metrics-png.png?v=2) | **Accuracy Metrics** — Real benchmark data |
+| ![](assets/vnx-visuals/vnx-edge-performance-dashboard-png.png?v=2) | **Edge Performance** — Sub-millisecond targets |
+| ![](assets/vnx-visuals/vnx-performance-comparison-png.png?v=2) | **Performance** — BitLattice vs alternatives |
+| ![](assets/vnx-visuals/vnx-model-size-comparison-png.png?v=2) | **Model Size** — 63KB vs industry standard |
+| ![](assets/vnx-visuals/vnx-scalability-visualization-png.png?v=2) | **Scalability** — Horizontal agent scaling |
+| ![](assets/vnx-visuals/vnx-competitive-advantage-grid-png.png?v=2) | **Competitive Grid** — VNX vs market |
+| ![](assets/vnx-visuals/vnx-sustainability-infographic-png.png?v=2) | **Sustainability** — Carbon-aware operations |
+| ![](assets/vnx-visuals/vnx-research-timeline-png.png?v=2) | **Research Timeline** — Development milestones |
 
 SVG versions available in [`docs/visuals/`](docs/visuals/) for high-resolution rendering.
 
