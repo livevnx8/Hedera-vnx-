@@ -1,0 +1,15 @@
+{
+  "receipt_id": "e6086cce4abc445f",
+  "task_id": "vnx_accuracy_2026_05_15",
+  "event_type": "swarm.accuracy.report",
+  "proof_hash": "ea4f6fee3612f03ed9d0d8eaedc8359f4bd58b52e275ab658319ec7de9484980",
+  "mode": "mainnet",
+  "topic_id": "0.0.10416185",
+  "sequence_number": 2790,
+  "transaction_id": "0.0.10294360@1778810837.153527342",
+  "hashscan_url": "https://hashscan.io/mainnet/transaction/0.0.10294360@1778810837.153527342",
+  "timestamp": 1778810840.3377168,
+  "operator_id": "0.0.10294360",
+  "payload_size": 764,
+  "error": null
+}
