@@ -61,6 +61,8 @@ CREATE TABLE IF NOT EXISTS fast_predictions (
     confidence      REAL NOT NULL,
     up_prob         REAL NOT NULL,
     inference_ms    REAL NOT NULL DEFAULT 0,
+    pattern         TEXT,
+    pattern_confidence REAL,
     -- Scored after 5 min
     actual_price    REAL,
     price_change_pct REAL,
@@ -144,6 +146,7 @@ class FastPredictor:
         "bb_bounce": 1.3,
         "sma_cross": 1.0,
         "vol_price": 0.8,
+        "pattern_recog": 1.4,
     }
 
     def __init__(self):
@@ -315,6 +318,134 @@ class FastPredictor:
 
         return features
 
+    def _find_peaks_troughs(self, arr: np.ndarray, window: int = 3):
+        """Find local maxima (peaks) and minima (troughs) indices."""
+        peaks, troughs = [], []
+        for i in range(window, len(arr) - window):
+            local = arr[i - window:i + window + 1]
+            if arr[i] == np.max(local):
+                peaks.append(i)
+            elif arr[i] == np.min(local):
+                troughs.append(i)
+        return np.array(peaks), np.array(troughs)
+
+    def detect_patterns(self, prices: list) -> Dict[str, Any]:
+        """
+        Detect common chart patterns from recent price history.
+        Returns: {pattern_name, direction_score, confidence, details}
+        """
+        if len(prices) < 20:
+            return {"pattern": "none", "score": 0.0, "confidence": 0.0}
+
+        arr = np.array(prices)
+        peaks, troughs = self._find_peaks_troughs(arr, window=2)
+        n = len(arr)
+
+        best = {"pattern": "none", "score": 0.0, "confidence": 0.0}
+
+        # ── Double Top ──
+        if len(peaks) >= 2:
+            for i in range(len(peaks) - 1):
+                p1, p2 = peaks[i], peaks[i + 1]
+                if p2 - p1 < 5 or p2 - p1 > 25:
+                    continue
+                top1, top2 = arr[p1], arr[p2]
+                # Tops within 1% of each other
+                if abs(top1 - top2) / max(top1, 1e-8) < 0.01:
+                    trough = np.min(arr[p1:p2])
+                    neckline = trough * 0.998
+                    if arr[-1] < neckline:
+                        conf = min(1.0, (neckline - arr[-1]) / neckline * 200)
+                        best = {"pattern": "double_top", "score": -0.5, "confidence": round(conf, 3)}
+                        break
+
+        # ── Double Bottom ──
+        if best["pattern"] == "none" and len(troughs) >= 2:
+            for i in range(len(troughs) - 1):
+                t1, t2 = troughs[i], troughs[i + 1]
+                if t2 - t1 < 5 or t2 - t1 > 25:
+                    continue
+                bot1, bot2 = arr[t1], arr[t2]
+                if abs(bot1 - bot2) / max(bot1, 1e-8) < 0.01:
+                    peak = np.max(arr[t1:t2])
+                    neckline = peak * 1.002
+                    if arr[-1] > neckline:
+                        conf = min(1.0, (arr[-1] - neckline) / neckline * 200)
+                        best = {"pattern": "double_bottom", "score": 0.5, "confidence": round(conf, 3)}
+                        break
+
+        # ── Ascending Triangle (bullish) ──
+        if best["pattern"] == "none" and len(peaks) >= 3 and len(troughs) >= 2:
+            recent_peaks = arr[peaks[-3:]]
+            recent_troughs = arr[troughs[-2:]]
+            flat_top = np.std(recent_peaks) / np.mean(recent_peaks) < 0.005
+            rising_bottom = recent_troughs[-1] > recent_troughs[0] * 1.003
+            if flat_top and rising_bottom:
+                conf = min(1.0, (recent_troughs[-1] - recent_troughs[0]) / recent_troughs[0] * 100)
+                best = {"pattern": "asc_triangle", "score": 0.4, "confidence": round(conf, 3)}
+
+        # ── Descending Triangle (bearish) ──
+        if best["pattern"] == "none" and len(peaks) >= 2 and len(troughs) >= 3:
+            recent_peaks = arr[peaks[-2:]]
+            recent_troughs = arr[troughs[-3:]]
+            flat_bottom = np.std(recent_troughs) / np.mean(recent_troughs) < 0.005
+            falling_top = recent_peaks[-1] < recent_peaks[0] * 0.997
+            if flat_bottom and falling_top:
+                conf = min(1.0, (recent_peaks[0] - recent_peaks[-1]) / recent_peaks[0] * 100)
+                best = {"pattern": "desc_triangle", "score": -0.4, "confidence": round(conf, 3)}
+
+        # ── Bull Flag (continuation after strong up move) ──
+        if best["pattern"] == "none" and n >= 15:
+            pre = arr[-15:-5]
+            flag = arr[-5:]
+            pre_move = (pre[-1] - pre[0]) / max(pre[0], 1e-8)
+            flag_drift = (flag[-1] - flag[0]) / max(flag[0], 1e-8)
+            if pre_move > 0.005 and -0.002 < flag_drift < 0.001:
+                best = {"pattern": "bull_flag", "score": 0.35, "confidence": round(min(1.0, pre_move * 50), 3)}
+
+        # ── Bear Flag (continuation after strong down move) ──
+        if best["pattern"] == "none" and n >= 15:
+            pre = arr[-15:-5]
+            flag = arr[-5:]
+            pre_move = (pre[-1] - pre[0]) / max(pre[0], 1e-8)
+            flag_drift = (flag[-1] - flag[0]) / max(flag[0], 1e-8)
+            if pre_move < -0.005 and -0.001 < flag_drift < 0.002:
+                best = {"pattern": "bear_flag", "score": -0.35, "confidence": round(min(1.0, abs(pre_move) * 50), 3)}
+
+        # ── Rising Wedge (bearish reversal) ──
+        if best["pattern"] == "none" and len(peaks) >= 2 and len(troughs) >= 2:
+            recent_peaks = arr[peaks[-2:]]
+            recent_troughs = arr[troughs[-2:]]
+            tops_rising = recent_peaks[-1] > recent_peaks[0]
+            bottoms_rising = recent_troughs[-1] > recent_troughs[0]
+            wedge_tight = abs((recent_peaks[-1] - recent_peaks[0]) - (recent_troughs[-1] - recent_troughs[0])) / max(recent_peaks[0], 1e-8) < 0.01
+            if tops_rising and bottoms_rising and wedge_tight:
+                best = {"pattern": "rising_wedge", "score": -0.3, "confidence": 0.5}
+
+        # ── Falling Wedge (bullish reversal) ──
+        if best["pattern"] == "none" and len(peaks) >= 2 and len(troughs) >= 2:
+            recent_peaks = arr[peaks[-2:]]
+            recent_troughs = arr[troughs[-2:]]
+            tops_falling = recent_peaks[-1] < recent_peaks[0]
+            bottoms_falling = recent_troughs[-1] < recent_troughs[0]
+            wedge_tight = abs((recent_peaks[0] - recent_peaks[-1]) - (recent_troughs[0] - recent_troughs[-1])) / max(recent_peaks[0], 1e-8) < 0.01
+            if tops_falling and bottoms_falling and wedge_tight:
+                best = {"pattern": "falling_wedge", "score": 0.3, "confidence": 0.5}
+
+        # ── Support Breakout ( bullish ) ──
+        if best["pattern"] == "none" and n >= 10:
+            sma10 = np.mean(arr[-10:])
+            if arr[-1] > sma10 * 1.003 and arr[-2] <= sma10 * 1.003:
+                best = {"pattern": "support_bounce", "score": 0.25, "confidence": 0.4}
+
+        # ── Resistance Breakdown ( bearish ) ──
+        if best["pattern"] == "none" and n >= 10:
+            sma10 = np.mean(arr[-10:])
+            if arr[-1] < sma10 * 0.997 and arr[-2] >= sma10 * 0.997:
+                best = {"pattern": "resist_break", "score": -0.25, "confidence": 0.4}
+
+        return best
+
     def predict(self) -> Optional[Dict]:
         """
         Multi-agent swarm prediction for next 5-min direction.
@@ -326,6 +457,7 @@ class FastPredictor:
           4. Bollinger Bounce - band-edge reversals
           5. SMA Crossover - trend alignment
           6. Volume-Price Divergence - smart money detection
+          7. Chart Pattern Recognition - double tops, triangles, flags, wedges
         
         Each agent votes UP (+1) or DOWN (-1) with a weight.
         Consensus = weighted sum -> direction + confidence.
@@ -433,6 +565,12 @@ class FastPredictor:
                 vol_score = 0.0
             votes.append(("vol_price", vol_score, W.get("vol_price", 0.8)))
 
+        # ── Agent 7: Chart Pattern Recognition ──
+        pattern = self.detect_patterns(prices)
+        if pattern["pattern"] != "none":
+            pat_score = pattern["score"] * pattern["confidence"]  # scale by pattern confidence
+            votes.append(("pattern_recog", pat_score, W.get("pattern_recog", 1.4)))
+
         # ── Swarm Consensus ──
         if not votes:
             return None
@@ -456,7 +594,7 @@ class FastPredictor:
         agent_details = {name: round(score, 3) for name, score, _ in votes}
         logger.info(f"  Agents: {agent_details} => consensus={consensus:.3f}")
 
-        return {
+        result = {
             "token": "HBAR",
             "direction": direction,
             "up_probability": round(max(0, min(1, up_prob)), 4),
@@ -469,6 +607,14 @@ class FastPredictor:
             "agreement": f"{agreeing}/{len(votes)}",
             "_votes": votes,  # internal: for saving per-agent data
         }
+
+        # Include pattern info if detected
+        if pattern["pattern"] != "none":
+            result["pattern"] = pattern["pattern"]
+            result["pattern_confidence"] = pattern["confidence"]
+            logger.info(f"  Pattern detected: {pattern['pattern']} (conf={pattern['confidence']:.2f})")
+
+        return result
 
     def score_predictions(self, current_price: float):
         """Score predictions that are >= 5 min old."""
@@ -556,11 +702,12 @@ def run_loop():
                         iso = datetime.now(timezone.utc).isoformat()
                         predictor.db.execute(
                             """INSERT INTO fast_predictions
-                               (timestamp, iso_time, price_at_predict, direction, confidence, up_prob, inference_ms)
-                               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                               (timestamp, iso_time, price_at_predict, direction, confidence, up_prob, inference_ms, pattern, pattern_confidence)
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                             (now, iso, current_price,
                              result["direction"], result["confidence"],
-                             result["up_probability"], result.get("inference_time_ms", 0)),
+                             result["up_probability"], result.get("inference_time_ms", 0),
+                             result.get("pattern"), result.get("pattern_confidence")),
                         )
                         predictor.db.commit()
                         # Save per-agent votes for adaptive learning
@@ -568,9 +715,10 @@ def run_loop():
                         if result.get("_votes"):
                             predictor._save_agent_votes(pred_id, result["_votes"])
                         last_predict_time = now
+                        pat_str = f" | pattern={result['pattern']}" if result.get('pattern') else ""
                         logger.info(f"PREDICT: {result['direction']} (conf={result['confidence']:.1%}) "
                                     f"price=${current_price:.6f} [{result.get('inference_time_ms', 0):.2f}ms] "
-                                    f"agree={result.get('agreement', '?')}")
+                                    f"agree={result.get('agreement', '?')}{pat_str}")
                     else:
                         logger.warning("Prediction skipped (insufficient data)")
                         last_predict_time = now

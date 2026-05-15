@@ -106,6 +106,31 @@ async def fast_accuracy():
     }
 
 
+@router.get("/patterns")
+async def fast_patterns():
+    """Recent pattern detections with accuracy breakdown."""
+    conn = _get_db()
+    if not conn:
+        return {"patterns": []}
+    # Recent predictions that had a pattern detected
+    rows = conn.execute(
+        "SELECT pattern, pattern_confidence, direction, correct, timestamp "
+        "FROM fast_predictions WHERE pattern IS NOT NULL "
+        "ORDER BY timestamp DESC LIMIT 50"
+    ).fetchall()
+    # Per-pattern accuracy
+    pat_stats = conn.execute(
+        "SELECT pattern, COUNT(*) as total, SUM(correct) as correct "
+        "FROM fast_predictions WHERE pattern IS NOT NULL AND correct IS NOT NULL "
+        "GROUP BY pattern"
+    ).fetchall()
+    conn.close()
+    return {
+        "recent": [dict(r) for r in rows],
+        "stats": {r["pattern"]: {"total": r["total"], "correct": r["correct"], "accuracy": round(r["correct"] / max(r["total"], 1), 3)} for r in pat_stats},
+    }
+
+
 @router.get("/dashboard", response_class=HTMLResponse)
 async def fast_dashboard():
     """Real-time HBAR prediction tracker with live chart."""
@@ -260,6 +285,7 @@ canvas{width:100%!important;display:block;border-radius:6px}
     <div class="agent-chip"><div class="dot on"></div><span class="name">SMA-Cross</span><span class="role">trend</span></div>
     <div class="agent-chip"><div class="dot on"></div><span class="name">Volume-Flow</span><span class="role">liquidity</span></div>
     <div class="agent-chip"><div class="dot on"></div><span class="name">Price-Action</span><span class="role">structure</span></div>
+    <div class="agent-chip" id="pat-chip"><div class="dot on"></div><span class="name">Pattern-Recog</span><span class="role">chart</span></div>
   </div>
 
   <div class="center">
@@ -280,7 +306,7 @@ canvas{width:100%!important;display:block;border-radius:6px}
     <div class="swarm-panel">
       <div class="row"><span class="k">Engine</span><span class="v hi">ONNX Runtime (GPU)</span></div>
       <div class="row"><span class="k">Model</span><span class="v">VNX BitLattice v3</span></div>
-      <div class="row"><span class="k">Agents</span><span class="v cy">6 active</span></div>
+      <div class="row"><span class="k">Agents</span><span class="v cy">7 active</span></div>
       <div class="row"><span class="k">Latency</span><span class="v" id="latency">--</span></div>
       <div class="row"><span class="k">Consensus</span><span class="v">Weighted majority</span></div>
       <div class="row"><span class="k">Chain</span><span class="v cy">Hedera HCS-20</span></div>
@@ -408,9 +434,14 @@ async function load() {
     dirEl.textContent = pred.direction || '--';
     dirEl.className = 'dir-badge ' + (pred.direction === 'UP' ? 'up' : 'down');
     document.getElementById('sig-price').textContent = '$' + price.toFixed(5);
-    var agentCount = 6;
+    var agentCount = 7;
     var agreeing = Math.round(agentCount * (pred.confidence || 0.5));
-    document.getElementById('sig-desc').textContent = agreeing + '/' + agentCount + ' agents agree | Next signal in countdown';
+    var patText = pred.pattern ? ' | ' + pred.pattern.replace(/_/g,' ') : '';
+    document.getElementById('sig-desc').textContent = agreeing + '/' + agentCount + ' agents agree' + patText + ' | Next signal in countdown';
+    // Pattern chip highlight
+    var patChip = document.getElementById('pat-chip');
+    if (pred.pattern) { patChip.style.borderColor = '#f97316'; patChip.querySelector('.dot').style.background = '#f97316'; }
+    else { patChip.style.borderColor = 'var(--border)'; patChip.querySelector('.dot').style.background = ''; }
     document.getElementById('sig-conf').textContent = ((pred.confidence || 0) * 100).toFixed(0) + '%';
 
     // Countdown
@@ -444,9 +475,10 @@ async function load() {
       var p = preds[i];
       var t = p.iso_time ? p.iso_time.slice(11,16) : '--';
       var badge = p.correct === null || p.correct === undefined ? 'wait' : (p.correct ? 'hit' : 'miss');
+      var patBadge = p.pattern ? '<span style="color:#f97316;font-size:7px;margin-left:3px">' + p.pattern.replace(/_/g,' ') + '</span>' : '';
       html += '<div class="log-item">' +
         '<div class="t">' + t + '</div>' +
-        '<div class="px">$' + p.price_at_predict.toFixed(4) + '</div>' +
+        '<div class="px">$' + p.price_at_predict.toFixed(4) + patBadge + '</div>' +
         '<div class="d ' + (p.direction==='UP'?'up':'down') + '">' + p.direction + '</div>' +
         '<div class="b ' + badge + '">' + badge + '</div>' +
         '</div>';
