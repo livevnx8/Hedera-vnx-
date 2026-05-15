@@ -14,7 +14,7 @@ from typing import Dict, Any, List
 
 import numpy as np
 
-from vera_os.paths import CACHE_DIR, TOKEN_DATA_DIR
+from vnx.paths import CACHE_DIR, TOKEN_DATA_DIR
 
 
 class GraphDataEngine:

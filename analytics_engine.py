@@ -12,7 +12,7 @@ from typing import Dict, Any, List, Tuple
 
 import numpy as np
 
-from vera_os.paths import TOKEN_DATA_DIR
+from vnx.paths import TOKEN_DATA_DIR
 
 
 class AnalyticsEngine:

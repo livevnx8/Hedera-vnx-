@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""
-Vera OS MCP Server
+"""VNX MCP Server
 Model Context Protocol server for external LLM/agent integration.
 
-Exposes Vera capabilities as standardized MCP tools:
+Exposes VNX capabilities as standardized MCP tools:
   - predict(token)           → price direction prediction
   - get_price(token)       → live token price
   - get_token_balance(acct) → HBAR/HTS token balance
@@ -291,7 +290,7 @@ def handle_initialize(params: Dict) -> Dict:
     return {
         "protocolVersion": "2024-11-05",
         "serverInfo": {
-            "name": "vera-os-mcp",
+            "name": "vnx-mcp",
             "version": "1.0.0",
         },
         "capabilities": {
@@ -347,7 +346,7 @@ def run_stdio():
 # ─── HTTP/SSE Transport ───────────────────────────────────────────────────
 
 if FASTAPI_AVAILABLE:
-    app = FastAPI(title="Vera OS MCP Server", version="1.0.0")
+    app = FastAPI(title="VNX MCP Server", version="1.0.0")
 
     @app.post("/mcp/v1/initialize")
     async def mcp_initialize():
@@ -386,5 +385,5 @@ if __name__ == "__main__":
         import uvicorn
         uvicorn.run(app, host="0.0.0.0", port=9000)
     else:
-        print("Vera MCP Server (stdio mode) — ready", file=sys.stderr, flush=True)
+        print("VNX MCP Server (stdio mode) — ready", file=sys.stderr, flush=True)
         run_stdio()

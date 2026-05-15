@@ -20,7 +20,7 @@ from typing import Dict, Any, List, Tuple
 import numpy as np
 from scipy import stats
 
-from vera_os.paths import CACHE_DIR
+from vnx.paths import CACHE_DIR
 
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 

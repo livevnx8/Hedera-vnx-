@@ -1,12 +1,12 @@
 """
-Vera OS SQLite persistence layer.
+VNX SQLite persistence layer.
 
 Stores proof receipts, proof loops, lessons, and upgrade packages so state
 survives process restarts.  All writes are synchronous and use WAL mode for
 concurrent reads.
 
 Usage:
-    db = VeraDB("data/vera.db")
+    db = VNXDB("data/vnx.db")
     db.save_receipt(receipt.to_dict())
     receipts = db.load_receipts(limit=100)
 """
@@ -18,7 +18,7 @@ import sqlite3
 import threading
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger("vera.persistence")
+logger = logging.getLogger("vnx.persistence")
 
 SCHEMA_VERSION = 1
 
@@ -88,10 +88,10 @@ CREATE INDEX IF NOT EXISTS idx_packages_domain ON upgrade_packages(domain);
 """
 
 
-class VeraDB:
-    """Lightweight SQLite persistence for Vera OS v2 state."""
+class VNXDB:
+    """Lightweight SQLite persistence for VNX v2 state."""
 
-    def __init__(self, db_path: str = "data/vera.db"):
+    def __init__(self, db_path: str = "data/vnx.db"):
         self._db_path = db_path
         self._lock = threading.Lock()
 
@@ -104,10 +104,10 @@ class VeraDB:
         self._conn.row_factory = sqlite3.Row
 
         self._init_schema()
-        logger.info(f"VeraDB initialized: {db_path}")
+        logger.info(f"VNXDB initialized: {db_path}")
 
     def __repr__(self) -> str:
-        return f"VeraDB(path={self._db_path})"
+        return f"VNXDB(path={self._db_path})"
 
     def _init_schema(self):
         with self._lock:
@@ -318,7 +318,7 @@ class VeraDB:
             ts = _time.strftime("%Y%m%d-%H%M%S")
             backup_dir = os.path.join(os.path.dirname(self._db_path), "backups")
             os.makedirs(backup_dir, exist_ok=True)
-            backup_path = os.path.join(backup_dir, f"vera-{ts}.db")
+            backup_path = os.path.join(backup_dir, f"vnx-{ts}.db")
 
         with self._lock:
             dst = sqlite3.connect(backup_path)

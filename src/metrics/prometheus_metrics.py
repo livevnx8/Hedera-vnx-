@@ -227,184 +227,184 @@ class MetricsRegistry:
 
         # Request metrics
         self.request_count = self._register(Counter(
-            "vera_requests_total",
+            "vnx_requests_total",
             "Total HTTP requests",
             ["endpoint", "method"]
         ))
 
         self.request_duration = self._register(Histogram(
-            "vera_request_duration_seconds",
+            "vnx_request_duration_seconds",
             "HTTP request duration",
             ["endpoint"]
         ))
 
         self.response_status = self._register(Counter(
-            "vera_response_status_total",
+            "vnx_response_status_total",
             "HTTP response status codes",
             ["endpoint", "status"]
         ))
 
         # Specialist metrics
         self.specialist_runs = self._register(Counter(
-            "vera_specialist_runs_total",
+            "vnx_specialist_runs_total",
             "Specialist execution count",
             ["specialist_id", "swarm_type"]
         ))
 
         self.specialist_latency = self._register(Histogram(
-            "vera_specialist_latency_seconds",
+            "vnx_specialist_latency_seconds",
             "Specialist execution latency",
             ["specialist_id"]
         ))
 
         self.specialist_alerts = self._register(Counter(
-            "vera_alerts_total",
+            "vnx_alerts_total",
             "Total alerts generated",
             ["severity", "specialist_id"]
         ))
 
         # Swarm health
         self.vnx_swarm_health = self._register(Gauge(
-            "vera_vnx_swarm_health",
+            "vnx_swarm_health",
             "VNX swarm health score (0-1)"
         ))
 
         self.hedera_swarm_health = self._register(Gauge(
-            "vera_hedera_swarm_health",
+            "vnx_hedera_swarm_health",
             "Hedera VNX swarm health score (0-1)"
         ))
 
         self.swarm_specialists_active = self._register(Gauge(
-            "vera_swarm_specialists_active",
+            "vnx_swarm_specialists_active",
             "Number of active specialists"
         ))
 
         # Prediction metrics
         self.prediction_count = self._register(Counter(
-            "vera_predictions_total",
+            "vnx_predictions_total",
             "Total predictions made",
             ["token", "direction"]
         ))
 
         self.prediction_accuracy = self._register(Gauge(
-            "vera_prediction_accuracy",
+            "vnx_prediction_accuracy",
             "Prediction accuracy (0-1)",
             ["token"]
         ))
 
         # Circuit breaker metrics
         self.circuit_breaker_state = self._register(Gauge(
-            "vera_circuit_breaker_state",
+            "vnx_circuit_breaker_state",
             "Circuit breaker state (0=closed, 1=open, 2=half_open)",
             ["name"]
         ))
 
         self.circuit_breaker_failures = self._register(Counter(
-            "vera_circuit_breaker_failures_total",
+            "vnx_circuit_breaker_failures_total",
             "Circuit breaker failure count",
             ["name"]
         ))
 
         # Cache metrics
         self.cache_hit = self._register(Counter(
-            "vera_cache_hits_total",
+            "vnx_cache_hits_total",
             "Cache hit count",
             ["cache_level"]
         ))
 
         self.cache_miss = self._register(Counter(
-            "vera_cache_misses_total",
+            "vnx_cache_misses_total",
             "Cache miss count",
             ["cache_level"]
         ))
 
         # Infrastructure
         self.db_connection_up = self._register(Gauge(
-            "vera_db_connection_up",
+            "vnx_db_connection_up",
             "Database connection status (1=up, 0=down)"
         ))
 
         self.redis_up = self._register(Gauge(
-            "vera_redis_up",
+            "vnx_redis_up",
             "Redis connection status (1=up, 0=down)"
         ))
 
         # HCS metrics
         self.hcs_messages = self._register(Counter(
-            "vera_hcs_messages_total",
+            "vnx_hcs_messages_total",
             "HCS messages processed"
         ))
 
         self.hcs_failures = self._register(Counter(
-            "vera_hcs_failures_total",
+            "vnx_hcs_failures_total",
             "HCS processing failures"
         ))
 
         # v2: Proof loop metrics
         self.proofs_emitted = self._register(Counter(
-            "vera_proofs_emitted_total",
+            "vnx_proofs_emitted_total",
             "Total proof receipts emitted to HCS",
             ["mode"]
         ))
 
         self.proofs_errors = self._register(Counter(
-            "vera_proofs_errors_total",
+            "vnx_proofs_errors_total",
             "Total proof emission errors"
         ))
 
         self.proof_chain_length = self._register(Gauge(
-            "vera_proof_chain_length",
+            "vnx_proof_chain_length",
             "Current proof chain length"
         ))
 
         # v2: Proof loop tracker
         self.loops_opened = self._register(Counter(
-            "vera_loops_opened_total",
+            "vnx_loops_opened_total",
             "Total proof loops opened"
         ))
 
         self.loops_closed = self._register(Counter(
-            "vera_loops_closed_total",
+            "vnx_loops_closed_total",
             "Total proof loops closed"
         ))
 
         # v2: Verifiable AI
         self.agent_executions = self._register(Counter(
-            "vera_agent_executions_total",
+            "vnx_agent_executions_total",
             "First-party agent task executions",
             ["agent_id"]
         ))
 
         self.tasks_settled = self._register(Counter(
-            "vera_tasks_settled_total",
+            "vnx_tasks_settled_total",
             "Marketplace tasks settled"
         ))
 
         self.verifications_total = self._register(Counter(
-            "vera_verifications_total",
+            "vnx_verifications_total",
             "Result verifications performed",
             ["outcome"]
         ))
 
         # v2: Learning lane
         self.lessons_extracted = self._register(Counter(
-            "vera_lessons_extracted_total",
+            "vnx_lessons_extracted_total",
             "Lessons extracted from closed loops"
         ))
 
         self.lessons_approved = self._register(Counter(
-            "vera_lessons_approved_total",
+            "vnx_lessons_approved_total",
             "Operator-approved lessons"
         ))
 
         self.packages_published = self._register(Counter(
-            "vera_packages_published_total",
+            "vnx_packages_published_total",
             "Upgrade packages published to HCS"
         ))
 
         # v2: Persistence
         self.db_receipts_persisted = self._register(Counter(
-            "vera_db_receipts_persisted_total",
+            "vnx_db_receipts_persisted_total",
             "Proof receipts persisted to SQLite"
         ))
 

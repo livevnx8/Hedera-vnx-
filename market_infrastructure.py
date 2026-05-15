@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Vera OS PolyMarket-style Binary Outcome Market Infrastructure
+"""VNX PolyMarket-style Binary Outcome Market Infrastructure
 
 Implements:
   - Market creation (YES/NO outcome with oracle resolution)
@@ -10,7 +9,7 @@ Implements:
   - Resolution via oracle / admin
   - Payout redemption after resolution
 
-No real money — uses a virtual credit system (VeraCredits).
+No real money — uses a virtual credit system (VNXCredits).
 """
 import json
 import math

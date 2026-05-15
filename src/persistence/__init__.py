@@ -1,3 +1,3 @@
-from .vera_db import VeraDB
+from .vera_db import VNXDB
 
-__all__ = ["VeraDB"]
+__all__ = ["VNXDB"]

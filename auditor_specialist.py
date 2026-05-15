@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
-from vera_os.paths import CACHE_DIR
+from vnx.paths import CACHE_DIR
 
 
 class AuditorSpecialist:

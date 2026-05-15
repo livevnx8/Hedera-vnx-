@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Optimized Vera OS Prediction Server.
+"""Optimized VNX Prediction Server.
 
 Drop-in replacement for prediction_server_v3.py with:
   - ThreadPoolExecutor for non-blocking inference
@@ -77,7 +76,7 @@ auditor.register_entity(validator.validator_id, "validator", validator.get_secre
 auditor.register_entity(reward_agent.agent_id, "agent", reward_agent.get_secret_key())
 
 app = FastAPI(
-    title="Vera OS Prediction Engine - Optimized",
+    title="VNX Prediction Engine - Optimized",
     version="3.1.0",
     description="Predictions + Analytics + Graph Data with optimized inference",
 )
@@ -229,7 +228,7 @@ async def prometheus_metrics():
 @app.get("/")
 async def root():
     return {
-        "name": "Vera OS Prediction Engine - Optimized",
+        "name": "VNX Prediction Engine - Optimized",
         "version": "3.1.0",
         "endpoints": [
             "/predict/{token}",

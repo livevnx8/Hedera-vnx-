@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Vera OS Super Server — Full Optimization Stack.
+"""VNX Super Server — Full Optimization Stack.
 
 Features:
   - ONNX Runtime inference (6x faster)
@@ -106,7 +105,7 @@ auditor.register_entity(validator.validator_id, "validator", validator.get_secre
 auditor.register_entity(reward_agent.agent_id, "agent", reward_agent.get_secret_key())
 
 app = FastAPI(
-    title="Vera OS Super Server",
+    title="VNX Super Server",
     version="3.2.3-super",
     description="ONNX + Redis + ThreadPool + MicroBatching + ZeroCopy + CircuitBreaker optimized inference",
 )
@@ -356,7 +355,7 @@ async def hedera_hcs_submit(topic_id: str, message: str):
 
 
 @app.post("/hedera/topic/create")
-async def hedera_topic_create(topic_name: str = "VeraTopic"):
+async def hedera_topic_create(topic_name: str = "VNXTopic"):
     try:
         result = hedera_toolkit.create_topic(topic_name)
         return {"success": True, "topic_id": result.get("topic_id"), "memo": topic_name}
@@ -604,7 +603,7 @@ async def prometheus_metrics():
 @app.get("/")
 async def root():
     return {
-        "name": "Vera OS Super Server",
+        "name": "VNX Super Server",
         "version": "3.2.3-super",
         "optimizations": [
             "onnx_quantized_inference",
