@@ -8,7 +8,7 @@ from typing import Any
 
 @dataclass
 class HealthService:
-    """Run and format deep Vera OS health checks."""
+    """Run and format deep VNX health checks."""
 
     hedera_swarm: Any | None = None
     vnx_swarm: Any | None = None

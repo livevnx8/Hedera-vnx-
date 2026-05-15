@@ -1,4 +1,4 @@
-"""Public Python facade for Vera OS v2.1.
+"""Public Python facade for VNX v2.1.
 
 Seven layers of verifiable AI infrastructure for Hedera, exposed as stable
 imports.  Pick what you need — each layer stands alone.
@@ -10,7 +10,7 @@ Layer 4  Marketplace          MarketplaceService
 Layer 5  Live Proof Loop      HCSProofEmitter, MirrorVerifier, TestnetConfig
 Layer 6  Verifiable AI        FirstPartyAgentRegistry
 Layer 7  Learning Lane        ProofLoopTracker, LessonEngine, UpgradePackageBuilder
-Cross    Persistence          VeraDB
+Cross    Persistence          VNXDB
 Cross    Health               UnifiedHealthCheck
 """
 
@@ -39,7 +39,7 @@ from src.learning_lane.lesson_engine import LessonEngine
 from src.learning_lane.upgrade_packages import UpgradePackageBuilder
 
 # Cross-cutting: persistence & health
-from src.persistence.vera_db import VeraDB
+from src.persistence.vera_db import VNXDB
 from src.health.unified_health import UnifiedHealthCheck
 
 __version__ = "2.1.0"
@@ -68,7 +68,7 @@ __all__ = [
     "LessonEngine",
     "UpgradePackageBuilder",
     # Cross-cutting
-    "VeraDB",
+    "VNXDB",
     "UnifiedHealthCheck",
     # meta
     "__version__",

@@ -1,4 +1,4 @@
-"""Shared filesystem paths for Vera OS.
+"""Shared filesystem paths for VNX.
 
 The original research workspace used absolute local paths. The public release
 uses repository-relative defaults with environment-variable overrides so the
@@ -13,13 +13,13 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(os.environ.get("VERA_OS_HOME", Path(__file__).resolve().parents[1])).resolve()
-SRC_DIR = Path(os.environ.get("VERA_OS_SRC_DIR", ROOT / "src")).resolve()
+ROOT = Path(os.environ.get("VNX_HOME", Path(__file__).resolve().parents[1])).resolve()
+SRC_DIR = Path(os.environ.get("VNX_SRC_DIR", ROOT / "src")).resolve()
 MODELS_DIR = Path(os.environ.get("MODELS_DIR", ROOT / "models")).resolve()
-DATA_DIR = Path(os.environ.get("VERA_OS_DATA_DIR", ROOT / "data")).resolve()
-TOKEN_DATA_DIR = Path(os.environ.get("VERA_OS_TOKEN_DATA_DIR", DATA_DIR / "tokens")).resolve()
-CACHE_DIR = Path(os.environ.get("VERA_OS_CACHE_DIR", ROOT / "cache")).resolve()
-LOGS_DIR = Path(os.environ.get("VERA_OS_LOG_DIR", ROOT / "logs")).resolve()
+DATA_DIR = Path(os.environ.get("VNX_DATA_DIR", ROOT / "data")).resolve()
+TOKEN_DATA_DIR = Path(os.environ.get("VNX_TOKEN_DATA_DIR", DATA_DIR / "tokens")).resolve()
+CACHE_DIR = Path(os.environ.get("VNX_CACHE_DIR", ROOT / "cache")).resolve()
+LOGS_DIR = Path(os.environ.get("VNX_LOG_DIR", ROOT / "logs")).resolve()
 
 
 def add_src_to_path() -> None:

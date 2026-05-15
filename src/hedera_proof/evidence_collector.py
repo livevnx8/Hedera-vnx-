@@ -17,7 +17,7 @@ import os
 import time
 from typing import Any, Dict, List
 
-logger = logging.getLogger("vera.evidence")
+logger = logging.getLogger("vnx.evidence")
 
 
 class EvidenceCollector:
@@ -67,7 +67,7 @@ class EvidenceCollector:
         tx_ids = [r.get("transaction_id", "") for r in self._receipts if r.get("transaction_id")]
 
         md = [
-            f"# Vera OS — Testnet Proof Evidence",
+            f"# VNX — Testnet Proof Evidence",
             f"",
             f"**Session:** `{self._session}`",
             f"**Collected:** {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime(self._created_at))}",

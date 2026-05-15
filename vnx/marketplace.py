@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 class MarketplaceService:
     """
-    High-level facade for the Vera OS Agent Marketplace.
+    High-level facade for the VNX Agent Marketplace.
 
     Provides task lifecycle management, reputation scoring, escrow,
     and result verification in one unified interface.

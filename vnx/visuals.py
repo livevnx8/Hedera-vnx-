@@ -1,4 +1,4 @@
-"""Inventory of Vera OS PNG and SVG visual assets."""
+"""Inventory of VNX PNG and SVG visual assets."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ VISUAL_CATALOG: tuple[tuple[str, str, str], ...] = (
     ),
     (
         "vnx-architecture-diagram",
-        "Vera OS Architecture",
+        "VNX Architecture",
         "System architecture spanning prediction APIs, specialist swarms, cache, metrics, and deployment.",
     ),
     (
@@ -45,7 +45,7 @@ VISUAL_CATALOG: tuple[tuple[str, str, str], ...] = (
     (
         "vnx-performance-comparison",
         "Performance Comparison",
-        "Benchmark-style comparison of Vera OS performance characteristics.",
+        "Benchmark-style comparison of VNX performance characteristics.",
     ),
     (
         "vnx-competitive-advantage-grid",
@@ -81,7 +81,7 @@ VISUAL_CATALOG: tuple[tuple[str, str, str], ...] = (
 
 
 def get_visual_assets(base_dir: Path | str | None = None) -> list[VisualAsset]:
-    """Return the curated Vera OS visual catalog with concrete file paths."""
+    """Return the curated VNX visual catalog with concrete file paths."""
     visual_dir = Path(base_dir) if base_dir is not None else DEFAULT_VISUALS_DIR
     return [
         VisualAsset(

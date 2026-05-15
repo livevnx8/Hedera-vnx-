@@ -41,7 +41,7 @@ def banner(msg: str):
 
 def main():
     print("=" * 60)
-    print("  VERA OS v2.1 — Testnet HCS Proof Benchmark")
+    print("  VNX v2.1 — Testnet HCS Proof Benchmark")
     print("=" * 60)
 
     # ── Step 1: Validate config ──────────────────────────────────

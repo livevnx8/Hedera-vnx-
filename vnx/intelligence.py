@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 
 class IntelligenceService:
     """
-    High-level facade for Vera OS AI Backbone.
+    High-level facade for VNX AI Backbone.
 
     Provides LLM routing, task decomposition, summarization, and RAG Q&A.
     """

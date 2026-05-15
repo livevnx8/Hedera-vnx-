@@ -376,12 +376,12 @@ event_bus.subscribe("marketplace.*", _metrics_bridge)
 event_bus.subscribe("proof.*", _metrics_bridge)
 
 # ── Persistence ───────────────────────────────────────────────
-vera_db = VNXDB(os.environ.get("VNX_DB_PATH", "data/vera.db"))
+vnx_db = VNXDB(os.environ.get("VNX_DB_PATH", "data/vera.db"))
 
 # Bridge: proof emission → DB
 def _persist_receipt(event_name: str, data):
     if isinstance(data, dict) and "receipt_id" in data:
-        vera_db.save_receipt(data)
+        vnx_db.save_receipt(data)
 event_bus.subscribe("proof.*", _persist_receipt)
 
 # Periodic flush of emitter receipts to DB (on health check)
@@ -392,7 +392,7 @@ def _flush_receipts_to_db():
     if receipts:
         batch = [r.to_dict() for r in receipts if r.sequence_number > _last_persisted_seq[0]]
         if batch:
-            vera_db.save_receipts_batch(batch)
+            vnx_db.save_receipts_batch(batch)
             _last_persisted_seq[0] = max(r.sequence_number for r in receipts)
 
 # ── Unified Health ────────────────────────────────────────────
@@ -485,17 +485,17 @@ async def list_tokens():
 async def health():
     _flush_receipts_to_db()
     result = unified_health.check()
-    result["persistence"] = vera_db.stats()
+    result["persistence"] = vnx_db.stats()
     return result
 
 @app.get("/health/db")
 async def health_db():
-    return vera_db.stats()
+    return vnx_db.stats()
 
 @app.on_event("shutdown")
 async def shutdown_event():
     _flush_receipts_to_db()
-    vera_db.close()
+    vnx_db.close()
 
 @app.get("/metrics")
 async def prometheus_metrics():
@@ -505,12 +505,12 @@ async def prometheus_metrics():
 @app.get("/db/stats")
 async def db_stats():
     """Database statistics and health."""
-    return {**vera_db.stats(), **vera_db.integrity_check()}
+    return {**vnx_db.stats(), **vnx_db.integrity_check()}
 
 @app.post("/db/backup")
 async def db_backup():
     """Create a hot backup of the database."""
-    path = vera_db.backup()
+    path = vnx_db.backup()
     return {"status": "ok", "backup_path": path}
 
 # ── Phase 4A: ONNX Inference Endpoints ────────────────────────
@@ -1129,7 +1129,7 @@ if __name__ == "__main__":
     from src.hedera_proof.testnet_config import TestnetConfig as _TC
     _cfg = _TC.from_env()
     print("=" * 70)
-    print("  VERA OS v2.1 — Verifiable AI on Hedera")
+    print("  VNX v2.1 — Verifiable AI on Hedera")
     print("  Hedera Prediction Market Engine + Proof Infrastructure")
     print("=" * 70)
     print()
@@ -1141,7 +1141,7 @@ if __name__ == "__main__":
     print(f"  Layer 6  Verifiable AI        {len(first_party_registry.list_agents())} first-party agents")
     print(f"  Layer 7  Learning Lane        Loops → Lessons → Upgrade packages")
     print()
-    print(f"  Persistence:  {vera_db}")
+    print(f"  Persistence:  {vnx_db}")
     print(f"  Metrics:      /metrics (Prometheus)")
     print(f"  Health:       /health (7-layer unified)")
     print(f"  Dashboard:    /dashboard/ (static build)")
@@ -1151,8 +1151,8 @@ if __name__ == "__main__":
     print("    GET  /metrics                          Prometheus counters")
     print("    GET  /proof/stats                      Proof emitter + verifier")
     print("    GET  /proof/testnet-status             Testnet readiness")
-    print("    POST /api/vera/verifiable-ai/run-now   Run full proof loop")
-    print("    GET  /api/vera/learning/stats          Learning lane stats")
+    print("    POST /api/vnx/verifiable-ai/run-now    Run full proof loop")
+    print("    GET  /api/vnx/learning/stats           Learning lane stats")
     print("    POST /markets                          Create market")
     print("    GET  /markets                          List markets")
     print()
