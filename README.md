@@ -321,6 +321,34 @@ SVG versions available in [`docs/visuals/`](docs/visuals/) for high-resolution r
 
 ---
 
+## Hiero Integration
+
+VNX builds on **Hiero** — the Linux Foundation open-source project governing Hedera's entire tech stack. Hiero makes every layer of the network auditable and interoperable.
+
+| Hiero Component | How VNX Uses It | Benefit |
+|-----------------|-----------------|---------|
+| **hiero-mirror-node** | REST API verifies every HCS proof | Free, stateless, no auth — verify from anywhere |
+| **hiero-consensus-node** | Hashgraph algorithm auditable (Apache-2.0) | Trust argument backed by inspectable code |
+| **hiero-json-rpc-relay** | EVM-compatible settlement layer | Smart contract escrow, MetaMask-compatible |
+| **hiero-sdk-js** | TypeScript bridge for HCS emission | Production SDK, actively maintained |
+| **Solo** | Local Hiero network for CI/CD | Test proof pipeline without testnet rate limits |
+
+### Mirror Node Verification
+
+Every prediction produces a deterministic SHA-256 hash. Verify it on-chain via Hiero's open-source mirror nodes:
+
+```bash
+# Verify any prediction by ID — no SDK needed
+curl http://localhost:8080/fast/verify/42
+
+# Or query Hiero mirror node REST API directly
+curl https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.xxx/messages?limit=25
+```
+
+The mirror node returns consensus timestamps, sequence numbers, and running hashes — all independently auditable.
+
+---
+
 ## Environment
 
 | Variable | Default | Purpose |

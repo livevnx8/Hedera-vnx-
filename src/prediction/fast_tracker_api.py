@@ -4,12 +4,24 @@ API router for 5-min fast prediction tracker with real-time HBAR chart.
 
 import os
 import sqlite3
+import sys
 import time
 
 from fastapi import APIRouter, Query
 from fastapi.responses import HTMLResponse
 
 router = APIRouter(prefix="/fast", tags=["fast-predictions"])
+
+# Lazy-import Hiero mirror node verifier (avoids import cycle)
+_mirror_verifier = None
+
+def _get_verifier():
+    global _mirror_verifier
+    if _mirror_verifier is None:
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+        from hedera_proof.mirror_verifier import MirrorVerifier
+        _mirror_verifier = MirrorVerifier()
+    return _mirror_verifier
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "fast_predictions.db")
 
@@ -128,6 +140,59 @@ async def fast_patterns():
     return {
         "recent": [dict(r) for r in rows],
         "stats": {r["pattern"]: {"total": r["total"], "correct": r["correct"], "accuracy": round(r["correct"] / max(r["total"], 1), 3)} for r in pat_stats},
+    }
+
+
+@router.get("/verify/{prediction_id}")
+async def verify_prediction(prediction_id: int):
+    """
+    Verify a specific prediction against Hiero mirror node on-chain data.
+    Uses the open-source Hiero Mirror Node REST API — no SDK required.
+    """
+    conn = _get_db()
+    if not conn:
+        return {"error": "No database — start scripts/fast_predictor.py"}
+
+    row = conn.execute(
+        "SELECT id, timestamp, direction, confidence, pattern, "
+        "price_at_predict, correct, iso_time FROM fast_predictions WHERE id = ?",
+        (prediction_id,)
+    ).fetchone()
+    conn.close()
+
+    if not row:
+        return {"error": "Prediction not found", "prediction_id": prediction_id}
+
+    # Build a deterministic proof hash from prediction data
+    import hashlib
+    proof_payload = f"{row['timestamp']}:{row['direction']}:{row['confidence']}:{row['price_at_predict']}"
+    proof_hash = hashlib.sha256(proof_payload.encode()).hexdigest()
+
+    # Verify against Hiero mirror node (dry-run fallback if no topic configured)
+    topic_id = os.environ.get("VERA_TASK_TOPIC_ID", "")
+    if topic_id and topic_id != "dry_run":
+        verifier = _get_verifier()
+        result = verifier.verify_by_hash(
+            proof_hash=proof_hash,
+            topic_id=topic_id,
+        )
+        return {
+            "prediction_id": prediction_id,
+            "prediction": dict(row),
+            "proof_hash": proof_hash,
+            "on_chain_verified": result.verified,
+            "consensus_timestamp": result.consensus_timestamp,
+            "hashscan_url": result.hashscan_url,
+            "mirror_node": verifier.stats()["mirror_nodes"][0] if verifier.stats()["mirror_nodes"] else None,
+            "note": "Verified via Hiero Mirror Node REST API (Apache-2.0)",
+        }
+
+    return {
+        "prediction_id": prediction_id,
+        "prediction": dict(row),
+        "proof_hash": proof_hash,
+        "on_chain_verified": None,
+        "note": "HCS topic not configured — proof computed but not emitted. Set VERA_TASK_TOPIC_ID to enable Hiero verification.",
     }
 
 

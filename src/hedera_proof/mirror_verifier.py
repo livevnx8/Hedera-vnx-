@@ -1,10 +1,15 @@
 """
-Mirror Node Verifier — reads HCS messages from Hedera mirror node and validates
+Mirror Node Verifier — reads HCS messages from Hiero/Hedera mirror nodes and validates
 that local proof hashes match on-chain records.
 
-Uses the public Hedera Mirror Node REST API:
-  - mainnet: https://mainnet-public.mirrornode.hedera.com
-  - testnet: https://testnet.mirrornode.hedera.com
+Uses the public Hiero Mirror Node REST API (Apache-2.0 open source):
+  - Hedera mainnet: https://mainnet-public.mirrornode.hedera.com
+  - Hedera testnet: https://testnet.mirrornode.hedera.com
+  - Hiero community mirrors: see https://hiero.org for node operators
+
+Hiero is the Linux Foundation open-source project governing Hedera's
+consensus node, mirror node, and SDK code. Every endpoint here is
+free, stateless, and requires no authentication.
 """
 
 import base64
@@ -21,8 +26,13 @@ from urllib.request import Request, urlopen
 logger = logging.getLogger("vera.mirror_verifier")
 
 MIRROR_URLS = {
-    "mainnet": "https://mainnet-public.mirrornode.hedera.com",
-    "testnet": "https://testnet.mirrornode.hedera.com",
+    "mainnet": [
+        "https://mainnet-public.mirrornode.hedera.com",
+        "https://mainnet.mirrornode.hedera.com",
+    ],
+    "testnet": [
+        "https://testnet.mirrornode.hedera.com",
+    ],
 }
 
 
@@ -68,7 +78,8 @@ class VerificationResult:
 
 class MirrorVerifier:
     """
-    Verifies local proof receipts against Hedera mirror node data.
+    Verifies local proof receipts against Hiero/Hedera mirror node data.
+    Uses the open-source Hiero Mirror Node REST API — no SDK or auth required.
     """
 
     def __init__(
@@ -77,19 +88,37 @@ class MirrorVerifier:
         mirror_url: Optional[str] = None,
     ):
         self._network = network or os.environ.get("HEDERA_NETWORK", "testnet").lower()
-        self._mirror_url = mirror_url or os.environ.get(
-            "MIRROR_NODE_BASE_URL",
-            MIRROR_URLS.get(self._network, MIRROR_URLS["testnet"])
-        )
+        # Support single override URL or fallback list from MIRROR_URLS
+        override = mirror_url or os.environ.get("MIRROR_NODE_BASE_URL", "")
+        if override:
+            self._mirror_urls = [override]
+        else:
+            self._mirror_urls = MIRROR_URLS.get(self._network, MIRROR_URLS["testnet"])
         self._verifications: List[VerificationResult] = []
         self._total_verified: int = 0
         self._total_failed: int = 0
         self._total_requests: int = 0
 
-        logger.info(f"MirrorVerifier initialized: network={self._network}, mirror={self._mirror_url}")
+        logger.info(f"MirrorVerifier initialized: network={self._network}, mirrors={self._mirror_urls}")
 
     def __repr__(self) -> str:
         return f"MirrorVerifier(network={self._network}, verified={self._total_verified})"
+
+    def _fetch_from_mirror(
+        self,
+        mirror_url: str,
+        topic_id: str,
+        params: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Fetch raw JSON from a single mirror node. Returns None on failure."""
+        url = f"{mirror_url}/api/v1/topics/{topic_id}/messages{params}"
+        try:
+            req = Request(url, headers={"Accept": "application/json"})
+            with urlopen(req, timeout=15) as resp:
+                return json.loads(resp.read())
+        except (URLError, Exception) as e:
+            logger.warning(f"Mirror node {mirror_url} failed: {e}")
+            return None
 
     def fetch_topic_messages(
         self,
@@ -98,10 +127,9 @@ class MirrorVerifier:
         sequence_after: int = 0,
         sequence_exact: Optional[int] = None,
     ) -> List[OnChainMessage]:
-        """Fetch recent messages from a topic via mirror node REST API."""
-        url = f"{self._mirror_url}/api/v1/topics/{topic_id}/messages"
+        """Fetch recent messages from a topic via Hiero mirror node REST API.
+        Tries all configured mirrors in order until one succeeds."""
         if sequence_exact is not None:
-            # Fetch a specific sequence number directly
             params = f"?sequencenumber={sequence_exact}&limit=1"
         else:
             params = f"?limit={limit}&order=desc"
@@ -110,34 +138,34 @@ class MirrorVerifier:
 
         self._total_requests += 1
 
-        try:
-            req = Request(url + params, headers={"Accept": "application/json"})
-            with urlopen(req, timeout=20) as resp:
-                data = json.loads(resp.read())
-
-            messages = []
-            for msg in data.get("messages", []):
-                content = {}
-                try:
-                    raw = base64.b64decode(msg.get("message", ""))
-                    content = json.loads(raw)
-                except Exception:
-                    content = {"raw": msg.get("message", "")}
-
-                messages.append(OnChainMessage(
-                    topic_id=topic_id,
-                    sequence_number=msg.get("sequence_number", 0),
-                    consensus_timestamp=msg.get("consensus_timestamp", ""),
-                    message_content=content,
-                    payer_account_id=msg.get("payer_account_id", ""),
-                    running_hash=msg.get("running_hash", ""),
-                    chunk_info=msg.get("chunk_info"),
-                ))
-            return messages
-
-        except (URLError, Exception) as e:
-            logger.error(f"Mirror node fetch failed: {e}")
+        # Try each mirror with fallback
+        for mirror_url in self._mirror_urls:
+            data = self._fetch_from_mirror(mirror_url, topic_id, params)
+            if data is not None:
+                break
+        else:
+            logger.error(f"All mirror nodes failed for topic {topic_id}")
             return []
+
+        messages = []
+        for msg in data.get("messages", []):
+            content = {}
+            try:
+                raw = base64.b64decode(msg.get("message", ""))
+                content = json.loads(raw)
+            except Exception:
+                content = {"raw": msg.get("message", "")}
+
+            messages.append(OnChainMessage(
+                topic_id=topic_id,
+                sequence_number=msg.get("sequence_number", 0),
+                consensus_timestamp=msg.get("consensus_timestamp", ""),
+                message_content=content,
+                payer_account_id=msg.get("payer_account_id", ""),
+                running_hash=msg.get("running_hash", ""),
+                chunk_info=msg.get("chunk_info"),
+            ))
+        return messages
 
     def verify_receipt(
         self,
@@ -289,6 +317,35 @@ class MirrorVerifier:
             "total_receipts": len(receipts),
             "all_verified": all_verified,
             "results": results,
+        }
+
+    def verify_by_hash(
+        self,
+        proof_hash: str,
+        topic_id: str,
+        sequence_number: Optional[int] = None,
+    ) -> VerificationResult:
+        """
+        Lightweight standalone verification — no task_id or emitter needed.
+        Perfect for verifying individual predictions via Hiero mirror node REST API.
+        """
+        return self.verify_receipt(
+            task_id="standalone",
+            local_proof_hash=proof_hash,
+            topic_id=topic_id,
+            sequence_number=sequence_number,
+        )
+
+    def stats(self) -> Dict[str, Any]:
+        """Return verifier health stats."""
+        total = self._total_verified + self._total_failed
+        return {
+            "network": self._network,
+            "mirror_nodes": self._mirror_urls,
+            "total_verified": self._total_verified,
+            "total_failed": self._total_failed,
+            "total_requests": self._total_requests,
+            "success_rate": round(self._total_verified / max(total, 1), 4),
         }
 
     def _extract_proof_hash(self, content: Dict[str, Any]) -> Optional[str]:
