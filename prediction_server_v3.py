@@ -8,7 +8,7 @@ import os
 import sys
 from typing import Dict, Any, List
 
-from vera_os.paths import add_src_to_path
+from vnx.paths import add_src_to_path
 
 add_src_to_path()
 
@@ -101,7 +101,7 @@ from src.health.unified_health import UnifiedHealthCheck
 from src.health.monitoring_dashboard import router as monitoring_router
 
 # Persistence
-from src.persistence.vera_db import VeraDB
+from src.persistence.vera_db import VNXDB
 
 # ONNX Inference (Phase 4A)
 from src.prediction.onnx_inference import ONNXPredictionEngine
@@ -223,7 +223,7 @@ app = FastAPI(
 )
 
 # CORS — tighten to known origins in production
-_allowed_origins = os.environ.get("VERA_CORS_ORIGINS", "*").split(",")
+_allowed_origins = os.environ.get("VNX_CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
@@ -376,7 +376,7 @@ event_bus.subscribe("marketplace.*", _metrics_bridge)
 event_bus.subscribe("proof.*", _metrics_bridge)
 
 # ── Persistence ───────────────────────────────────────────────
-vera_db = VeraDB(os.environ.get("VERA_DB_PATH", "data/vera.db"))
+vera_db = VNXDB(os.environ.get("VNX_DB_PATH", "data/vera.db"))
 
 # Bridge: proof emission → DB
 def _persist_receipt(event_name: str, data):

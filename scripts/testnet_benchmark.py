@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vera OS — Testnet HCS Proof Benchmark
+VNX — Testnet HCS Proof Benchmark
 
 Exercises the full proof pipeline against Hedera testnet:
   1. Validates testnet config
@@ -64,9 +64,9 @@ def main():
 
     # Determine mode from env
     network = os.environ.get("HEDERA_NETWORK", "testnet")
-    dry_run = os.environ.get("VERA_DRY_RUN", "true").lower() == "true"
+    dry_run = os.environ.get("VNX_DRY_RUN", "true").lower() == "true"
     has_creds = bool(os.environ.get("HEDERA_OPERATOR_ACCOUNT_ID")) and bool(os.environ.get("HEDERA_OPERATOR_PRIVATE_KEY"))
-    has_topics = bool(os.environ.get("VERA_TASK_TOPIC_ID"))
+    has_topics = bool(os.environ.get("VNX_TASK_TOPIC_ID"))
 
     if dry_run or not has_creds or not has_topics:
         print(f"\n  ❌ Not ready for live. Running in DRY_RUN mode.")
@@ -159,7 +159,7 @@ def main():
     banner("Step 5: Mirror Node Verification")
     if mode == ProofMode.DRY_RUN:
         print("  Skipping mirror verification in DRY_RUN mode.")
-        print("  (Set VERA_DRY_RUN=false with valid credentials to test live)")
+        print("  (Set VNX_DRY_RUN=false with valid credentials to test live)")
     elif receipts:
         # Wait for mirror node propagation (mainnet ~10-20s, testnet ~5-10s)
         wait = 15 if network == "mainnet" else 8
@@ -203,7 +203,7 @@ def main():
     banner("BENCHMARK COMPLETE")
     print(f"""
   ┌─────────────────────────────────────────────────────┐
-  │  Vera OS v2.1 Testnet Proof Benchmark               │
+  │  VNX v2.1 Testnet Proof Benchmark               │
   ├──────────────────────┬──────────────────────────────┤
   │  Mode                │  {mode.value:<28} │
   │  Emissions           │  {len(receipts)}/{N} successful{' '*(17-len(f'{len(receipts)}/{N} successful'))}│

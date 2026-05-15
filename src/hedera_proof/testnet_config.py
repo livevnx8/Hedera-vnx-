@@ -9,9 +9,9 @@ Required environment variables (for testnet mode):
     HEDERA_OPERATOR_ACCOUNT_ID   — e.g. 0.0.4515xxx
     HEDERA_OPERATOR_PRIVATE_KEY  — DER-encoded Ed25519 private key
     HEDERA_NETWORK               — "testnet" (default)
-    VERA_TASK_TOPIC_ID           — HCS topic for task proofs
-    VERA_AUDIT_TOPIC_ID          — HCS topic for audit proofs
-    VERA_DRY_RUN                 — "false" to enable live emission
+    VNX_TASK_TOPIC_ID           — HCS topic for task proofs
+    VNX_AUDIT_TOPIC_ID          — HCS topic for audit proofs
+    VNX_DRY_RUN                 — "false" to enable live emission
 """
 
 import logging
@@ -19,7 +19,7 @@ import os
 from dataclasses import dataclass
 from typing import List, Optional
 
-logger = logging.getLogger("vera.testnet_config")
+logger = logging.getLogger("vnx.testnet_config")
 
 
 @dataclass(frozen=True)
@@ -42,11 +42,11 @@ class TestnetConfig:
             operator_account_id=os.environ.get("HEDERA_OPERATOR_ACCOUNT_ID", ""),
             operator_private_key_present=bool(os.environ.get("HEDERA_OPERATOR_PRIVATE_KEY", "")),
             network=os.environ.get("HEDERA_NETWORK", "testnet").lower(),
-            task_topic_id=os.environ.get("VERA_TASK_TOPIC_ID", ""),
-            audit_topic_id=os.environ.get("VERA_AUDIT_TOPIC_ID", ""),
-            learning_topic_id=os.environ.get("VERA_LEARNING_TOPIC_ID", ""),
-            dry_run=os.environ.get("VERA_DRY_RUN", "true").lower() == "true",
-            bridge_url=os.environ.get("VERA_HCS_BRIDGE_URL", "http://localhost:8000"),
+            task_topic_id=os.environ.get("VNX_TASK_TOPIC_ID", ""),
+            audit_topic_id=os.environ.get("VNX_AUDIT_TOPIC_ID", ""),
+            learning_topic_id=os.environ.get("VNX_LEARNING_TOPIC_ID", ""),
+            dry_run=os.environ.get("VNX_DRY_RUN", "true").lower() == "true",
+            bridge_url=os.environ.get("VNX_HCS_BRIDGE_URL", "http://localhost:8000"),
         )
 
     @property
@@ -64,7 +64,7 @@ class TestnetConfig:
         """Return a list of missing requirements.  Empty = ready."""
         issues: List[str] = []
         if self.dry_run:
-            issues.append("VERA_DRY_RUN is true — set to 'false' for testnet")
+            issues.append("VNX_DRY_RUN is true — set to 'false' for testnet")
         if not self.operator_account_id:
             issues.append("HEDERA_OPERATOR_ACCOUNT_ID not set")
         if not self.operator_private_key_present:
@@ -72,9 +72,9 @@ class TestnetConfig:
         if self.network not in ("testnet", "mainnet"):
             issues.append(f"HEDERA_NETWORK={self.network} — expected 'testnet' or 'mainnet'")
         if not self.task_topic_id:
-            issues.append("VERA_TASK_TOPIC_ID not set — create with: hedera topic create")
+            issues.append("VNX_TASK_TOPIC_ID not set — create with: hedera topic create")
         if not self.audit_topic_id:
-            issues.append("VERA_AUDIT_TOPIC_ID not set (optional but recommended)")
+            issues.append("VNX_AUDIT_TOPIC_ID not set (optional but recommended)")
         return issues
 
     def summary(self) -> dict:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Optimized Prediction Engine for Vera OS.
+Optimized Prediction Engine for VNX.
 
 Optimizations applied:
   1. ThreadPoolExecutor for CPU-bound PyTorch inference (non-blocking)

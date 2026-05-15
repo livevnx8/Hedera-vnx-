@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Super Prediction Engine for Vera OS.
+Super Prediction Engine for VNX.
 
 Combines all optimizations:
   1. ONNX Runtime inference (6x faster than PyTorch)
@@ -35,7 +35,7 @@ import torch
 try:
     import requests
     _sync_session = requests.Session()
-    _sync_session.headers.update({"Accept": "application/json", "User-Agent": "VeraOS/3.2"})
+    _sync_session.headers.update({"Accept": "application/json", "User-Agent": "VNXOS/3.2"})
 except ImportError:
     _sync_session = None
 

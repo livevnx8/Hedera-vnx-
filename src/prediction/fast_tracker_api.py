@@ -169,7 +169,7 @@ async def verify_prediction(prediction_id: int):
     proof_hash = hashlib.sha256(proof_payload.encode()).hexdigest()
 
     # Verify against Hiero mirror node (dry-run fallback if no topic configured)
-    topic_id = os.environ.get("VERA_TASK_TOPIC_ID", "")
+    topic_id = os.environ.get("VNX_TASK_TOPIC_ID", "")
     if topic_id and topic_id != "dry_run":
         verifier = _get_verifier()
         result = verifier.verify_by_hash(
@@ -192,7 +192,7 @@ async def verify_prediction(prediction_id: int):
         "prediction": dict(row),
         "proof_hash": proof_hash,
         "on_chain_verified": None,
-        "note": "HCS topic not configured — proof computed but not emitted. Set VERA_TASK_TOPIC_ID to enable Hiero verification.",
+        "note": "HCS topic not configured — proof computed but not emitted. Set VNX_TASK_TOPIC_ID to enable Hiero verification.",
     }
 
 

@@ -86,7 +86,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vera OS — HBAR Prediction Tracker</title>
+<title>VNX — HBAR Prediction Tracker</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#0a0e17; color:#e0e6ed; }
@@ -121,7 +121,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <body>
 <div class="header">
   <div>
-    <h1><span>Vera OS</span> HBAR Prediction Tracker</h1>
+    <h1><span>VNX</span> HBAR Prediction Tracker</h1>
     <div class="subtitle">VNX BitLattice Model — Hourly Predictions with Accuracy Tracking</div>
   </div>
   <div style="display:flex;gap:12px"><a href="/fast/dashboard">Fast 5-min</a> <a href="/monitoring">System</a></div>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vera OS — Fast 5-Minute HBAR Predictor with Real-Time Learning
+VNX — Fast 5-Minute HBAR Predictor with Real-Time Learning
 
 Runs as a long-running background process:
   - Fetches HBAR price every 60s (for chart data)
@@ -26,7 +26,7 @@ import numpy as np
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from vera_os.paths import MODELS_DIR, LOGS_DIR, add_src_to_path
+from vnx.paths import MODELS_DIR, LOGS_DIR, add_src_to_path
 
 add_src_to_path()
 
@@ -679,7 +679,7 @@ def run_loop():
     tick_count = 0
 
     logger.info("=" * 60)
-    logger.info("Vera OS Fast Predictor started (5-min cycle)")
+    logger.info("VNX Fast Predictor started (5-min cycle)")
     logger.info("=" * 60)
 
     while True:

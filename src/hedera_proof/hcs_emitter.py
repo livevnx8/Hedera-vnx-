@@ -4,7 +4,7 @@ HCS Proof Emitter — emits marketplace proof hashes to Hedera Consensus Service
 Feature-gated modes:
   - dry_run: records proof packets locally, no network cost
   - testnet: submits to Hedera testnet topics
-  - mainnet: submits to Hedera mainnet (requires VERA_ENABLE_MAINNET=true)
+  - mainnet: submits to Hedera mainnet (requires VNX_ENABLE_MAINNET=true)
 
 Integrates with the existing TypeScript hederaMasterClass via HTTP bridge,
 or operates in dry-run mode with full proof chain tracking.
@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-logger = logging.getLogger("vera.hedera_proof")
+logger = logging.getLogger("vnx.hedera_proof")
 
 
 class ProofMode(str, Enum):
@@ -95,10 +95,10 @@ class HCSProofEmitter:
         operator_id: Optional[str] = None,
     ):
         self._mode = mode or self._detect_mode()
-        self._task_topic_id = task_topic_id or os.environ.get("VERA_TASK_TOPIC_ID", "")
-        self._audit_topic_id = audit_topic_id or os.environ.get("VERA_AUDIT_TOPIC_ID", "")
-        self._learning_topic_id = os.environ.get("VERA_LEARNING_TOPIC_ID", "")
-        self._bridge_url = bridge_url or os.environ.get("VERA_HCS_BRIDGE_URL", "http://localhost:8000")
+        self._task_topic_id = task_topic_id or os.environ.get("VNX_TASK_TOPIC_ID", "")
+        self._audit_topic_id = audit_topic_id or os.environ.get("VNX_AUDIT_TOPIC_ID", "")
+        self._learning_topic_id = os.environ.get("VNX_LEARNING_TOPIC_ID", "")
+        self._bridge_url = bridge_url or os.environ.get("VNX_HCS_BRIDGE_URL", "http://localhost:8000")
         self._operator_id = operator_id or os.environ.get("HEDERA_OPERATOR_ACCOUNT_ID", "0.0.local")
 
         self._receipts: List[ProofReceipt] = []
@@ -119,10 +119,10 @@ class HCSProofEmitter:
         return f"HCSProofEmitter(mode={self._mode.value}, emitted={self._total_emitted})"
 
     def _detect_mode(self) -> ProofMode:
-        if os.environ.get("VERA_DRY_RUN", "true").lower() == "true":
+        if os.environ.get("VNX_DRY_RUN", "true").lower() == "true":
             return ProofMode.DRY_RUN
         network = os.environ.get("HEDERA_NETWORK", "testnet").lower()
-        if network == "mainnet" and os.environ.get("VERA_ENABLE_MAINNET", "").lower() == "true":
+        if network == "mainnet" and os.environ.get("VNX_ENABLE_MAINNET", "").lower() == "true":
             return ProofMode.MAINNET
         return ProofMode.TESTNET
 

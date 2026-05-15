@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-logger = logging.getLogger("vera.mirror_verifier")
+logger = logging.getLogger("vnx.mirror_verifier")
 
 MIRROR_URLS = {
     "mainnet": [

@@ -1,5 +1,5 @@
 """
-ONNX Inference Engine for Vera OS token prediction models.
+ONNX Inference Engine for VNX token prediction models.
 
 Loads ONNX models from models/onnx/ and runs inference using onnxruntime.
 Falls back to CPU if GPU provider is unavailable.
@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-logger = logging.getLogger("vera.onnx_inference")
+logger = logging.getLogger("vnx.onnx_inference")
 
 FEATURE_KEYS = [
     "price_change_1h", "price_change_4h", "price_change_24h",
@@ -84,7 +84,7 @@ class ONNXModel:
 
 class ONNXPredictionEngine:
     """
-    Drop-in ONNX prediction engine for Vera OS.
+    Drop-in ONNX prediction engine for VNX.
 
     Scans models/onnx/ for *_production.onnx files and loads them.
     Provides the same predict() interface as ProductionPredictionEngine.

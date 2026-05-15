@@ -52,7 +52,7 @@ pip install -e .  &&  python prediction_server_v3.py
 | **163 routes** production API | **98 tests** full coverage |
 
 ```python
-from vera_os import PredictionService, HCSProofEmitter
+from vnx import PredictionService, HCSProofEmitter
 
 svc = PredictionService()
 result = svc.predict("hbar", svc.features_from_price("hbar", {"price": 0.095}))
@@ -101,7 +101,7 @@ VNX's BitLattice architecture is purpose-built for minimal compute:
 | **HCS Proof Loop** | ✅ Active | Hash-chained proofs emitting to testnet |
 | **Agent Marketplace** | ✅ Functional | Post → Bid → Execute → Settle → Proof |
 | **Dashboard** | ✅ Live | Real-time chart + swarm signals at `/fast/dashboard` |
-| **Mainnet Proofs** | 🔶 Ready | Gated behind `VERA_ENABLE_MAINNET=true` |
+| **Mainnet Proofs** | 🔶 Ready | Gated behind `VNX_ENABLE_MAINNET=true` |
 | **Multi-token Models** | 🔶 Beta | HBAR (80%), SAUCE (68%), DOVU (100%) |
 | **Learning Lane** | 🔶 Beta | Proof loops → lessons → upgrade packages |
 | **Edge Deployment** | 🟡 Planned | Browser/IoT targets via WASM export |
@@ -209,7 +209,7 @@ That's it. Open `http://localhost:8080/fast/dashboard` to see the prediction swa
 HEDERA_OPERATOR_ACCOUNT_ID=0.0.XXXXX
 HEDERA_OPERATOR_PRIVATE_KEY=302e...
 HEDERA_NETWORK=testnet
-VERA_DRY_RUN=false          # flip to emit real HCS proofs
+VNX_DRY_RUN=false          # flip to emit real HCS proofs
 ```
 
 ---
@@ -233,7 +233,7 @@ Model Hash → Prompt Hash → Output Hash → Trace Hash → Proof Hash → HCS
 Proof packets are **chained** — each includes the hash of the previous, forming a tamper-evident sequence. Anyone can verify against the Hedera mirror node:
 
 ```python
-from vera_os import MirrorVerifier
+from vnx import MirrorVerifier
 
 verifier = MirrorVerifier()
 result = verifier.verify_receipt("task_1", proof_hash, topic_id="0.0.12345")
@@ -242,9 +242,9 @@ result = verifier.verify_receipt("task_1", proof_hash, topic_id="0.0.12345")
 
 | Mode | Config | Cost |
 |------|--------|------|
-| **Dry run** | `VERA_DRY_RUN=true` (default) | Free — proofs logged locally |
+| **Dry run** | `VNX_DRY_RUN=true` (default) | Free — proofs logged locally |
 | **Testnet** | `HEDERA_NETWORK=testnet` | Free — Hedera testnet |
-| **Mainnet** | `VERA_ENABLE_MAINNET=true` | ~$0.0001/proof |
+| **Mainnet** | `VNX_ENABLE_MAINNET=true` | ~$0.0001/proof |
 
 ---
 
@@ -271,7 +271,7 @@ result = verifier.verify_receipt("task_1", proof_hash, topic_id="0.0.12345")
 ### Run a verified agent task in 4 lines:
 
 ```python
-from vera_os import MarketplaceService
+from vnx import MarketplaceService
 
 mkt = MarketplaceService()
 task = mkt.post_task("Analyze whale activity", budget_hbar=25.0, category="intel")
@@ -353,10 +353,10 @@ The mirror node returns consensus timestamps, sequence numbers, and running hash
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `VERA_DRY_RUN` | `true` | Skip live HCS emission |
+| `VNX_DRY_RUN` | `true` | Skip live HCS emission |
 | `HEDERA_NETWORK` | `testnet` | Network target |
-| `VERA_ENABLE_MAINNET` | `false` | Mainnet safety gate |
-| `VERA_TASK_TOPIC_ID` | — | HCS topic for proofs |
+| `VNX_ENABLE_MAINNET` | `false` | Mainnet safety gate |
+| `VNX_TASK_TOPIC_ID` | — | HCS topic for proofs |
 | `HEDERA_OPERATOR_ACCOUNT_ID` | — | Operator account |
 | `HEDERA_OPERATOR_PRIVATE_KEY` | — | Operator key |
 
@@ -373,7 +373,7 @@ python -m pytest tests/ -v    # 98 tests, < 3 seconds
 ## Repository Layout
 
 ```
-vera_os/                  Python package (stable public API)
+vnx/                  Python package (stable public API)
 src/prediction/           BitLattice ONNX + 7-agent swarm
 src/hedera_proof/         HCS emitter, mirror verifier
 src/verifiable_ai/        8 first-party verified agents

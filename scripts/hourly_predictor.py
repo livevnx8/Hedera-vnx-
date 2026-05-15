@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vera OS — Hourly HBAR Price Predictor & Accuracy Tracker
+VNX — Hourly HBAR Price Predictor & Accuracy Tracker
 
 Runs every hour via cron. Uses VNX BitLattice model (PyTorch + ONNX) to:
   1. Fetch current HBAR price from CoinGecko
@@ -26,7 +26,7 @@ import requests
 
 # Setup path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from vera_os.paths import MODELS_DIR, LOGS_DIR, add_src_to_path
+from vnx.paths import MODELS_DIR, LOGS_DIR, add_src_to_path
 
 add_src_to_path()
 
@@ -280,7 +280,7 @@ def get_accuracy_stats(conn: sqlite3.Connection) -> Dict[str, Any]:
 
 def main():
     logger.info("=" * 60)
-    logger.info("Vera OS — Hourly HBAR Prediction Run")
+    logger.info("VNX — Hourly HBAR Prediction Run")
     logger.info("=" * 60)
 
     conn = get_db()

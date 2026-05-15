@@ -182,4 +182,4 @@ The system is in its first hour of adaptive learning. Expected steady-state accu
 
 ---
 
-*Built on Vera OS • VNX BitLattice v3 • Hedera Network*
+*Built on VNX • VNX BitLattice v3 • Hedera Network*
