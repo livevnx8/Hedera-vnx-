@@ -1,0 +1,63 @@
+[
+  {
+    "name": "sqlite_price_tick_write",
+    "latency_ms": 10.377,
+    "network": "testnet",
+    "timestamp": "2026-05-15T00:54:13.500065+00:00",
+    "details": {
+      "status": "success",
+      "result": "inserted"
+    }
+  },
+  {
+    "name": "sqlite_prediction_query_last10",
+    "latency_ms": 0.235,
+    "network": "testnet",
+    "timestamp": "2026-05-15T00:54:13.500406+00:00",
+    "details": {
+      "status": "success",
+      "result": 10
+    }
+  },
+  {
+    "name": "hiero_mirror_node_query",
+    "latency_ms": 114.513,
+    "network": "testnet",
+    "timestamp": "2026-05-15T00:54:13.614951+00:00",
+    "details": {
+      "status": "success",
+      "result": []
+    }
+  },
+  {
+    "name": "hiero_verify_by_hash",
+    "latency_ms": 91.372,
+    "network": "testnet",
+    "timestamp": "2026-05-15T00:54:13.706401+00:00",
+    "details": {
+      "status": "success",
+      "result": {
+        "task_id": "standalone",
+        "verified": false,
+        "local_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "on_chain_hash": null,
+        "topic_id": "0.0.43850297",
+        "sequence_number": null,
+        "consensus_timestamp": null,
+        "hashscan_url": null,
+        "mismatch_details": "Proof hash not found in last 50 messages on topic 0.0.43850297",
+        "timestamp": 1778806453.706385
+      }
+    }
+  },
+  {
+    "name": "end_to_end_verify_cycle",
+    "latency_ms": 109.847,
+    "network": "testnet",
+    "timestamp": "2026-05-15T00:54:13.816307+00:00",
+    "details": {
+      "status": "success",
+      "result": "completed"
+    }
+  }
+]
