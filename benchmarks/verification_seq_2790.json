@@ -1,0 +1,35 @@
+{
+  "topic_id": "0.0.10416185",
+  "sequence_number": 2790,
+  "network": "mainnet",
+  "consensus_timestamp": "1778810840.687010077",
+  "transaction_id": null,
+  "payer_account_id": "0.0.10294360",
+  "stored_hash": "ea4f6fee3612f03ed9d0d8eaedc8359f4bd58b52e275ab658319ec7de9484980",
+  "recomputed_hash": "ea4f6fee3612f03ed9d0d8eaedc8359f4bd58b52e275ab658319ec7de9484980",
+  "hash_match": true,
+  "on_chain_metrics": {
+    "down_accuracy_pct": 50,
+    "high_conf_accuracy_pct": 46.2,
+    "last_10_accuracy_pct": 70,
+    "last_50_accuracy_pct": 56,
+    "low_conf_accuracy_pct": 56.1,
+    "overall_accuracy_pct": 53.7,
+    "total_scored": 54,
+    "up_accuracy_pct": 57.7
+  },
+  "db_metrics": {
+    "overall_accuracy_pct": 53.3,
+    "last_10_accuracy_pct": 60.0,
+    "last_50_accuracy_pct": 56.0,
+    "up_accuracy_pct": 53.3,
+    "down_accuracy_pct": 53.3,
+    "high_conf_accuracy_pct": 46.2,
+    "low_conf_accuracy_pct": 55.3
+  },
+  "metrics_match": false,
+  "immutable": true,
+  "verified_at": "2026-05-15T02:35:07Z",
+  "mirror_node": "https://mainnet-public.mirrornode.hedera.com",
+  "hashscan_url": "https://hashscan.io/mainnet/topic/0.0.10416185?seq=2790"
+}
