@@ -34,7 +34,7 @@ pip install -e .  &&  python prediction_server_v3.py
 
 ![VNX Prediction Swarm Dashboard](assets/vnx-visuals/vnx-edge-performance-dashboard-png.png?v=2)
 
-*VNX Prediction Swarm — 6 agents, real-time HBAR/USD, sub-2ms inference, adaptive self-learning*
+*VNX Prediction Swarm — 7 agents, real-time HBAR/USD, sub-2ms inference, adaptive self-learning*
 
 </div>
 
@@ -47,7 +47,7 @@ pip install -e .  &&  python prediction_server_v3.py
 | | |
 |---|---|
 | **< 2ms** inference | **63 KB** quantized model |
-| **6-agent** prediction swarm | **On-chain** HCS proofs |
+| **7-agent** prediction swarm | **On-chain** HCS proofs |
 | **38 agents** across 6 domains | **Self-learning** adaptive weights |
 | **163 routes** production API | **98 tests** full coverage |
 
@@ -96,7 +96,7 @@ VNX's BitLattice architecture is purpose-built for minimal compute:
 
 | Component | Status | Details |
 |-----------|--------|--------|
-| **Prediction Swarm** | ✅ Live | 6-agent ensemble, 5-min cycles, adaptive learning |
+| **Prediction Swarm** | ✅ Live | 7-agent ensemble, 5-min cycles, adaptive learning |
 | **BitLattice ONNX** | ✅ Production | Quantized model, 14μs inference, 63KB |
 | **HCS Proof Loop** | ✅ Active | Hash-chained proofs emitting to testnet |
 | **Agent Marketplace** | ✅ Functional | Post → Bid → Execute → Settle → Proof |
@@ -147,11 +147,11 @@ BitLattice is VNX's proprietary neural architecture — a ternary-weight system 
 
 ![VNX Performance](assets/vnx-visuals/vnx-performance-comparison-png.png?v=2)
 
-*Real-time 5-minute HBAR/USD directional predictions with 6-agent weighted consensus*
+*Real-time 5-minute HBAR/USD directional predictions with 7-agent weighted consensus*
 
 </div>
 
-Six specialized agents analyze price data from different angles and vote through weighted consensus:
+Seven specialized agents analyze price data from different angles and vote through weighted consensus:
 
 | Agent | Strategy | What it detects |
 |-------|----------|-----------------|
@@ -161,6 +161,7 @@ Six specialized agents analyze price data from different angles and vote through
 | **SMA-Cross** | 5/10 period crossover | Micro-trend direction |
 | **Momentum** | 3-tick price velocity | Strong moves vs exhaustion |
 | **Volume-Flow** | Volume-price divergence | Smart money accumulation |
+| **Pattern-Recog** | Chart pattern detection | Double tops, triangles, flags, wedges |
 
 ### Consensus Mechanism
 
@@ -264,7 +265,7 @@ result = verifier.verify_receipt("task_1", proof_hash, topic_id="0.0.12345")
 | 5 | **Live Proof Loop** | HCS emitter + mirror verifier |
 | 4 | **Agent Marketplace** | Post → bid → execute → settle with escrow |
 | 3 | **Workflow Agents** | 30 agents across 6 domains |
-| 2 | **Prediction Engine** | BitLattice ONNX + 6-agent swarm |
+| 2 | **Prediction Engine** | BitLattice ONNX + 7-agent swarm |
 | 1 | **Hedera Core** | HCS topics, HTS tokens, 27 network specialists |
 
 ### Run a verified agent task in 4 lines:
@@ -345,7 +346,7 @@ python -m pytest tests/ -v    # 98 tests, < 3 seconds
 
 ```
 vera_os/                  Python package (stable public API)
-src/prediction/           BitLattice ONNX + 6-agent swarm
+src/prediction/           BitLattice ONNX + 7-agent swarm
 src/hedera_proof/         HCS emitter, mirror verifier
 src/verifiable_ai/        8 first-party verified agents
 src/marketplace/          Task engine, escrow, reputation
